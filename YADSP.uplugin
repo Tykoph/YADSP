@@ -1,0 +1,28 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "YADSP",
+	"Description": "Yet Another Dialogue System Plugin",
+	"Category": "Other",
+	"CreatedBy": "Tom",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "YADSP",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "YADSPEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
