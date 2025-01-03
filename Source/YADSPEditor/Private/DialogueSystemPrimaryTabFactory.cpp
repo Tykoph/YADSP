@@ -1,14 +1,14 @@
-﻿#include "DialogueGraphPrimaryTabFactory.h"
+﻿#include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueGraphEditorApp.h"
 #include "CoreMinimal.h"
-#include "DialogueGraph.h"
+#include "DialogueSystem.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 #include "GraphEditor.h"
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
 
-DialogueGraphPrimaryTabFactory::DialogueGraphPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
+DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
 {
 	DGApp = App;
 	TabLabel = FText::FromString(TEXT("Primary"));
@@ -16,7 +16,7 @@ DialogueGraphPrimaryTabFactory::DialogueGraphPrimaryTabFactory(const TSharedPtr<
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Primary view"));
 }
 
-TSharedRef<SWidget> DialogueGraphPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
 	const TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
 
@@ -32,7 +32,7 @@ TSharedRef<SWidget> DialogueGraphPrimaryTabFactory::CreateTabBody(const FWorkflo
 		];
 }
 
-FText DialogueGraphPrimaryTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText DialogueSystemPrimaryTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("A primary view for the dialogue graph editor"));
 }

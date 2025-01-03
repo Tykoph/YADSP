@@ -1,6 +1,6 @@
-﻿#include "AssetTypeActions_DialogueGraph.h"
+﻿#include "AssetTypeActions_DialogueSystem.h"
 #include "CoreMinimal.h"
-#include "DialogueGraph.h"
+#include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 
 FAssetTypeActions_DialogueGraph::FAssetTypeActions_DialogueGraph(EAssetTypeCategories::Type AssetCategory)
@@ -21,7 +21,7 @@ FColor  FAssetTypeActions_DialogueGraph::GetTypeColor() const
 
 UClass*  FAssetTypeActions_DialogueGraph::GetSupportedClass() const
 {
-	return UDialogueGraph::StaticClass();
+	return UDialogueSystem::StaticClass();
 }
 
 uint32  FAssetTypeActions_DialogueGraph::GetCategories()
@@ -34,7 +34,7 @@ void  FAssetTypeActions_DialogueGraph::OpenAssetEditor(const TArray<UObject*>& I
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* object : InObjects)
 	{
-		UDialogueGraph* dialogueGraph = Cast<UDialogueGraph>(object);
+		UDialogueSystem* dialogueGraph = Cast<UDialogueSystem>(object);
 		if (dialogueGraph != nullptr)
 		{
 			TSharedRef<DialogueGraphEditorApp> dialogueGraphEditorApp = MakeShareable(new DialogueGraphEditorApp());

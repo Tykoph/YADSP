@@ -1,5 +1,5 @@
 ﻿#include "DialogueGraphSchema.h"
-#include "DialogueGraphNode.h"
+#include "DialogueSystemNode.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -32,7 +32,7 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
 {
-	UDialogueGraphNode* ResultNode = NewObject<UDialogueGraphNode>(ParentGraph);
+	UDialogueSystemNode* ResultNode = NewObject<UDialogueSystemNode>(ParentGraph);
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;

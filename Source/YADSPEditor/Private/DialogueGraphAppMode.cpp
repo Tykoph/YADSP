@@ -1,13 +1,13 @@
 ﻿#include "DialogueGraphAppMode.h"
 #include "DialogueGraphEditorApp.h"
-#include "DialogueGraphPrimaryTabFactory.h"
-#include "DialogueGraphPropertiesTabFactory.h"
+#include "DialogueSystemPrimaryTabFactory.h"
+#include "DialogueSystemPropertiesTabFactory.h"
 
 DialogueGraphAppMode::DialogueGraphAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
 	_app = App;
-	_tabs.RegisterFactory(MakeShareable(new DialogueGraphPrimaryTabFactory(App)));
-	_tabs.RegisterFactory(MakeShareable(new DialogueGraphPropertiesTabFactory(App)));
+	_tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
+	_tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
 
 	// Slate UI
 	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v1")

@@ -1,12 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueRuntimeGraph.h"
+#include "DialogueSystemRuntimeGraph.h"
 #include "UObject/Object.h"
-#include "DialogueGraph.generated.h"
+#include "DialogueSystem.generated.h"
 
 UCLASS(Blueprintable, BlueprintType)
-class YADSP_API UDialogueGraph : public UObject
+class YADSP_API UDialogueSystem : public UObject
 {
 	GENERATED_BODY()
 
@@ -21,5 +21,5 @@ public:
 	FString GetGraphName() const { return GraphName; }
 
 	UPROPERTY()
-	UDialogueRuntimeGraph* Graph = nullptr;
+	UDialogueSystemRuntimeGraph* Graph = nullptr;
 };

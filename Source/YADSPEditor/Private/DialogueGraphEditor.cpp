@@ -1,6 +1,6 @@
-﻿#include "YADSPEditor.h"
+﻿#include "DialogueGraphEditor.h"
 #include "AssetToolsModule.h"
-#include "AssetTypeActions_DialogueGraph.h"
+#include "AssetTypeActions_DialogueSystem.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"

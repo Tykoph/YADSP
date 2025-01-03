@@ -2,11 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "YADSPFactory.generated.h"
+#include "DialogueSystemFactory.generated.h"
 
-/**
- *
- */
 UCLASS()
 class YADSPEDITOR_API UYADSPFactory : public UFactory
 {

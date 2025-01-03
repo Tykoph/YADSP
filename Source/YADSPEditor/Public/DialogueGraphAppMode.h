@@ -4,9 +4,6 @@
 #include "WorkflowOrientedApp/ApplicationMode.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 
-/**
- * 
- */
 class YADSPEDITOR_API DialogueGraphAppMode : public FApplicationMode
 {
 public:

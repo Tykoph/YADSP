@@ -1,11 +1,11 @@
 ﻿#include "DialogueGraphEditorApp.h"
 #include "DialogueGraphAppMode.h"
 #include "CoreMinimal.h"
-#include "DialogueGraph.h"
-#include "DialogueGraphNode.h"
+#include "DialogueSystem.h"
+#include "DialogueSystemNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
-#include "DialogueRuntimeGraph.h"
+#include "DialogueSystemRuntimeGraph.h"
 
 
 void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager)
@@ -18,7 +18,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
 
-	WorkingGraphAsset = Cast<UDialogueGraph>(InObject);
+	WorkingGraphAsset = Cast<UDialogueSystem>(InObject);
 	if (!WorkingGraphAsset)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to cast InObject to UDialogueGraph!"));
@@ -86,7 +86,7 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 		return;
 	}
 
-	UDialogueRuntimeGraph* RuntimeGraph = NewObject<UDialogueRuntimeGraph>(WorkingGraphAsset);
+	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
 	WorkingGraphAsset->Graph = RuntimeGraph;
 
 	TArray<std::pair<FGuid, FGuid>> Connections;
@@ -143,7 +143,7 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 
 	if (WorkingGraphAsset->Graph == nullptr)
 	{
-		WorkingGraphAsset->Graph = NewObject<UDialogueRuntimeGraph>(WorkingGraphAsset);
+		WorkingGraphAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
 		OnGraphChangedListenerHandle = WorkingGraphEditor->AddOnGraphChangedHandler(
 			FOnGraphChanged::FDelegate::CreateRaw(this, &DialogueGraphEditorApp::OnGraphChanged));
 
@@ -161,7 +161,7 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 
 	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingGraphAsset->Graph->Nodes)
 	{
-		UDialogueGraphNode* NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
+		UDialogueSystemNode* NewNode = NewObject<UDialogueSystemNode>(WorkingGraphEditor);
 		NewNode->NodePosX = RuntimeNode->NodePosition.X;
 		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
 

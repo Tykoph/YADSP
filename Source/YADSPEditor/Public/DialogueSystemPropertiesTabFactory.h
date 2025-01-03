@@ -6,14 +6,14 @@
 /**
  * 
  */
-class YADSPEDITOR_API DialogueGraphPrimaryTabFactory : public FWorkflowTabFactory
+class YADSPEDITOR_API DialogueSystemPropertiesTabFactory : public FWorkflowTabFactory
 {
 public:
-	DialogueGraphPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App);
+	DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
-	TWeakPtr<class DialogueGraphEditorApp> DGApp;
+	TWeakPtr<class DialogueGraphEditorApp> _app;
 };

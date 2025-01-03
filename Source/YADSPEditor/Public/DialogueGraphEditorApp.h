@@ -9,7 +9,7 @@ class YADSPEDITOR_API DialogueGraphEditorApp : public FWorkflowCentricApplicatio
 
 private:
 	UPROPERTY()
-	class UDialogueGraph* WorkingGraphAsset = nullptr;
+	class UDialogueSystem* WorkingGraphAsset = nullptr;
 
 	UPROPERTY()
 	class UEdGraph* WorkingGraphEditor = nullptr;
@@ -20,7 +20,7 @@ public:
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager) override;
 	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit);
 
-	UDialogueGraph* GetDialogueGraph() const { return WorkingGraphAsset; }
+	UDialogueSystem* GetDialogueGraph() const { return WorkingGraphAsset; }
 	UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
 	// FAssetEditorToolkit interface

@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "EdGraph/EdGraphNode.h"
-#include "DialogueGraphNode.generated.h"
+#include "DialogueSystemNode.generated.h"
 
 UCLASS()
-class UDialogueGraphNode : public UEdGraphNode
+class UDialogueSystemNode : public UEdGraphNode
 {
 	GENERATED_BODY()
 

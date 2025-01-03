@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject//NameTypes.h"
-#include "DialogueRuntimeGraph.generated.h"
+#include "DialogueSystemRuntimeGraph.generated.h"
 
 UCLASS()
 class YADSP_API UDialogueRuntimeGraphPin : public UObject
@@ -37,7 +37,7 @@ public:
 };
 
 UCLASS()
-class YADSP_API UDialogueRuntimeGraph : public UObject
+class YADSP_API UDialogueSystemRuntimeGraph : public UObject
 {
 	GENERATED_BODY()
 

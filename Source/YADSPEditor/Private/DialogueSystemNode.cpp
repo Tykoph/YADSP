@@ -1,12 +1,12 @@
-﻿#include "DialogueGraphNode.h"
+﻿#include "DialogueSystemNode.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
 
-void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+void UDialogueSystemNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
 	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Dialogue Node Actions")));
 
-	UDialogueGraphNode* Node = const_cast<UDialogueGraphNode*>(this);
+	UDialogueSystemNode* Node = const_cast<UDialogueSystemNode*>(this);
 	Section.AddMenuEntry(
 		"AddPinEntry",
 		FText::FromString(TEXT("Add Pin")),
@@ -59,7 +59,7 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 	);
 }
 
-UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueSystemNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
 	FName PinCategory = (Dir == EGPD_Input) ? TEXT("input") : TEXT("output");
 	FName PinSubCategory = TEXT("DialoguePin");
