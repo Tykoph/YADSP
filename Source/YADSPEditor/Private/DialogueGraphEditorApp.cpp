@@ -6,8 +6,10 @@
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueSystemRuntimeGraph.h"
-#include "DialogueSystemNodeInfo.h"
+#include "DialogueNodeInfo.h"
+#include "DialogueGraphNodeStart.h"
 
+DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
 void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager)
 {
@@ -133,12 +135,8 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 
 	for (UEdGraphNode* UiNode : WorkingGraphEditor->Nodes)
 	{
-		UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
-		if (UiGraphNode == nullptr) continue;
-
 		UDialogueRuntimeGraphNode* RuntimeNode = NewObject<UDialogueRuntimeGraphNode>(RuntimeGraph);
 		RuntimeNode->NodePosition = FVector2d(UiNode->NodePosX, UiNode->NodePosY);
-		RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
 
 		for (UEdGraphPin* UIPin : UiNode->Pins)
 		{
@@ -162,6 +160,16 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 			{
 				RuntimeNode->OutputPins.Add(RuntimePin);
 			}
+		}
+		if (UiNode->IsA(UDialogueGraphNode::StaticClass()))
+		{
+			UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
+			RuntimeNode->NodeType = EDialogueNodeType::DialogueNode;
+			RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
+		}
+		else if (UiNode->IsA(UDialogueGraphNodeStart::StaticClass()))
+		{
+			RuntimeNode->NodeType = EDialogueNodeType::StartNode;
 		}
 
 		RuntimeGraph->Nodes.Add(RuntimeNode);
@@ -187,14 +195,8 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 	if (WorkingGraphAsset->Graph == nullptr)
 	{
 		WorkingGraphAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
-
 		UE_LOG(LogTemp, Warning, TEXT("WorkingGraphAsset->Graph was null. Initialized a new graph."));
-	}
-
-	if (WorkingGraphAsset->Graph->Nodes.Num() == 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("WorkingGraphAsset->Graph->Nodes is empty."));
-		return;
+		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
 	}
 
 	TArray<std::pair<FGuid, FGuid>> Connections;
@@ -202,7 +204,21 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 
 	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingGraphAsset->Graph->Nodes)
 	{
-		UDialogueGraphNode* NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
+		UDialogueGraphNodeBase* NewNode = nullptr;
+		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode)
+		{
+			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
+		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode)
+		{
+			NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
+		}
+		else
+		{
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
+		}
+
+		NewNode->CreateNewGuid();
 		NewNode->NodePosX = RuntimeNode->NodePosition.X;
 		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
 
@@ -210,9 +226,9 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 		{
 			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
 		}
-		else
+		else if (RuntimeNode->NodeType != EDialogueNodeType::StartNode)
 		{
-			NewNode->SetNodeInfo(NewObject<UDialogueSystemNodeInfo>(RuntimeNode));
+			NewNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(RuntimeNode));
 		}
 
 		if (RuntimeNode->InputPin != nullptr)

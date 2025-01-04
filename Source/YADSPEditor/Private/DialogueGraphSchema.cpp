@@ -1,19 +1,32 @@
 ﻿#include "DialogueGraphSchema.h"
 #include "DialogueGraphNode.h"
-#include "DialogueSystemNodeInfo.h"
+#include "DialogueNodeInfo.h"
+#include "DialogueGraphNodeStart.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<FNewNodeAction> NewNodeAction(
+	TSharedPtr<FNewNodeAction> NewDialogueNodeAction(
 		new FNewNodeAction(
+			UDialogueGraphNode::StaticClass(),
 			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("new Node")),
-			FText::FromString(TEXT("Makes a new node")),
+			FText::FromString(TEXT("new dialogue Node")),
+			FText::FromString(TEXT("Makes a new dialogue node")),
 			0
 		)
 	);
 
-	ContextMenuBuilder.AddAction(NewNodeAction);
+	TSharedPtr<FNewNodeAction> NewEndNodeAction(
+		new FNewNodeAction(
+			UdialogueGraphNodeEnd::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("new End Node")),
+			FText::FromString(TEXT("Makes a new End node")),
+			0
+		)
+	);
+
+	ContextMenuBuilder.AddAction(NewDialogueNodeAction);
+	ContextMenuBuilder.AddAction(NewEndNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
@@ -31,19 +44,31 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 	return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT(""));
 }
 
+void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
+{
+	UDialogueGraphNodeStart* StartNode = NewObject<UDialogueGraphNodeStart>(&Graph);
+	StartNode->CreateNewGuid();
+	StartNode->NodePosX = 0;
+	StartNode->NodePosY = 0;
+
+	StartNode->CreateDialoguePin(EGPD_Output, FName(TEXT("Start")));
+
+	Graph.AddNode(StartNode, true, true);
+	Graph.NotifyGraphChanged();
+}
+
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
 {
-	UDialogueGraphNode* ResultNode = NewObject<UDialogueGraphNode>(ParentGraph);
+	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr);
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;
 
-	ResultNode->SetNodeInfo(NewObject<UDialogueSystemNodeInfo>(ResultNode));
+	ResultNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(ResultNode));
 
-	UEdGraphPin* InputPin = ResultNode->CreateDialoguePin(EGPD_Input, TEXT("Display"));
-	FString DefaultResponse = TEXT("Continue");
-	ResultNode->GetNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
-	ResultNode->SyncWithNodeResponse();
+	UEdGraphPin* InputPin = ResultNode->CreateDefaultInputPin();
+	ResultNode->CreateDefaultOutputPin();
+
 
 	if (FromPin != nullptr)
 	{

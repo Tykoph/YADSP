@@ -44,7 +44,9 @@ TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWor
 		[
 			DetailsView.ToSharedRef()
 		]
-		.VAlign(VAlign_Fill)
+		+ SVerticalBox::Slot()
+		.FillHeight(1.0f)
+		.HAlign(HAlign_Fill)
 		[
 			SelectedNodeDetailsView.ToSharedRef()
 		];

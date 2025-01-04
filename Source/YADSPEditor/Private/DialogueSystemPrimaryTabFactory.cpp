@@ -18,7 +18,7 @@ DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPt
 
 TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	const TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
+	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
 
 	SGraphEditor::FGraphEditorEvents GraphEvents;
 	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &DialogueGraphEditorApp::OnGraphSelectionChanged);

@@ -1,6 +1,6 @@
 ﻿#include "DialogueGraphNode.h"
 
-#include "DialogueSystemNodeInfo.h"
+#include "DialogueNodeInfo.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
 
@@ -31,7 +31,7 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeAddPinIcon")),
 		FUIAction(FExecuteAction::CreateLambda(
 			[Node] (){
-				Node->GetNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("New Response")));
+				Node->GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("New Response")));
 				Node->SyncWithNodeResponse();
 
 				Node->GetGraph()->NotifyGraphChanged();
@@ -50,7 +50,7 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 				UEdGraphPin* Pin = Node->GetPinAt(Node->Pins.Num() - 1);
 				if (Pin->Direction != EGPD_Input)
 				{
-					UDialogueSystemNodeInfo* NodeInfo = Node->GetNodeInfo();
+					UDialogueNodeInfo* NodeInfo = Node->GetDialogueNodeInfo();
 					NodeInfo->DialogueResponses.RemoveAt(NodeInfo->DialogueResponses.Num() - 1);
 					Node->SyncWithNodeResponse();
 
@@ -76,6 +76,18 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 	);
 }
 
+UEdGraphPin* UDialogueGraphNode::CreateDefaultInputPin()
+{
+	return CreateDialoguePin(EGPD_Input, FName(TEXT("Input")));
+}
+
+void UDialogueGraphNode::CreateDefaultOutputPin()
+{
+	FString DefaultResponse = TEXT("Continue");
+	ResultNode->GetNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
+	ResultNode->SyncWithNodeResponse();
+}
+
 UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
 	FName PinCategory = (Dir == EGPD_Input) ? TEXT("input") : TEXT("output");
@@ -89,7 +101,7 @@ UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FNa
 
 void UDialogueGraphNode::SyncWithNodeResponse()
 {
-	UDialogueSystemNodeInfo* NodeInfo = GetNodeInfo();
+	UDialogueNodeInfo* NodeInfo = GetDialogueNodeInfo();
 	int NumGraphNodePins = Pins.Num() - 1;
 	int NumInfoPins = NodeInfo->DialogueResponses.Num();
 

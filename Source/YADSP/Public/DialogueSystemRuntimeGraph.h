@@ -1,9 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueSystemNodeInfo.h"
+#include "DialogueNodeInfoBase.h"
 #include "UObject//NameTypes.h"
 #include "DialogueSystemRuntimeGraph.generated.h"
+
 
 UCLASS()
 class YADSP_API UDialogueRuntimeGraphPin : public UObject
@@ -28,6 +29,9 @@ class YADSP_API UDialogueRuntimeGraphNode : public UObject
 
 public:
 	UPROPERTY()
+	EDialogueNodeType NodeType = EDialogueNodeType::DialogueNode;
+
+	UPROPERTY()
 	UDialogueRuntimeGraphPin* InputPin;
 
 	UPROPERTY()
@@ -37,7 +41,7 @@ public:
 	FVector2D NodePosition;
 
 	UPROPERTY()
-	UDialogueSystemNodeInfo* NodeInfo;
+	UDialogueNodeInfoBase* NodeInfo;
 };
 
 UCLASS()

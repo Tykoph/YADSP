@@ -27,6 +27,24 @@ private:
     }
 };
 
+class SDialogueGraphStartPin : public SGraphPin
+{
+public:
+    SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
+    {
+        SGraphPin::Construct(SGraphPin::FArguments(), InPin);
+    }
+
+private:
+    virtual FSlateColor GetPinColor() const override
+    {
+        return FLinearColor::Red;
+    }
+};
+
 struct FDialoguePinFactory : public FGraphPanelPinFactory
 {
 public:
@@ -36,6 +54,10 @@ public:
         if (FName(TEXT("DialoguePin")) == Pin->PinType.PinSubCategory)
         {
             return SNew(SDialogueGraphPin, Pin);
+        }
+        else if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory)
+        {
+            return SNew(SDialogueGraphStartPin, Pin);
         }
 
         return nullptr;
@@ -55,28 +77,17 @@ void FYADSPEditorModule::StartupModule()
     FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
     DGStyleSet->SetContentRoot(ContentDir);
 
-    FString AbsolutePath = FPaths::ConvertRelativePathToFull(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")));
-    if (!FPaths::FileExists(AbsolutePath))
-    {
-        UE_LOG(LogTemp, Error, TEXT("File not found: %s"), *AbsolutePath);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("File found: %s"), *AbsolutePath);
-    }
-
-
     FSlateImageBrush* ThumbnailBrush =      new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
     FSlateImageBrush* IconBrush =           new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
     FSlateImageBrush* NodeAddPinIcon =      new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
     FSlateImageBrush* NodeDeletePinIcon =   new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
     FSlateImageBrush* NodeDeleteNodeIcon =  new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
 
-    DGStyleSet->Set(TEXT("ClassThumbnail.DialogueGraph"), ThumbnailBrush);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueGraph"), IconBrush);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueGraph"), NodeAddPinIcon);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueGraph"), NodeDeletePinIcon);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueGraph"), NodeDeleteNodeIcon);
+    DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailBrush);
+    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);
+    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeAddPinIcon);
+    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeDeletePinIcon);
+    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeDeleteNodeIcon);
 
     FSlateStyleRegistry::RegisterSlateStyle(*DGStyleSet);
 

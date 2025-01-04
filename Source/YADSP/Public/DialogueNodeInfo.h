@@ -1,10 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueSystemNodeInfo.generated.h"
+#include "DialogueNodeInfoBase.h"
+#include "DialogueNodeInfo.generated.h"
 
 UCLASS(BlueprintType)
-class YADSP_API UDialogueSystemNodeInfo : public UObject
+class YADSP_API UDialogueNodeInfo : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 
