@@ -1,5 +1,6 @@
 ﻿#include "DialogueGraphSchema.h"
-#include "DialogueSystemNode.h"
+#include "DialogueGraphNode.h"
+#include "DialogueSystemNodeInfo.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -32,13 +33,17 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
 {
-	UDialogueSystemNode* ResultNode = NewObject<UDialogueSystemNode>(ParentGraph);
+	UDialogueGraphNode* ResultNode = NewObject<UDialogueGraphNode>(ParentGraph);
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;
 
-	UEdGraphPin* InputPin = ResultNode->CreateDialoguePin(EGPD_Input, TEXT("Input"));
-	ResultNode->CreateDialoguePin(EGPD_Output, TEXT("output"));
+	ResultNode->SetNodeInfo(NewObject<UDialogueSystemNodeInfo>(ResultNode));
+
+	UEdGraphPin* InputPin = ResultNode->CreateDialoguePin(EGPD_Input, TEXT("Display"));
+	FString DefaultResponse = TEXT("Continue");
+	ResultNode->GetNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
+	ResultNode->SyncWithNodeResponse();
 
 	if (FromPin != nullptr)
 	{

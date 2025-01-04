@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueSystemNodeInfo.h"
 #include "UObject//NameTypes.h"
 #include "DialogueSystemRuntimeGraph.generated.h"
 
@@ -34,6 +35,9 @@ public:
 
 	UPROPERTY()
 	FVector2D NodePosition;
+
+	UPROPERTY()
+	UDialogueSystemNodeInfo* NodeInfo;
 };
 
 UCLASS()

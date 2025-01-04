@@ -1,9 +1,9 @@
-﻿#include "DialogueGraphAppMode.h"
+﻿#include "DialogueSystemAppMode.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueSystemPropertiesTabFactory.h"
 
-DialogueGraphAppMode::DialogueGraphAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
+DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
 	_app = App;
 	_tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
@@ -34,19 +34,19 @@ DialogueGraphAppMode::DialogueGraphAppMode(TSharedPtr<class DialogueGraphEditorA
 		));
 }
 
-void DialogueGraphAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
+void DialogueSystemAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
 {
 	TSharedPtr<DialogueGraphEditorApp> App = _app.Pin();
 	App->PushTabFactories(_tabs);
 	FApplicationMode::RegisterTabFactories(InTabManager);
 }
 
-void DialogueGraphAppMode::PreDeactivateMode()
+void DialogueSystemAppMode::PreDeactivateMode()
 {
 	FApplicationMode::PreDeactivateMode();
 }
 
-void DialogueGraphAppMode::PostActivateMode()
+void DialogueSystemAppMode::PostActivateMode()
 {
 	FApplicationMode::PostActivateMode();
 }

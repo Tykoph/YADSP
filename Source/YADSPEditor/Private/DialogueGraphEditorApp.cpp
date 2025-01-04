@@ -1,11 +1,12 @@
 ﻿#include "DialogueGraphEditorApp.h"
-#include "DialogueGraphAppMode.h"
+#include "DialogueSystemAppMode.h"
 #include "CoreMinimal.h"
 #include "DialogueSystem.h"
-#include "DialogueSystemNode.h"
+#include "DialogueGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueSystemRuntimeGraph.h"
+#include "DialogueSystemNodeInfo.h"
 
 
 void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager)
@@ -19,11 +20,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	ObjectsToEdit.Add(InObject);
 
 	WorkingGraphAsset = Cast<UDialogueSystem>(InObject);
-	if (!WorkingGraphAsset)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to cast InObject to UDialogueGraph!"));
-		return;
-	}
+	WorkingGraphAsset->SetPreSaveListener([this](){OnWorkingGraphAssetPreSave();});
 
 	WorkingGraphEditor = FBlueprintEditorUtils::CreateNewGraph(
 		WorkingGraphAsset,
@@ -42,13 +39,44 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 		ObjectsToEdit
 		);
 
-	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueGraphAppMode(SharedThis(this))));
+	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
 
 	UpdateGraphEditorFromWorkingAsset();
+}
 
-	OnGraphChangedListenerHandle = WorkingGraphEditor->AddOnGraphChangedHandler(
-		FOnGraphChanged::FDelegate::CreateRaw(this, &DialogueGraphEditorApp::OnGraphChanged));
+void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView)
+{
+	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
+	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+}
+
+// Return the first UDialogueGraphNode in the selection set
+UDialogueGraphNode* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet)
+{
+	for (UObject* Obj : SelectionSet)
+	{
+		UDialogueGraphNode* SelectedNode = Cast<UDialogueGraphNode>(Obj);
+		if (SelectedNode != nullptr)
+		{
+			return SelectedNode;
+		}
+	}
+
+	return nullptr;
+}
+
+void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet)
+{
+	UDialogueGraphNode* SelectedNode = GetSelectedNode(SelectionSet);
+	if (SelectedNode != nullptr)
+	{
+		SelectedNodeDetailViewPtr->SetObject(SelectedNode->GetNodeInfo());
+	}
+	else
+	{
+		SelectedNodeDetailViewPtr->SetObject(nullptr);
+	}
 }
 
 void DialogueGraphEditorApp::OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit)
@@ -64,14 +92,25 @@ void DialogueGraphEditorApp::OnToolkitHostingStarted(const TSharedRef<IToolkit>&
 void DialogueGraphEditorApp::OnClose()
 {
 	UpdateWorkingAssetFromGraph();
-	WorkingGraphEditor->RemoveOnGraphChangedHandler(OnGraphChangedListenerHandle);
-
-	UE_LOG(LogTemp, Log, TEXT("Working Graph Updated on close."));
-
+	WorkingGraphAsset->SetPreSaveListener(nullptr);
 	FAssetEditorToolkit::OnClose();
 }
 
-void DialogueGraphEditorApp::OnGraphChanged(const FEdGraphEditAction& Action)
+void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event)
+{
+	if (WorkingGraphUiPtr != nullptr)
+	{
+		//get the node getting modified
+		UDialogueGraphNode* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
+		if (SelectedNode != nullptr)
+		{
+			SelectedNode->SyncWithNodeResponse();
+		}
+		WorkingGraphUiPtr->NotifyGraphChanged();
+	}
+}
+
+void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
 {
 	UpdateWorkingAssetFromGraph();
 	UE_LOG(LogTemp, Log, TEXT("Working Graph Updated."));
@@ -94,8 +133,12 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 
 	for (UEdGraphNode* UiNode : WorkingGraphEditor->Nodes)
 	{
+		UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
+		if (UiGraphNode == nullptr) continue;
+
 		UDialogueRuntimeGraphNode* RuntimeNode = NewObject<UDialogueRuntimeGraphNode>(RuntimeGraph);
 		RuntimeNode->NodePosition = FVector2d(UiNode->NodePosX, UiNode->NodePosY);
+		RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
 
 		for (UEdGraphPin* UIPin : UiNode->Pins)
 		{
@@ -135,17 +178,15 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 
 void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 {
-	if (WorkingGraphAsset == nullptr)
+	if (WorkingGraphEditor == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("WorkingGraphAsset is null!"));
+		UE_LOG(LogTemp, Error, TEXT("WorkingGraphEditor is null in UpdateGraphEditorFromWorkingAsset."));
 		return;
 	}
 
 	if (WorkingGraphAsset->Graph == nullptr)
 	{
 		WorkingGraphAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
-		OnGraphChangedListenerHandle = WorkingGraphEditor->AddOnGraphChangedHandler(
-			FOnGraphChanged::FDelegate::CreateRaw(this, &DialogueGraphEditorApp::OnGraphChanged));
 
 		UE_LOG(LogTemp, Warning, TEXT("WorkingGraphAsset->Graph was null. Initialized a new graph."));
 	}
@@ -161,9 +202,18 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 
 	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingGraphAsset->Graph->Nodes)
 	{
-		UDialogueSystemNode* NewNode = NewObject<UDialogueSystemNode>(WorkingGraphEditor);
+		UDialogueGraphNode* NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
 		NewNode->NodePosX = RuntimeNode->NodePosition.X;
 		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
+
+		if (RuntimeNode->NodeInfo != nullptr)
+		{
+			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
+		}
+		else
+		{
+			NewNode->SetNodeInfo(NewObject<UDialogueSystemNodeInfo>(RuntimeNode));
+		}
 
 		if (RuntimeNode->InputPin != nullptr)
 		{

@@ -33,13 +33,20 @@ TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWor
 	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(App->GetDialogueGraph());
 
+	TSharedPtr<IDetailsView> SelectedNodeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	SelectedNodeDetailsView->SetObject(nullptr);
+	App->SetSelectedNodeDetailView(SelectedNodeDetailsView);
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
 		[
 			DetailsView.ToSharedRef()
+		]
+		.VAlign(VAlign_Fill)
+		[
+			SelectedNodeDetailsView.ToSharedRef()
 		];
 }
 

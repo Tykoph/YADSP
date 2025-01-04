@@ -20,15 +20,22 @@ TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkfl
 {
 	const TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
 
+	SGraphEditor::FGraphEditorEvents GraphEvents;
+	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &DialogueGraphEditorApp::OnGraphSelectionChanged);
+
+	TSharedPtr<SGraphEditor> GraphEditor =
+		SNew(SGraphEditor)
+			.IsEditable(true)
+			.GraphEvents(GraphEvents)
+			.GraphToEdit(App->GetGraphEditor());
+	App->SetWorkingGraphUi(GraphEditor);
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
-		.VAlign(VAlign_Fill)
 		[
-			SNew(SGraphEditor)
-				.IsEditable(true)
-				.GraphToEdit(App->GetGraphEditor())
+			GraphEditor.ToSharedRef()
 		];
 }
 

@@ -1,6 +1,6 @@
-﻿#include "DialogueGraphEditor.h"
+﻿#include "DialogueSystemEditor.h"
 #include "AssetToolsModule.h"
-#include "AssetTypeActions_DialogueSystem.h"
+#include "DialogueSystemAction.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"
@@ -47,19 +47,30 @@ void FYADSPEditorModule::StartupModule()
 {
     IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
     DialogueGraphAssetCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
-    TSharedPtr<FAssetTypeActions_DialogueGraph> DialogueGraphAssetTypeAction = MakeShared<FAssetTypeActions_DialogueGraph>(DialogueGraphAssetCategory);
+    TSharedPtr<FDialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<FDialogueSystemAction>(DialogueGraphAssetCategory);
     AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
     DGStyleSet = MakeShareable(new FSlateStyleSet(TEXT("YADSPStyle")));
     TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("YADSP"));
-    FString ContentDir = Plugin->GetContentDir();
+    FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
     DGStyleSet->SetContentRoot(ContentDir);
 
-    FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnail"), TEXT(".png")), FVector2D(512.0f, 512.0f));
-    FSlateImageBrush* IconBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon"), TEXT(".png")), FVector2D(512.0f, 512.0f));
-    FSlateImageBrush* NodeAddPinIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon"), TEXT(".png")), FVector2D(512.0f, 512.0f));
-    FSlateImageBrush* NodeDeletePinIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon"), TEXT(".png")), FVector2D(512.0f, 512.0f));
-    FSlateImageBrush* NodeDeleteNodeIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon"), TEXT(".png")), FVector2D(512.0f, 512.0f));
+    FString AbsolutePath = FPaths::ConvertRelativePathToFull(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")));
+    if (!FPaths::FileExists(AbsolutePath))
+    {
+        UE_LOG(LogTemp, Error, TEXT("File not found: %s"), *AbsolutePath);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("File found: %s"), *AbsolutePath);
+    }
+
+
+    FSlateImageBrush* ThumbnailBrush =      new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+    FSlateImageBrush* IconBrush =           new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+    FSlateImageBrush* NodeAddPinIcon =      new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+    FSlateImageBrush* NodeDeletePinIcon =   new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+    FSlateImageBrush* NodeDeleteNodeIcon =  new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
 
     DGStyleSet->Set(TEXT("ClassThumbnail.DialogueGraph"), ThumbnailBrush);
     DGStyleSet->Set(TEXT("ClassIcon.DialogueGraph"), IconBrush);
@@ -71,6 +82,8 @@ void FYADSPEditorModule::StartupModule()
 
     PinFactory = MakeShareable(new FDialoguePinFactory());
     FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
+
+    FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
 }
 
 void FYADSPEditorModule::ShutdownModule()

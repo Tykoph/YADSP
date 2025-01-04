@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 
 
-class FAssetTypeActions_DialogueGraph : public FAssetTypeActions_Base
+class FDialogueSystemAction : public FAssetTypeActions_Base
 {
 public:
-	FAssetTypeActions_DialogueGraph(EAssetTypeCategories::Type AssetCategory);
+	FDialogueSystemAction(EAssetTypeCategories::Type AssetCategory);
 
 	//  FAssetTypeActions_Base interface
 	virtual FText GetName() const override;

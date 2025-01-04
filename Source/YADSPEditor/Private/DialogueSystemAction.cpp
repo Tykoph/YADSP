@@ -1,35 +1,35 @@
-﻿#include "AssetTypeActions_DialogueSystem.h"
+﻿#include "DialogueSystemAction.h"
 #include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 
-FAssetTypeActions_DialogueGraph::FAssetTypeActions_DialogueGraph(EAssetTypeCategories::Type AssetCategory)
+FDialogueSystemAction::FDialogueSystemAction(EAssetTypeCategories::Type AssetCategory)
 {
 	_assetCategory = AssetCategory;
 }
 
 //  FAssetTypeActions_Base interface
-FText FAssetTypeActions_DialogueGraph::GetName()  const
+FText FDialogueSystemAction::GetName()  const
 {
 	return FText::FromString(TEXT("Dialogue Graph"));
 }
 
-FColor  FAssetTypeActions_DialogueGraph::GetTypeColor() const
+FColor  FDialogueSystemAction::GetTypeColor() const
 {
 	return FColor::FromHex("007fff");
 }
 
-UClass*  FAssetTypeActions_DialogueGraph::GetSupportedClass() const
+UClass*  FDialogueSystemAction::GetSupportedClass() const
 {
 	return UDialogueSystem::StaticClass();
 }
 
-uint32  FAssetTypeActions_DialogueGraph::GetCategories()
+uint32  FDialogueSystemAction::GetCategories()
 {
 	return _assetCategory;
 }
 
-void  FAssetTypeActions_DialogueGraph::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void  FDialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* object : InObjects)
