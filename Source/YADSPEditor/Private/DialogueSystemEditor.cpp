@@ -23,7 +23,7 @@ public:
 private:
     virtual FSlateColor GetPinColor() const override
     {
-        return FLinearColor::Blue;
+        return FColor::Blue;
     }
 };
 
@@ -41,7 +41,25 @@ public:
 private:
     virtual FSlateColor GetPinColor() const override
     {
-        return FLinearColor::Red;
+        return FColor::Red;
+    }
+};
+
+class SDialogueGraphEndPin : public SGraphPin
+{
+public:
+    SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
+    {
+        SGraphPin::Construct(SGraphPin::FArguments(), InPin);
+    }
+
+private:
+    virtual FSlateColor GetPinColor() const override
+    {
+        return FColor::Purple;
     }
 };
 
@@ -51,13 +69,12 @@ public:
     virtual ~FDialoguePinFactory() {}
     virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* Pin) const override
     {
-        if (FName(TEXT("DialoguePin")) == Pin->PinType.PinSubCategory)
-        {
+        if (FName(TEXT("DialoguePin")) == Pin->PinType.PinSubCategory) {
             return SNew(SDialogueGraphPin, Pin);
-        }
-        else if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory)
-        {
+        } else if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory) {
             return SNew(SDialogueGraphStartPin, Pin);
+        } else if (FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory) {
+            return SNew(SDialogueGraphEndPin, Pin);
         }
 
         return nullptr;

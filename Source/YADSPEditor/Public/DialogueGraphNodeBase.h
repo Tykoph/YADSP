@@ -15,7 +15,7 @@ public:
 	virtual void CreateDefaultOutputPin() { /* Don't do anything by default */ }
 
 	virtual void InitNodeInfo(UObject* Output) { /* Nothing by default */ }
-	virtual void SetNodeInfo(class UDialogueNodeInfoBase* NodeInfo) {/* None by default */}
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) {/* None by default */}
 	virtual UDialogueNodeInfoBase* GetNodeInfo() { /* None by default */ return nullptr; }
 
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }

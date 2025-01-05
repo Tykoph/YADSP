@@ -1,14 +1,16 @@
 ﻿#include "DialogueGraphNode.h"
 
+#include "DialogueGraphNodeEnd.h"
 #include "DialogueNodeInfo.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
 
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (NodeInfoPtr->Title.IsEmpty())
+	UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoPtr);
+	if (NodeInfo->Title.IsEmpty())
 	{
-		FString DialogueTextStr = NodeInfoPtr->DialogueText.ToString();
+		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
 		if (DialogueTextStr.Len() > 15)
 		{
 			DialogueTextStr = DialogueTextStr.Left(15) + TEXT("...");
@@ -16,7 +18,7 @@ FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		return FText::FromString(DialogueTextStr);
 	}
 
-	return NodeInfoPtr->Title;
+	return NodeInfo->Title;
 }
 
 void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
@@ -84,8 +86,8 @@ UEdGraphPin* UDialogueGraphNode::CreateDefaultInputPin()
 void UDialogueGraphNode::CreateDefaultOutputPin()
 {
 	FString DefaultResponse = TEXT("Continue");
-	ResultNode->GetNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
-	ResultNode->SyncWithNodeResponse();
+	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
+	GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
 }
 
 UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)

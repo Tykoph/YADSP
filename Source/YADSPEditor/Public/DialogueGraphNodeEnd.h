@@ -2,8 +2,8 @@
 
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
-#include "DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.h"
+#include "DialogueNodeInfoEnd.h"
 #include "DialogueGraphNodeEnd.Generated.h"
 
 UCLASS()
@@ -11,15 +11,24 @@ class UDialogueGraphNodeEnd : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 
-public:
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override { /* Must be overriden */ return nullptr; }
-	virtual UEdGraphPin* CreateDefaultInputPin() override {return nullptr;}
-	virtual void CreateDefaultOutputPin() override { /* Don't do anything by default */ }
+public: // UEdGraphNode interface
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Purple; }
+	virtual bool CanUserDeleteNode() const override {return true;}
+	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
-	virtual void InitNodeInfo(UObject* Output) override { /* Nothing by default */ }
-	virtual void SetNodeInfo(class UDialogueNodeInfoBase* NodeInfo) override {/* None by default */}
-	virtual UDialogueNodeInfoBase* GetNodeInfo() override { /* None by default */ return nullptr; }
+public: // Our Interface
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual UEdGraphPin* CreateDefaultInputPin() override;
 
-	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::Unknown; }
-	virtual void OnPropertiesChanged() override{ /* Nothing by default */ }
+	virtual void InitNodeInfo(UObject* Output) override {NodeInfoPtr = NewObject<UDialogueNodeInfoEnd>(Output);}
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfoEnd>(NodeInfo);}
+	virtual UDialogueNodeInfoBase* GetNodeInfo() override { return NodeInfoPtr; }
+
+	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::EndNode; }
+	virtual void OnPropertiesChanged() override{ Modify(); }
+
+protected:
+	UPROPERTY()
+	UDialogueNodeInfoEnd* NodeInfoPtr = nullptr;
 };

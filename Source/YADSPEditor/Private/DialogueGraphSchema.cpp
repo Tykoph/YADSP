@@ -1,5 +1,6 @@
 ﻿#include "DialogueGraphSchema.h"
 #include "DialogueGraphNode.h"
+#include "DialogueGraphNodeEnd.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueGraphNodeStart.h"
 
@@ -17,7 +18,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 
 	TSharedPtr<FNewNodeAction> NewEndNodeAction(
 		new FNewNodeAction(
-			UdialogueGraphNodeEnd::StaticClass(),
+			UDialogueGraphNodeEnd::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("new End Node")),
 			FText::FromString(TEXT("Makes a new End node")),
@@ -63,12 +64,10 @@ UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* 
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;
-
-	ResultNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(ResultNode));
+	ResultNode->InitNodeInfo(ResultNode);
 
 	UEdGraphPin* InputPin = ResultNode->CreateDefaultInputPin();
 	ResultNode->CreateDefaultOutputPin();
-
 
 	if (FromPin != nullptr)
 	{

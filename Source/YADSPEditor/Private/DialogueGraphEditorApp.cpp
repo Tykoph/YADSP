@@ -8,6 +8,7 @@
 #include "DialogueSystemRuntimeGraph.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueGraphNodeStart.h"
+#include "DialogueGraphNodeEnd.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
@@ -54,11 +55,11 @@ void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> 
 }
 
 // Return the first UDialogueGraphNode in the selection set
-UDialogueGraphNode* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet)
+UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet)
 {
 	for (UObject* Obj : SelectionSet)
 	{
-		UDialogueGraphNode* SelectedNode = Cast<UDialogueGraphNode>(Obj);
+		UDialogueGraphNodeBase* SelectedNode = Cast<UDialogueGraphNodeBase>(Obj);
 		if (SelectedNode != nullptr)
 		{
 			return SelectedNode;
@@ -70,7 +71,7 @@ UDialogueGraphNode* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSel
 
 void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet)
 {
-	UDialogueGraphNode* SelectedNode = GetSelectedNode(SelectionSet);
+	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(SelectionSet);
 	if (SelectedNode != nullptr)
 	{
 		SelectedNodeDetailViewPtr->SetObject(SelectedNode->GetNodeInfo());
@@ -103,10 +104,10 @@ void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyCh
 	if (WorkingGraphUiPtr != nullptr)
 	{
 		//get the node getting modified
-		UDialogueGraphNode* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
+		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
 		if (SelectedNode != nullptr)
 		{
-			SelectedNode->SyncWithNodeResponse();
+			SelectedNode->OnPropertiesChanged();
 		}
 		WorkingGraphUiPtr->NotifyGraphChanged();
 	}
@@ -161,16 +162,10 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 				RuntimeNode->OutputPins.Add(RuntimePin);
 			}
 		}
-		if (UiNode->IsA(UDialogueGraphNode::StaticClass()))
-		{
-			UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
-			RuntimeNode->NodeType = EDialogueNodeType::DialogueNode;
-			RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
-		}
-		else if (UiNode->IsA(UDialogueGraphNodeStart::StaticClass()))
-		{
-			RuntimeNode->NodeType = EDialogueNodeType::StartNode;
-		}
+
+		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
+		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
 
 		RuntimeGraph->Nodes.Add(RuntimeNode);
 	}
@@ -205,16 +200,13 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingGraphAsset->Graph->Nodes)
 	{
 		UDialogueGraphNodeBase* NewNode = nullptr;
-		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode)
-		{
+		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode) {
 			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode)
-		{
+		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode) {
 			NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
-		}
-		else
-		{
+		} else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode) {
+			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
+		} else {
 			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
 		}
 
@@ -222,13 +214,10 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 		NewNode->NodePosX = RuntimeNode->NodePosition.X;
 		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
 
-		if (RuntimeNode->NodeInfo != nullptr)
-		{
+		if (RuntimeNode->NodeInfo != nullptr) {
 			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
-		}
-		else if (RuntimeNode->NodeType != EDialogueNodeType::StartNode)
-		{
-			NewNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(RuntimeNode));
+		} else {
+			NewNode->InitNodeInfo(NewNode);
 		}
 
 		if (RuntimeNode->InputPin != nullptr)

@@ -33,7 +33,7 @@ public:	// FAssetEditorToolkit interface
 protected:
 	void UpdateWorkingAssetFromGraph();
 	void UpdateGraphEditorFromWorkingAsset();
-	class UDialogueGraphNode* GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet);
+	class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet);
 
 private:
 	UPROPERTY()

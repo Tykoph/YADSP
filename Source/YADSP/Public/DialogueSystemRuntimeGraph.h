@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
+#include "DialogueNodeType.h"
 #include "UObject//NameTypes.h"
 #include "DialogueSystemRuntimeGraph.generated.h"
 

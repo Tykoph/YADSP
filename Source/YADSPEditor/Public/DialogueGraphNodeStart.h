@@ -16,4 +16,5 @@ public:
 
 public:
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::StartNode; }
 };

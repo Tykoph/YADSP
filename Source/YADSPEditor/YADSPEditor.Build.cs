@@ -10,6 +10,7 @@ public class YADSPEditor : ModuleRules
             new string[]
             {
                 "Core",
+                "YADSP",
             }
         );
 
