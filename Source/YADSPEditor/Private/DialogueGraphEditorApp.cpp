@@ -116,7 +116,7 @@ void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyCh
 void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
 {
 	UpdateWorkingAssetFromGraph();
-	UE_LOG(LogTemp, Log, TEXT("Working Graph Updated."));
+	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph pre save"));
 
 }
 
@@ -124,7 +124,7 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 {
 	if (WorkingGraphAsset == nullptr || WorkingGraphEditor == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WorkingGraphEditor is null."));
+		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphEditor is null."));
 		return;
 	}
 
@@ -164,9 +164,19 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 		}
 
 		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
-		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
-		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
 
+		if (UiGraphNode->GetNodeInfo() == nullptr)
+		{
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("NodeInfo was null in UpdateWorkingAssetFromGraph."));
+		}
+
+		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
+		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
+
+		if (RuntimeNode->NodeInfo == nullptr)
+		{
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("RuntimeNode was null in UpdateWorkingAssetFromGraph."));
+		}
 		RuntimeGraph->Nodes.Add(RuntimeNode);
 	}
 
@@ -177,20 +187,22 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 
 		OutputPin->Connection = InputPin;
 	}
+
+	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph Updated."));
 }
 
 void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 {
 	if (WorkingGraphEditor == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("WorkingGraphEditor is null in UpdateGraphEditorFromWorkingAsset."));
+		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphEditor is null in UpdateGraphEditorFromWorkingAsset."));
 		return;
 	}
 
 	if (WorkingGraphAsset->Graph == nullptr)
 	{
 		WorkingGraphAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
-		UE_LOG(LogTemp, Warning, TEXT("WorkingGraphAsset->Graph was null. Initialized a new graph."));
+		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphAsset->Graph was null. Initialized a new graph."));
 		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
 	}
 
@@ -218,6 +230,7 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
 		} else {
 			NewNode->InitNodeInfo(NewNode);
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("NodeInfo was null in UpdateGraphEditorFromWorkingAsset."));
 		}
 
 		if (RuntimeNode->InputPin != nullptr)

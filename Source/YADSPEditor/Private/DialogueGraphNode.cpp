@@ -1,6 +1,4 @@
 ﻿#include "DialogueGraphNode.h"
-
-#include "DialogueGraphNodeEnd.h"
 #include "DialogueNodeInfo.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
@@ -8,6 +6,12 @@
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoPtr);
+	if (NodeInfo == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("NodeInfo is null in GetNodeTitle"));
+		return FText::FromString(TEXT("No Node Info"));
+	}
+
 	if (NodeInfo->Title.IsEmpty())
 	{
 		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
@@ -35,7 +39,6 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 			[Node] (){
 				Node->GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("New Response")));
 				Node->SyncWithNodeResponse();
-
 				Node->GetGraph()->NotifyGraphChanged();
 				Node->GetGraph()->Modify();
 			}
@@ -55,7 +58,6 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 					UDialogueNodeInfo* NodeInfo = Node->GetDialogueNodeInfo();
 					NodeInfo->DialogueResponses.RemoveAt(NodeInfo->DialogueResponses.Num() - 1);
 					Node->SyncWithNodeResponse();
-
 					Node->GetGraph()->NotifyGraphChanged();
 					Node->GetGraph()->Modify();
 				}
