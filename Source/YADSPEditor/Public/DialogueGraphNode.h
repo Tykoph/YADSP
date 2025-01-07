@@ -16,6 +16,8 @@ public: // UEdGraphNode interface
 	virtual bool CanUserDeleteNode() const override {return true;}
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
+public: // UDialogueGraphNodeBase interface
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
@@ -23,13 +25,12 @@ public: // UEdGraphNode interface
 	virtual void OnPropertiesChanged() override { SyncWithNodeResponse(); }
 
 public: // Our Interface
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
 	void SyncWithNodeResponse();
 
 	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfo>(Output); }
-	virtual void SetNodeInfo(class UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfo>(NodeInfoPtr);}
-	virtual UDialogueNodeInfoBase* GetNodeInfo() override { return NodeInfoPtr; }
-	virtual UDialogueNodeInfo* GetDialogueNodeInfo() { return NodeInfoPtr; }
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfo>(NodeInfoPtr);}
+	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
+	UDialogueNodeInfo* GetDialogueNodeInfo() { return NodeInfoPtr; }
 
 protected:
 	UPROPERTY()

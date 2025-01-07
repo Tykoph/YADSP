@@ -6,12 +6,6 @@
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoPtr);
-	if (NodeInfo == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("NodeInfo is null in GetNodeTitle"));
-		return FText::FromString(TEXT("No Node Info"));
-	}
-
 	if (NodeInfo->Title.IsEmpty())
 	{
 		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
@@ -58,6 +52,7 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 					UDialogueNodeInfo* NodeInfo = Node->GetDialogueNodeInfo();
 					NodeInfo->DialogueResponses.RemoveAt(NodeInfo->DialogueResponses.Num() - 1);
 					Node->SyncWithNodeResponse();
+
 					Node->GetGraph()->NotifyGraphChanged();
 					Node->GetGraph()->Modify();
 				}
@@ -72,12 +67,21 @@ void UDialogueGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeCo
 		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
 		FUIAction(FExecuteAction::CreateLambda(
 			[Node] (){
-				Node->DestroyNode();
-				Node->GetGraph()->NotifyGraphChanged();
-				Node->GetGraph()->Modify();
+				Node->GetGraph()->RemoveNode(Node);
 			}
 		))
 	);
+}
+
+UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+{
+	FName PinCategory = (Dir == EGPD_Input) ? TEXT("input") : TEXT("output");
+	FName PinSubCategory = TEXT("DialoguePin");
+
+	UEdGraphPin* NewPin = CreatePin(Dir ,PinCategory, PinSubCategory, Name);
+	NewPin->PinType.PinSubCategory = PinSubCategory;
+
+	return NewPin;
 }
 
 UEdGraphPin* UDialogueGraphNode::CreateDefaultInputPin()
@@ -90,17 +94,6 @@ void UDialogueGraphNode::CreateDefaultOutputPin()
 	FString DefaultResponse = TEXT("Continue");
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
 	GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
-}
-
-UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
-{
-	FName PinCategory = (Dir == EGPD_Input) ? TEXT("input") : TEXT("output");
-	FName PinSubCategory = TEXT("DialoguePin");
-
-	UEdGraphPin* NewPin = CreatePin(Dir ,PinCategory, PinSubCategory, Name);
-	NewPin->PinType.PinCategory = PinCategory;
-
-	return NewPin;
 }
 
 void UDialogueGraphNode::SyncWithNodeResponse()

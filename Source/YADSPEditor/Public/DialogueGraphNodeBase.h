@@ -16,7 +16,7 @@ public:
 
 	virtual void InitNodeInfo(UObject* Output) { /* Nothing by default */ }
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) {/* None by default */}
-	virtual UDialogueNodeInfoBase* GetNodeInfo() { /* None by default */ return nullptr; }
+	virtual UDialogueNodeInfoBase* GetNodeInfo() const { /* None by default */ return nullptr; }
 
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }

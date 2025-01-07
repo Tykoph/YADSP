@@ -1,20 +1,18 @@
 ﻿#include "DialogueGraphEditorApp.h"
 #include "DialogueSystemAppMode.h"
-#include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
-#include "DialogueSystemRuntimeGraph.h"
-#include "DialogueNodeInfo.h"
 #include "DialogueGraphNodeStart.h"
 #include "DialogueGraphNodeEnd.h"
+#include "DialogueNodeInfo.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
-void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager)
+void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef)
 {
-	FWorkflowCentricApplication::RegisterTabSpawners(tabManager);
+	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
 void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,	UObject* InObject)
@@ -22,11 +20,11 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
 
-	WorkingGraphAsset = Cast<UDialogueSystem>(InObject);
-	WorkingGraphAsset->SetPreSaveListener([this](){OnWorkingGraphAssetPreSave();});
+	WorkingAsset = Cast<UDialogueSystem>(InObject);
+	WorkingAsset->SetPreSaveListener([this](){ OnWorkingGraphAssetPreSave(); });
 
 	WorkingGraphEditor = FBlueprintEditorUtils::CreateNewGraph(
-		WorkingGraphAsset,
+		WorkingAsset,
 		NAME_None,
 		UEdGraph::StaticClass(),
 		UDialogueGraphSchema::StaticClass()
@@ -48,10 +46,163 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	UpdateGraphEditorFromWorkingAsset();
 }
 
-void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView)
+void DialogueGraphEditorApp::OnClose()
 {
-	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
-	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+	UpdateWorkingAssetFromGraph();
+	WorkingAsset->SetPreSaveListener(nullptr);
+	FAssetEditorToolkit::OnClose();
+}
+
+void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event)
+{
+	if (WorkingGraphUiPtr != nullptr)
+	{
+		//get the node getting modified
+		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
+		if (SelectedNode != nullptr)
+		{
+			SelectedNode->OnPropertiesChanged();
+		}
+
+		WorkingGraphUiPtr->NotifyGraphChanged();
+	}
+}
+
+void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
+{
+	UpdateWorkingAssetFromGraph();
+}
+
+void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
+{
+	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) {	return;	}
+
+	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
+	WorkingAsset->Graph = RuntimeGraph;
+
+	TArray<std::pair<FGuid, FGuid>> Connections;
+	TMap<FGuid, UDialogueRuntimeGraphPin*> IdToPinMap;
+
+	for (UEdGraphNode* UiNode : WorkingGraphEditor->Nodes)
+	{
+		UDialogueRuntimeGraphNode* RuntimeNode = NewObject<UDialogueRuntimeGraphNode>(RuntimeGraph);
+		RuntimeNode->NodePosition = FVector2d(UiNode->NodePosX, UiNode->NodePosY);
+
+		for (UEdGraphPin* UIPin : UiNode->Pins)
+		{
+			UDialogueRuntimeGraphPin* RuntimePin = NewObject<UDialogueRuntimeGraphPin>(RuntimeNode);
+			RuntimePin->PinName = UIPin->PinName;
+			RuntimePin->PinId = UIPin->PinId;
+			RuntimePin->Parent = RuntimeNode;
+
+			if (UIPin->HasAnyConnections() && UIPin->Direction == EGPD_Output)
+			{
+				std::pair<FGuid, FGuid> Connection = std::make_pair(UIPin->PinId, UIPin->LinkedTo[0]->PinId);
+				Connections.Add(Connection);
+			}
+
+			IdToPinMap.Add(UIPin->PinId, RuntimePin);
+
+			if (UIPin->Direction == EGPD_Input) {
+				RuntimeNode->InputPin = RuntimePin;
+			} else {
+				RuntimeNode->OutputPins.Add(RuntimePin);
+			}
+		}
+
+		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
+		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
+
+		RuntimeGraph->Nodes.Add(RuntimeNode);
+	}
+
+	for (std::pair<FGuid, FGuid> Connection : Connections)
+	{
+		UDialogueRuntimeGraphPin* OutputPin = IdToPinMap[Connection.first];
+		UDialogueRuntimeGraphPin* InputPin = IdToPinMap[Connection.second];
+
+		OutputPin->Connection = InputPin;
+	}
+
+	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph Updated."));
+}
+
+void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
+{
+	if (WorkingAsset->Graph == nullptr)
+	{
+		UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
+		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
+		return;
+	}
+
+	TArray<std::pair<FGuid, FGuid>> Connections;
+	TMap<FGuid, UEdGraphPin*> IdToPinMap;
+
+	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingAsset->Graph->Nodes)
+	{
+		UDialogueGraphNodeBase* NewNode = nullptr;
+		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode) {
+			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
+		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode) {
+			NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
+		} else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode) {
+			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
+		} else {
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
+			continue;
+		}
+
+		NewNode->CreateNewGuid();
+		NewNode->NodePosX = RuntimeNode->NodePosition.X;
+		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
+
+		if (RuntimeNode->NodeInfo != nullptr) {
+			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, NewNode));
+		} else {
+			NewNode->InitNodeInfo(NewNode);
+			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."), *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
+		}
+
+		if (RuntimeNode->InputPin != nullptr)
+		{
+			UDialogueRuntimeGraphPin* InputPin = RuntimeNode->InputPin;
+			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Input, InputPin->PinName);
+			UIPin->PinId = InputPin->PinId;
+
+			if (InputPin->Connection != nullptr)
+			{
+				Connections.Add(std::make_pair(InputPin->PinId, InputPin->Connection->PinId));
+			}
+
+			IdToPinMap.Add(InputPin->PinId, UIPin);
+		}
+
+		for (UDialogueRuntimeGraphPin* OutputPin : RuntimeNode->OutputPins)
+		{
+			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Output, OutputPin->PinName);
+			UIPin->PinId = OutputPin->PinId;
+
+			if (OutputPin->Connection != nullptr)
+			{
+				Connections.Add(std::make_pair(OutputPin->PinId, OutputPin->Connection->PinId));
+			}
+
+			IdToPinMap.Add(OutputPin->PinId, UIPin);
+		}
+
+		WorkingGraphEditor->AddNode(NewNode, true, true);
+	}
+
+	for (std::pair<FGuid, FGuid> Connection : Connections)
+	{
+		UEdGraphPin* FromPin = IdToPinMap[Connection.first];
+		UEdGraphPin* ToPin = IdToPinMap[Connection.second];
+
+		FromPin->LinkedTo.Add(ToPin);
+		ToPin->LinkedTo.Add(FromPin);
+	}
 }
 
 // Return the first UDialogueGraphNode in the selection set
@@ -69,206 +220,18 @@ UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPane
 	return nullptr;
 }
 
+void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView)
+{
+	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
+	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+}
+
 void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet)
 {
 	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(SelectionSet);
-	if (SelectedNode != nullptr)
-	{
+	if (SelectedNode != nullptr) {
 		SelectedNodeDetailViewPtr->SetObject(SelectedNode->GetNodeInfo());
-	}
-	else
-	{
+	} else {
 		SelectedNodeDetailViewPtr->SetObject(nullptr);
-	}
-}
-
-void DialogueGraphEditorApp::OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit)
-{
-	FWorkflowCentricApplication::OnToolkitHostingFinished(Toolkit);
-}
-
-void DialogueGraphEditorApp::OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit)
-{
-	FWorkflowCentricApplication::OnToolkitHostingStarted(Toolkit);
-}
-
-void DialogueGraphEditorApp::OnClose()
-{
-	UpdateWorkingAssetFromGraph();
-	WorkingGraphAsset->SetPreSaveListener(nullptr);
-	FAssetEditorToolkit::OnClose();
-}
-
-void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event)
-{
-	if (WorkingGraphUiPtr != nullptr)
-	{
-		//get the node getting modified
-		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
-		if (SelectedNode != nullptr)
-		{
-			SelectedNode->OnPropertiesChanged();
-		}
-		WorkingGraphUiPtr->NotifyGraphChanged();
-	}
-}
-
-void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
-{
-	UpdateWorkingAssetFromGraph();
-	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph pre save"));
-
-}
-
-void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
-{
-	if (WorkingGraphAsset == nullptr || WorkingGraphEditor == nullptr)
-	{
-		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphEditor is null."));
-		return;
-	}
-
-	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
-	WorkingGraphAsset->Graph = RuntimeGraph;
-
-	TArray<std::pair<FGuid, FGuid>> Connections;
-	TMap<FGuid, UDialogueRuntimeGraphPin*> IdToPinMap;
-
-	for (UEdGraphNode* UiNode : WorkingGraphEditor->Nodes)
-	{
-		UDialogueRuntimeGraphNode* RuntimeNode = NewObject<UDialogueRuntimeGraphNode>(RuntimeGraph);
-		RuntimeNode->NodePosition = FVector2d(UiNode->NodePosX, UiNode->NodePosY);
-
-		for (UEdGraphPin* UIPin : UiNode->Pins)
-		{
-			UDialogueRuntimeGraphPin* RuntimePin = NewObject<UDialogueRuntimeGraphPin>(RuntimeNode);
-			RuntimePin->PinName = UIPin->PinName;
-			RuntimePin->PinGuid = UIPin->PinId;
-
-			if (UIPin->HasAnyConnections() && UIPin->Direction == EGPD_Output)
-			{
-				std::pair<FGuid, FGuid> Connection = std::make_pair(UIPin->PinId, UIPin->LinkedTo[0]->PinId);
-				Connections.Add(Connection);
-			}
-
-			IdToPinMap.Add(UIPin->PinId, RuntimePin);
-
-			if (UIPin->Direction == EGPD_Input)
-			{
-				RuntimeNode->InputPin = RuntimePin;
-			}
-			else
-			{
-				RuntimeNode->OutputPins.Add(RuntimePin);
-			}
-		}
-
-		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
-
-		if (UiGraphNode->GetNodeInfo() == nullptr)
-		{
-			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("NodeInfo was null in UpdateWorkingAssetFromGraph."));
-		}
-
-		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
-		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
-
-		if (RuntimeNode->NodeInfo == nullptr)
-		{
-			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("RuntimeNode was null in UpdateWorkingAssetFromGraph."));
-		}
-		RuntimeGraph->Nodes.Add(RuntimeNode);
-	}
-
-	for (std::pair<FGuid, FGuid> Connection : Connections)
-	{
-		UDialogueRuntimeGraphPin* OutputPin = IdToPinMap[Connection.first];
-		UDialogueRuntimeGraphPin* InputPin = IdToPinMap[Connection.second];
-
-		OutputPin->Connection = InputPin;
-	}
-
-	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph Updated."));
-}
-
-void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
-{
-	if (WorkingGraphEditor == nullptr)
-	{
-		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphEditor is null in UpdateGraphEditorFromWorkingAsset."));
-		return;
-	}
-
-	if (WorkingGraphAsset->Graph == nullptr)
-	{
-		WorkingGraphAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingGraphAsset);
-		UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("WorkingGraphAsset->Graph was null. Initialized a new graph."));
-		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
-	}
-
-	TArray<std::pair<FGuid, FGuid>> Connections;
-	TMap<FGuid, UEdGraphPin*> IdToPinMap;
-
-	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingGraphAsset->Graph->Nodes)
-	{
-		UDialogueGraphNodeBase* NewNode = nullptr;
-		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode) {
-			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
-		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode) {
-			NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
-		} else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode) {
-			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
-		} else {
-			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
-		}
-
-		NewNode->CreateNewGuid();
-		NewNode->NodePosX = RuntimeNode->NodePosition.X;
-		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
-
-		if (RuntimeNode->NodeInfo != nullptr) {
-			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
-		} else {
-			NewNode->InitNodeInfo(NewNode);
-			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("NodeInfo was null in UpdateGraphEditorFromWorkingAsset."));
-		}
-
-		if (RuntimeNode->InputPin != nullptr)
-		{
-			UDialogueRuntimeGraphPin* InputPin = RuntimeNode->InputPin;
-			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Input, InputPin->PinName);
-			UIPin->PinId = InputPin->PinGuid;
-
-			if (InputPin->Connection != nullptr)
-			{
-				Connections.Add(std::make_pair(InputPin->PinGuid, InputPin->Connection->PinGuid));
-			}
-
-			IdToPinMap.Add(InputPin->PinGuid, UIPin);
-		}
-
-		for (UDialogueRuntimeGraphPin* OutputPin : RuntimeNode->OutputPins)
-		{
-			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Output, OutputPin->PinName);
-			UIPin->PinId = OutputPin->PinGuid;
-
-			if (OutputPin->Connection != nullptr)
-			{
-				Connections.Add(std::make_pair(OutputPin->PinGuid, OutputPin->Connection->PinGuid));
-			}
-
-			IdToPinMap.Add(OutputPin->PinGuid, UIPin);
-		}
-
-		WorkingGraphEditor->AddNode(NewNode, true, true);
-	}
-
-	for (std::pair<FGuid, FGuid> Connection : Connections)
-	{
-		UEdGraphPin* FromPin = IdToPinMap[Connection.first];
-		UEdGraphPin* ToPin = IdToPinMap[Connection.second];
-
-		FromPin->LinkedTo.Add(ToPin);
-		ToPin->LinkedTo.Add(FromPin);
 	}
 }

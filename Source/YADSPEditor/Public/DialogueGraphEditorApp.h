@@ -7,10 +7,10 @@
 class YADSPEDITOR_API DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
-	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& tabManager) override;
+	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef) override;
 	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit);
 
-	class UDialogueSystem* GetDialogueGraph() const { return WorkingGraphAsset; }
+	class UDialogueSystem* GetDialogueGraph() const { return WorkingAsset; }
 	class UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
 	void SetWorkingGraphUi(TSharedPtr<SGraphEditor> WorkingGraphUi) {WorkingGraphUiPtr = WorkingGraphUi;}
@@ -23,8 +23,8 @@ public:	// FAssetEditorToolkit interface
 	virtual FString GetWorldCentricTabPrefix() const override { return TEXT("DialogueGraphEditorApp"); }
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor(0.15f, 0.2f, 0.5f, 0.5f); }
 	virtual FString GetDocumentationLink() const override { return TEXT("doc link"); }
-	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override;
-	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override;
+	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
+	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
 
 	virtual void OnClose() override;
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event);
@@ -37,7 +37,7 @@ protected:
 
 private:
 	UPROPERTY()
-	class UDialogueSystem* WorkingGraphAsset = nullptr;
+	class UDialogueSystem* WorkingAsset = nullptr;
 
 	UPROPERTY()
 	class UEdGraph* WorkingGraphEditor = nullptr;

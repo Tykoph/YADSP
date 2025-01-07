@@ -7,7 +7,7 @@
 #include "UObject/Object.h"
 #include "DialogueSystem.generated.h"
 
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(BlueprintType)
 class YADSP_API UDialogueSystem : public UObject
 {
 	GENERATED_BODY()

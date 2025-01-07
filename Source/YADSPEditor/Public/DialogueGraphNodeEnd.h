@@ -23,7 +23,7 @@ public: // Our Interface
 
 	virtual void InitNodeInfo(UObject* Output) override {NodeInfoPtr = NewObject<UDialogueNodeInfoEnd>(Output);}
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfoEnd>(NodeInfo);}
-	virtual UDialogueNodeInfoBase* GetNodeInfo() override { return NodeInfoPtr; }
+	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::EndNode; }
 	virtual void OnPropertiesChanged() override{ Modify(); }

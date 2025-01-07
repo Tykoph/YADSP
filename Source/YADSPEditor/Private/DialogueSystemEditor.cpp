@@ -84,7 +84,7 @@ public:
 // Create the DialogueGraph asset category and register the DialogueGraph asset in the context menu
 void FYADSPEditorModule::StartupModule()
 {
-    IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+    IAssetTools& AssetTools = IAssetTools::Get();
     DialogueGraphAssetCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
     TSharedPtr<FDialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<FDialogueSystemAction>(DialogueGraphAssetCategory);
     AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
@@ -110,8 +110,6 @@ void FYADSPEditorModule::StartupModule()
 
     PinFactory = MakeShareable(new FDialoguePinFactory());
     FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
-
-    FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
 }
 
 void FYADSPEditorModule::ShutdownModule()

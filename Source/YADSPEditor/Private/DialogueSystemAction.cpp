@@ -37,7 +37,7 @@ void  FDialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, 
 		UDialogueSystem* dialogueGraph = Cast<UDialogueSystem>(object);
 		if (dialogueGraph != nullptr)
 		{
-			TSharedRef<DialogueGraphEditorApp> dialogueGraphEditorApp = MakeShareable(new DialogueGraphEditorApp());
+			TSharedRef<DialogueGraphEditorApp> dialogueGraphEditorApp(new DialogueGraphEditorApp());
 			dialogueGraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, dialogueGraph);
 		}
 	}

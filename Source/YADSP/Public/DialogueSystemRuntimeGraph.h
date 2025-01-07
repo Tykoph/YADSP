@@ -17,10 +17,13 @@ public:
 	FName PinName;
 
 	UPROPERTY()
-	FGuid PinGuid;
+	FGuid PinId;
 
 	UPROPERTY()
 	UDialogueRuntimeGraphPin* Connection = nullptr;
+
+	UPROPERTY()
+	class UDialogueRuntimeGraphNode* Parent = nullptr;
 };
 
 UCLASS()
