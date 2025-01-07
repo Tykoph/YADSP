@@ -6,6 +6,11 @@
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoPtr);
+	if (NodeInfo == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("NodeInfo was null in GetNodeTitle"));
+		return FText::FromString(TEXT("NodeInfo was null"));
+	}
 	if (NodeInfo->Title.IsEmpty())
 	{
 		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
