@@ -70,7 +70,7 @@ public:
     virtual ~FDialoguePinFactory() {}
     virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* Pin) const override
     {
-        if (FName(TEXT("DialoguePin")) == Pin->PinType.PinSubCategory) {
+        if (FName(TEXT("TextPin")) == Pin->PinType.PinSubCategory) {
             return SNew(SDialogueGraphPin, Pin);
         } else if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory) {
             return SNew(SDialogueGraphStartPin, Pin);
