@@ -3,42 +3,42 @@
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 
-FDialogueSystemAction::FDialogueSystemAction(EAssetTypeCategories::Type AssetCategory)
+DialogueSystemAction::DialogueSystemAction(EAssetTypeCategories::Type AssetCategory)
 {
-	_assetCategory = AssetCategory;
+	_AssetCategory = AssetCategory;
 }
 
 //  FAssetTypeActions_Base interface
-FText FDialogueSystemAction::GetName()  const
+FText DialogueSystemAction::GetName()  const
 {
 	return FText::FromString(TEXT("Dialogue Graph"));
 }
 
-FColor  FDialogueSystemAction::GetTypeColor() const
+FColor  DialogueSystemAction::GetTypeColor() const
 {
 	return FColor::FromHex("007fff");
 }
 
-UClass*  FDialogueSystemAction::GetSupportedClass() const
+UClass*  DialogueSystemAction::GetSupportedClass() const
 {
 	return UDialogueSystem::StaticClass();
 }
 
-uint32  FDialogueSystemAction::GetCategories()
+uint32  DialogueSystemAction::GetCategories()
 {
-	return _assetCategory;
+	return _AssetCategory;
 }
 
-void  FDialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void  DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
-	for (UObject* object : InObjects)
+	for (UObject* Object : InObjects)
 	{
-		UDialogueSystem* dialogueGraph = Cast<UDialogueSystem>(object);
-		if (dialogueGraph != nullptr)
+		UDialogueSystem* DialogueGraph = Cast<UDialogueSystem>(Object);
+		if (DialogueGraph != nullptr)
 		{
-			TSharedRef<DialogueGraphEditorApp> dialogueGraphEditorApp(new DialogueGraphEditorApp());
-			dialogueGraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, dialogueGraph);
+			TSharedRef<DialogueGraphEditorApp> GraphEditorApp(new DialogueGraphEditorApp());
+			GraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, DialogueGraph);
 		}
 	}
 }

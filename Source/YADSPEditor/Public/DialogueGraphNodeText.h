@@ -1,12 +1,13 @@
 ﻿#pragma once
 
 #include "EdGraph/EdGraphNode.h"
+#include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "DialogueNodeInfo.h"
-#include "DialogueGraphNode.generated.h"
+#include "DialogueNodeInfoText.h"
+#include "DialogueGraphNodeText.Generated.h"
 
 UCLASS()
-class UDialogueGraphNode : public UDialogueGraphNodeBase
+class UDialogueGraphNodeText : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 
@@ -21,18 +22,19 @@ public: // UDialogueGraphNodeBase interface
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
-	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::DialogueNode; }
-	virtual void OnPropertiesChanged() override { SyncWithNodeResponse(); }
+	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::TextNode; }
+	virtual void OnPropertiesChanged() override{ SyncWithNodeResponse(); }
 
 public: // Our Interface
 	void SyncWithNodeResponse();
 
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfo>(Output); }
-	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfo>(NodeInfoPtr);}
+	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoText>(Output);}
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfoText>(NodeInfo);}
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
-	UDialogueNodeInfo* GetDialogueNodeInfo() { return NodeInfoPtr; }
+	UDialogueNodeInfoText* GetDialogueNodeInfo() const { return NodeInfoPtr; }
+
 
 protected:
 	UPROPERTY()
-	class UDialogueNodeInfo* NodeInfoPtr = nullptr;
+	UDialogueNodeInfoText* NodeInfoPtr = nullptr;
 };

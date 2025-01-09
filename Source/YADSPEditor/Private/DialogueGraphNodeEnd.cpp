@@ -44,7 +44,11 @@ UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(EEdGraphPinDirection Dir, 
 	FName Category = TEXT("Input");
 	FName SubCategory = TEXT("EndPin");
 
-	UEdGraphPin* Pin = CreatePin(Dir, Category, SubCategory, Name);
+	UEdGraphPin* Pin = CreatePin(
+		Dir,
+		Category,
+		Name
+		);
 	Pin->PinType.PinSubCategory = SubCategory;
 
 	return Pin;

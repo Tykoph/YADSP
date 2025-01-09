@@ -1,6 +1,5 @@
 ﻿#include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueGraphEditorApp.h"
-#include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"

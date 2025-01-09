@@ -5,13 +5,13 @@
 #include "DialogueSystemFactory.generated.h"
 
 UCLASS()
-class YADSPEDITOR_API UYADSPFactory : public UFactory
+class YADSPEDITOR_API UDialogueSystemFactory : public UFactory
 {
 	GENERATED_BODY()
 
 public:
-	UYADSPFactory(const FObjectInitializer& ObjectInitializer);
+	UDialogueSystemFactory(const FObjectInitializer& ObjectInitializer);
 
-	virtual UObject* FactoryCreateNew(UClass* Class, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
+	virtual UObject* FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 	virtual bool CanCreateNew() const override;
 };

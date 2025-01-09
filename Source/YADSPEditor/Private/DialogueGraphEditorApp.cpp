@@ -1,12 +1,12 @@
 ﻿#include "DialogueGraphEditorApp.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
-#include "DialogueGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueGraphNodeStart.h"
 #include "DialogueGraphNodeEnd.h"
-#include "DialogueNodeInfo.h"
+#include "DialogueGraphNodeText.h"
+#include "DialogueGraphNodeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
@@ -143,15 +143,20 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingAsset->Graph->Nodes)
 	{
 		UDialogueGraphNodeBase* NewNode = nullptr;
-		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode) {
+		switch (RuntimeNode->NodeType)
+		{
+		case EDialogueNodeType::StartNode:
 			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
-		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode) {
-			NewNode = NewObject<UDialogueGraphNode>(WorkingGraphEditor);
-		} else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode) {
+			break;
+		case EDialogueNodeType::EndNode :
 			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
-		} else {
+			break;
+		case EDialogueNodeType::TextNode :
+			NewNode = NewObject<UDialogueGraphNodeText>(WorkingGraphEditor);
+			break;
+		default:
 			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
-			continue;
+			break;
 		}
 
 		NewNode->CreateNewGuid();

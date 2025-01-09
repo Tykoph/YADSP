@@ -1,13 +1,12 @@
 ﻿#include "DialogueSystemPropertiesTabFactory.h"
 #include "DialogueGraphEditorApp.h"
-#include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 
 DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) : FWorkflowTabFactory(FName("GraphPropertyTab"), App)
 {
-	_app = App;
+	DGApp = App;
 	TabLabel = FText::FromString(TEXT("Properties"));
 	ViewMenuDescription = FText::FromString(TEXT("Display a Properties view for the dialogue graph editor"));
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Properties view"));
@@ -15,7 +14,7 @@ DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPt
 
 TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = _app.Pin();
+	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 
 	// Detail view args

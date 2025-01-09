@@ -9,5 +9,6 @@ enum class EDialogueNodeType
 	StartNode,
 	DialogueNode,
 	EndNode,
-	ActionNode
+	ActionNode,
+	TextNode
 };

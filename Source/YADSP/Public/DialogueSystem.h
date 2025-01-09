@@ -20,7 +20,7 @@ public: // Properties
 	UDialogueSystemRuntimeGraph* Graph = nullptr;
 
 public: // Our Interface
-	void SetPreSaveListener(std::function<void()> OnPreSaveListener){OnPreSaveListenerPtr = OnPreSaveListener;}
+	void SetPreSaveListener(std::function<void()> OnPreSaveListener){OnPreSaveListenerPtr = OnPreSaveListener; }
 
 public : // UObject interface
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;

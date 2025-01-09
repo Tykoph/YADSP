@@ -8,7 +8,7 @@
 #include "Modules/ModuleManager.h"
 #include "Styling/SlateStyle.h"
 
-class FYADSPEditorModule : public IModuleInterface
+class FDialogueSystemEditorModule : public IModuleInterface
 {
     TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
     EAssetTypeCategories::Type DialogueGraphAssetCategory = EAssetTypeCategories::None;

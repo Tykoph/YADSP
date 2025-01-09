@@ -4,7 +4,7 @@
 #include "SGraphPanel.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
-class YADSPEDITOR_API DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
+class DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef) override;

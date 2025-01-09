@@ -3,9 +3,6 @@
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowTabFactory.h"
 
-/**
- * 
- */
 class YADSPEDITOR_API DialogueSystemPrimaryTabFactory : public FWorkflowTabFactory
 {
 public:

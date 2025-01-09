@@ -1,21 +1,10 @@
 ﻿#include "DialogueGraphSchema.h"
-#include "DialogueGraphNode.h"
-#include "DialogueGraphNodeEnd.h"
-#include "DialogueNodeInfo.h"
 #include "DialogueGraphNodeStart.h"
+#include "DialogueGraphNodeEnd.h"
+#include "DialogueGraphNodeText.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<FNewNodeAction> NewDialogueNodeAction(
-		new FNewNodeAction(
-			UDialogueGraphNode::StaticClass(),
-			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("new dialogue Node")),
-			FText::FromString(TEXT("Makes a new dialogue node")),
-			0
-		)
-	);
-
 	TSharedPtr<FNewNodeAction> NewEndNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeEnd::StaticClass(),
@@ -26,8 +15,18 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	ContextMenuBuilder.AddAction(NewDialogueNodeAction);
+	TSharedPtr<FNewNodeAction> NewTextNodeAction(
+		new FNewNodeAction(
+			UDialogueGraphNodeText::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("New Dialogue Node")),
+			FText::FromString(TEXT("Makes a new Dialogue node")),
+			0
+		)
+	);
+
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
+	ContextMenuBuilder.AddAction(NewTextNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
@@ -55,7 +54,7 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 	StartNode->CreateDialoguePin(EGPD_Output, FName(TEXT("Start")));
 
 	Graph.AddNode(StartNode, true, true);
-	Graph.NotifyGraphChanged();
+	Graph.Modify();
 }
 
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)

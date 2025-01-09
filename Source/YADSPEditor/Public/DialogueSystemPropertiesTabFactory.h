@@ -3,9 +3,6 @@
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowTabFactory.h"
 
-/**
- * 
- */
 class YADSPEDITOR_API DialogueSystemPropertiesTabFactory : public FWorkflowTabFactory
 {
 public:
@@ -15,5 +12,5 @@ public:
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
-	TWeakPtr<class DialogueGraphEditorApp> _app;
+	TWeakPtr<class DialogueGraphEditorApp> DGApp;
 };

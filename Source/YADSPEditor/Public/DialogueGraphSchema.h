@@ -24,7 +24,7 @@ struct FNewNodeAction : public FEdGraphSchemaAction
 	FNewNodeAction(UClass* ClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
 		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGrouping), ClassTemplatePtr(ClassTemplate) {}
 
-	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
+	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true);
 
 protected:
 	UClass* ClassTemplatePtr = nullptr;

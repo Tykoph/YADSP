@@ -5,9 +5,9 @@
 
 DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
-	_app = App;
-	_tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
-	_tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
+	DGApp = App;
+	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
 
 	// Slate UI
 	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v1")
@@ -36,8 +36,8 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 
 void DialogueSystemAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
 {
-	TSharedPtr<DialogueGraphEditorApp> App = _app.Pin();
-	App->PushTabFactories(_tabs);
+	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
+	App->PushTabFactories(Tabs);
 	FApplicationMode::RegisterTabFactories(InTabManager);
 }
 
