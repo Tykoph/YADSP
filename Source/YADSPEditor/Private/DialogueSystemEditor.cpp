@@ -97,15 +97,9 @@ void FDialogueSystemEditorModule::StartupModule()
 
     FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
     FSlateImageBrush* IconBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
-    FSlateImageBrush* NodeAddPinIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
-    FSlateImageBrush* NodeDeletePinIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
-    FSlateImageBrush* NodeDeleteNodeIcon = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
 
     DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailBrush);
     DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeAddPinIcon);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeDeletePinIcon);
-    DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), NodeDeleteNodeIcon);
 
     FSlateStyleRegistry::RegisterSlateStyle(*DGStyleSet);
 

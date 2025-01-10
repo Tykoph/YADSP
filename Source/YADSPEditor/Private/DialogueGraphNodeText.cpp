@@ -41,7 +41,7 @@ void UDialogueGraphNodeText::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNo
 UEdGraphPin* UDialogueGraphNodeText::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
 	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("EndPin");
+	FName SubCategory = TEXT("TextPin");
 
 	UEdGraphPin* Pin = CreatePin(
 		Dir,
