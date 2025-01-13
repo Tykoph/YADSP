@@ -1,14 +1,15 @@
-﻿{
+{
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "YADSP",
 	"Description": "Yet Another Dialogue System Plugin",
-	"Category": "Other",
+	"Category": "Dialogue System",
 	"CreatedBy": "Tom",
 	"CreatedByURL": "",
 	"DocsURL": "",
 	"MarketplaceURL": "",
+	"SupportURL": "",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
