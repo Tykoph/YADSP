@@ -1,6 +1,9 @@
 ﻿#include "DialogueSystemFactory.h"
 #include "DialogueSystem.h"
 
+/*
+ * Dialogue Actor Factory
+ */
 UDialogueSystemFactory::UDialogueSystemFactory(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
 	SupportedClass = UDialogueSystem::StaticClass();
@@ -17,5 +20,3 @@ bool UDialogueSystemFactory::CanCreateNew() const
 {
 	return true;
 }
-
-

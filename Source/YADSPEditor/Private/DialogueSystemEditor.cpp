@@ -2,6 +2,7 @@
 #include "DialogueSystemAction.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
+#include "DialogueActorAction.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"
@@ -86,9 +87,14 @@ public:
 void FDialogueSystemEditorModule::StartupModule()
 {
     IAssetTools& AssetTools = IAssetTools::Get();
+
     EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
     TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
     AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
+
+    EAssetTypeCategories::Type  ActorType = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueActor")), LOCTEXT("DialogueActorAssetCategory", "Dialogue Actor"));
+    TSharedPtr<DialogueActorAction> DialogueActorAssetTypeAction = MakeShared<DialogueActorAction>(ActorType);
+    AssetTools.RegisterAssetTypeActions(DialogueActorAssetTypeAction.ToSharedRef());
 
     DGStyleSet = MakeShareable(new FSlateStyleSet(TEXT("YADSPStyle")));
     TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("YADSP"));
