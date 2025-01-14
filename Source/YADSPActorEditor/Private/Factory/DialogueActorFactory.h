@@ -1,11 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Factories/Factory.h"
 #include "UObject/Object.h"
 #include "DialogueActorFactory.generated.h"
 
 UCLASS()
-class YADSPEDITOR_API UDialogueActorFactory : public UFactory
+class YADSPACTOREDITOR_API UDialogueActorFactory : public UFactory
 {
 	GENERATED_BODY()
 

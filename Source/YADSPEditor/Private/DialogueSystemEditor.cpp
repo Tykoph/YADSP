@@ -92,10 +92,6 @@ void FDialogueSystemEditorModule::StartupModule()
     TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
     AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
-    EAssetTypeCategories::Type  ActorType = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueActor")), LOCTEXT("DialogueActorAssetCategory", "Dialogue Actor"));
-    TSharedPtr<DialogueActorAction> DialogueActorAssetTypeAction = MakeShared<DialogueActorAction>(ActorType);
-    AssetTools.RegisterAssetTypeActions(DialogueActorAssetTypeAction.ToSharedRef());
-
     DGStyleSet = MakeShareable(new FSlateStyleSet(TEXT("YADSPStyle")));
     TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("YADSP"));
     FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");

@@ -1,7 +1,8 @@
 ﻿#include "DialogueActorAction.h"
 #include "CoreMinimal.h"
+#include "AssetTypeCategories.h"
 #include "DialogueActor.h"
-#include "DialogueGraphEditorApp.h"
+#include "Toolkits/IToolkit.h"
 
 DialogueActorAction::DialogueActorAction(EAssetTypeCategories::Type AssetCategory)
 {

@@ -11,6 +11,7 @@ public class YADSPEditor : ModuleRules
             {
                 "Core",
                 "YADSP",
+                "YADSPActorEditor"
             }
         );
 
@@ -27,7 +28,6 @@ public class YADSPEditor : ModuleRules
                 "PropertyEditor",
                 "Projects",
                 "ToolMenus",
-                "GraphEditor",
                 "GraphEditor",
             }
         );
