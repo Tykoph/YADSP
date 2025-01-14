@@ -24,6 +24,11 @@
 			"Name": "YADSPEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "YADSPAssetEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	]
 }
