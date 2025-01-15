@@ -6,7 +6,7 @@
 #include "DialogueActorFactory.generated.h"
 
 UCLASS()
-class YADSPACTOREDITOR_API UDialogueActorFactory : public UFactory
+class YADSPACTORED_API UDialogueActorFactory : public UFactory
 {
 	GENERATED_BODY()
 

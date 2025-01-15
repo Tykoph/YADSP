@@ -14,22 +14,22 @@ FText DialogueSystemAction::GetName()  const
 	return FText::FromString(TEXT("Dialogue Graph"));
 }
 
-FColor  DialogueSystemAction::GetTypeColor() const
+FColor DialogueSystemAction::GetTypeColor() const
 {
 	return FColor::FromHex("007fff");
 }
 
-UClass*  DialogueSystemAction::GetSupportedClass() const
+UClass* DialogueSystemAction::GetSupportedClass() const
 {
 	return UDialogueSystem::StaticClass();
 }
 
-uint32  DialogueSystemAction::GetCategories()
+uint32 DialogueSystemAction::GetCategories()
 {
 	return _AssetCategory;
 }
 
-void  DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects)

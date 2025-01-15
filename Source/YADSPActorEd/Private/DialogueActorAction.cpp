@@ -15,22 +15,22 @@ FText DialogueActorAction::GetName()  const
 	return FText::FromString(TEXT("Dialogue Actor"));
 }
 
-FColor  DialogueActorAction::GetTypeColor() const
+FColor DialogueActorAction::GetTypeColor() const
 {
 	return FColor::FromHex("007fff");
 }
 
-UClass*  DialogueActorAction::GetSupportedClass() const
+UClass* DialogueActorAction::GetSupportedClass() const
 {
 	return UDialogueSystem::StaticClass();
 }
 
-uint32  DialogueActorAction::GetCategories()
+uint32 DialogueActorAction::GetCategories()
 {
 	return _AssetCategory;
 }
 
-void  DialogueActorAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void DialogueActorAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects)

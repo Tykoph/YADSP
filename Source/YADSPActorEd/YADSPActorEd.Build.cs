@@ -1,8 +1,8 @@
 ﻿using UnrealBuildTool;
 
-public class YADSPEditor : ModuleRules
+public class YADSPActorEd : ModuleRules
 {
-    public YADSPEditor(ReadOnlyTargetRules Target) : base(Target)
+    public YADSPActorEd(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
