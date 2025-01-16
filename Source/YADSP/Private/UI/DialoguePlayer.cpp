@@ -35,11 +35,6 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 
 	// Display Dialogue UI
 	DialogueUIPtr = UDialogueUIController::CreateInstance(PlayerController);
-	if (DialogueUIPtr == nullptr) // WHY DOES IT RETURN NOTHING, IT SHOULD NOT
-	{
-		UE_LOG(DialoguePlayerSub, Error, TEXT("No Dialogue UI found"));
-		return;
-	}
 	DialogueUIPtr->AddToViewport();
 
 	// Play the first node
@@ -62,7 +57,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		CurrentNodePtr = nullptr;
 	}
 
-	if (CurrentNodePtr != nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::TextNode) {
+	if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::TextNode) {
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
 
@@ -71,14 +66,16 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		for (FText Response : NodeInfo->DialogueResponses)
 		{
 			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(DialogueUIPtr->GetOwningPlayer());
-			OptionController->SetClickHandler(Index, [this] (int Index){
-				ChooseOptionAtIndex(Index);
+			OptionController->SetClickHandler(OptionIndex, [this] (int OptionIndex){
+				ChooseOptionAtIndex(OptionIndex);
 			});
+
 			OptionController->ResponseButtonText->SetText(Response);
 			UHorizontalBoxSlot* Slot = DialogueUIPtr->ResponseBox->AddChildToHorizontalBox(OptionController);
 			Slot->SetPadding(FMargin(10));
 			OptionIndex++;
 		}
+
 	} else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
 		DialogueUIPtr->RemoveFromParent();
 		DialogueUIPtr = nullptr;
