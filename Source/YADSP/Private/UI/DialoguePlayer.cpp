@@ -42,6 +42,7 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 	}
 	DialogueUIPtr->AddToViewport();
 
+	// Play the first node
 	ChooseOptionAtIndex(0);
 }
 

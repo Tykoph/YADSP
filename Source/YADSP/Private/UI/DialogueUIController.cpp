@@ -13,8 +13,8 @@ UDialogueUIController::UDialogueUIController(const FObjectInitializer& objectIni
 // ---------- Generated Methods Section ---------- //
 //             (Don't modify manually)             //
 UDialogueUIController* UDialogueUIController::CreateInstance(APlayerController* PlayerController) {
-    UDialogueUILoader* loader = NewObject<UDialogueUILoader>(PlayerController);
-    return Cast<UDialogueUIController>(CreateWidget(PlayerController, loader->WidgetTemplate));
+    UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
+    return Cast<UDialogueUIController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
 }
 
 UDialogueUILoader::UDialogueUILoader() {
