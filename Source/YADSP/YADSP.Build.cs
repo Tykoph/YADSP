@@ -26,6 +26,11 @@ public class YADSP : ModuleRules
 			new string[]
 			{
 				"Core",
+				"CoreUObject",
+				"Engine",
+				"InputCore",
+				"EnhancedInput",
+				"UMG",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,7 +43,9 @@ public class YADSP : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
+				"EnhancedInput",
+				"UMG"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
 		

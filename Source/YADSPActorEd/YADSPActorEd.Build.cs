@@ -11,7 +11,6 @@ public class YADSPActorEd : ModuleRules
             {
                 "Core",
                 "YADSP",
-                "YADSPActorEd"
             }
         );
 

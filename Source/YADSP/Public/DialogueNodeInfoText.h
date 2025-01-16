@@ -14,6 +14,9 @@ public:
 	FText Title;
 
 	UPROPERTY(EditAnywhere)
+	FText Speaker;
+
+	UPROPERTY(EditAnywhere)
 	FText DialogueText;
 
 	UPROPERTY(EditAnywhere)
