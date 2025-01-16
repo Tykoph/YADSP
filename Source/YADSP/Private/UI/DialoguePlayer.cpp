@@ -60,6 +60,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::TextNode) {
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
+		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
 
 		DialogueUIPtr->ResponseBox->ClearChildren();
 		int OptionIndex = 0;
