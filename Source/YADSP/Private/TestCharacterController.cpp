@@ -28,6 +28,8 @@ void ATestCharacterController::BeginPlay()
 	// Play the dialogue
 	DialoguePlayerPtr = NewObject<UDialoguePlayer>(this);
 	DialoguePlayerPtr->PlayDialogue(DialogueSystemPtr, this, [this](EDialogueNodeAction Action, FString Data) {
+	if (Action == EDialogueNodeAction::StartQuest)
+	{
 		if (NewQuestControllerPtr != nullptr)
 		{
 			NewQuestControllerPtr->RemoveFromParent();
@@ -35,6 +37,7 @@ void ATestCharacterController::BeginPlay()
 		NewQuestControllerPtr = UNewQuestController::CreateInstance(this);
 		NewQuestControllerPtr->QuestText->SetText(FText::FromString(Data));
 		NewQuestControllerPtr->AddToViewport();
+	}
 	});
 
 }

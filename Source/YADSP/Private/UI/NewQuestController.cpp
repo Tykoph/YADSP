@@ -13,8 +13,8 @@ UNewQuestController::UNewQuestController(const FObjectInitializer& objectInitial
 // ---------- Generated Methods Section ---------- //
 //             (Don't modify manually)             //
 UNewQuestController* UNewQuestController::CreateInstance(APlayerController* PlayerController) {
-    UNewQuestLoader* loader = NewObject<UNewQuestLoader>(PlayerController);
-    return Cast<UNewQuestController>(CreateWidget(PlayerController, loader->WidgetTemplate));
+    UNewQuestLoader* Loader = NewObject<UNewQuestLoader>(PlayerController);
+    return Cast<UNewQuestController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
 }
 
 UNewQuestLoader::UNewQuestLoader() {
