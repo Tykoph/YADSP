@@ -20,7 +20,10 @@ public: // Properties
 	UDialogueSystemRuntimeGraph* Graph = nullptr;
 
 	UPROPERTY()
-	ACameraActor* DefaultCamera = nullptr;
+	AActor* DefaultCamera = nullptr;
+
+	UPROPERTY()
+	TArray<AActor*> CameraActors;
 
 public: // Our Interface
 	void SetPreSaveListener(std::function<void()> OnPreSaveListener){OnPreSaveListenerPtr = OnPreSaveListener; }

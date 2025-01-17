@@ -11,11 +11,20 @@
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController,
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras,
 	FDialogueEndCallback OnDialogueEnded)
 {
 	OnDialogueEndedCallback = OnDialogueEnded;
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
+
+	DialogueAssetPtr = DialogueAsset;
+	DialogueAssetPtr->CameraActors = Cameras;
+	DialogueAssetPtr->DefaultCamera = PlayerController->PlayerCameraManager->GetViewTarget();
+
+	PlayerControllerPtr = PlayerController;
+	PlayerControllerPtr->SetShowMouseCursor(true);
+	PlayerControllerPtr->SetIgnoreLookInput(true);
+	PlayerControllerPtr->SetIgnoreMoveInput(true);
 
 	// Get the start node
 	for (UDialogueRuntimeGraphNode* Node : Graph->Nodes)
@@ -49,6 +58,8 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		return;
 	}
 
+	APlayerCameraManager* CameraManager = DialogueUIPtr->GetOwningPlayer()->PlayerCameraManager;
+
 	UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
 	if (SelectedPin->Connection != nullptr)	{
 		CurrentNodePtr = SelectedPin->Connection->Parent;
@@ -61,6 +72,12 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
 		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
+
+		if (NodeInfo->CameraIndex == -1) {
+			CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
+		} else if (NodeInfo->CameraIndex < DialogueAssetPtr->CameraActors.Num()) {
+			CameraManager->SetViewTarget(DialogueAssetPtr->CameraActors[NodeInfo->CameraIndex]);
+		}
 
 		DialogueUIPtr->ResponseBox->ClearChildren();
 		int OptionIndex = 0;
@@ -77,6 +94,16 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			OptionIndex++;
 		}
 
+		if (OptionIndex == 1)
+		{
+			CurrentSkipTime = NodeInfo->SkipAfterSeconds;
+			if (NodeInfo->SkipAfterSeconds == -1) {
+				CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
+			} else if (NodeInfo->SkipAfterSeconds == 0) {
+				return;
+			}
+			AutoSkipDialogue(CurrentSkipTime);
+		}
 	} else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
 		DialogueUIPtr->RemoveFromParent();
 		DialogueUIPtr = nullptr;
@@ -90,6 +117,25 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			ActionData = EndNodeInfo->ActionData;
 		}
 
+		CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
+		PlayerControllerPtr->SetShowMouseCursor(false);
+		PlayerControllerPtr->SetIgnoreLookInput(false);
+		PlayerControllerPtr->SetIgnoreMoveInput(false);
+
 		OnDialogueEndedCallback.Execute(Action, ActionData);
 	}
+}
+
+float UDialoguePlayer::CalculateSkipTimer(const FText& Text)
+{
+	int Length = Text.ToString().Len();
+	Length = Length / 1600;
+	Length = Length * 60;
+	Length = Length * 1.2;
+	return Length;
+}
+
+void UDialoguePlayer::AutoSkipDialogue(float Time)
+{
+	ChooseOptionAtIndex(0);
 }

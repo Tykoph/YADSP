@@ -14,9 +14,11 @@ class YADSP_API UDialoguePlayer : public UActorComponent
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
-	void PlayDialogue(class	UDialogueSystem* DialogueAsset, APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded);
+	void PlayDialogue(class	UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras,FDialogueEndCallback OnDialogueEnded);
 
 	void ChooseOptionAtIndex(int Index);
+	float CalculateSkipTimer(const FText& Text);
+	void AutoSkipDialogue(float Time);
 
 private:
 	UPROPERTY()
@@ -28,7 +30,10 @@ private:
 	UPROPERTY()
 	class UDialogueUIController* DialogueUIPtr = nullptr;
 
+	UPROPERTY()
+	class APlayerController* PlayerControllerPtr = nullptr;
+
+	float CurrentSkipTime = 0.0f;
+
 	FDialogueEndCallback OnDialogueEndedCallback;
-
-
 };
