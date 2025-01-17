@@ -9,10 +9,14 @@ DEFINE_LOG_CATEGORY_STATIC(ATestCharacterControllerSub, Log, All);
 
 ATestCharacterController::ATestCharacterController()
 {
-	static ConstructorHelpers::FObjectFinder<UDialogueSystem> DialogueSystemFinder(TEXT("/YADSP/DG_ExampleDialogueGraph"));
-	if (DialogueSystemFinder.Succeeded()) {
+	static ConstructorHelpers::FObjectFinder<UDialogueSystem> DialogueSystemFinder(
+		TEXT("/YADSP/DG_ExampleDialogueGraph"));
+	if (DialogueSystemFinder.Succeeded())
+	{
 		DialogueSystemPtr = DialogueSystemFinder.Object;
-	} else {
+	}
+	else
+	{
 		UE_LOG(ATestCharacterControllerSub, Error, TEXT("Failed to find dialogue system asset"));
 	}
 }

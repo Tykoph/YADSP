@@ -25,10 +25,10 @@ public: // Properties
 	UPROPERTY()
 	TArray<AActor*> CameraActors;
 
-public: // Our Interface
-	void SetPreSaveListener(std::function<void()> OnPreSaveListener){OnPreSaveListenerPtr = OnPreSaveListener; }
+	// Our Interface
+	void SetPreSaveListener(std::function<void()> OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }
 
-public : // UObject interface
+	// UObject interface
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 
 private: // Members

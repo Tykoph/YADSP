@@ -14,25 +14,29 @@ class UDialogueGraphNodeText : public UDialogueGraphNodeBase
 public: // UEdGraphNode interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::FromHex(TEXT("007FFF")); }
-	virtual bool CanUserDeleteNode() const override {return true;}
+	virtual bool CanUserDeleteNode() const override { return true; }
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
-public: // UDialogueGraphNodeBase interface
+	// UDialogueGraphNodeBase interface
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::TextNode; }
-	virtual void OnPropertiesChanged() override{ SyncWithNodeResponse(); }
+	virtual void OnPropertiesChanged() override { SyncWithNodeResponse(); }
 
-public: // Our Interface
+	// Our Interface
 	void SyncWithNodeResponse();
 
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoText>(Output);}
-	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override {NodeInfoPtr = Cast<UDialogueNodeInfoText>(NodeInfo);}
+	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoText>(Output); }
+
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override
+	{
+		NodeInfoPtr = Cast<UDialogueNodeInfoText>(NodeInfo);
+	}
+
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
 	UDialogueNodeInfoText* GetDialogueNodeInfo() const { return NodeInfoPtr; }
-
 
 protected:
 	UPROPERTY()

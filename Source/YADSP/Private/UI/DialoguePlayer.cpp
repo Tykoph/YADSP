@@ -11,8 +11,9 @@
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras,
-	FDialogueEndCallback OnDialogueEnded)
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController,
+                                   TArray<AActor*> Cameras,
+                                   FDialogueEndCallback OnDialogueEnded)
 {
 	OnDialogueEndedCallback = OnDialogueEnded;
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
@@ -61,21 +62,28 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	APlayerCameraManager* CameraManager = DialogueUIPtr->GetOwningPlayer()->PlayerCameraManager;
 
 	UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
-	if (SelectedPin->Connection != nullptr)	{
+	if (SelectedPin->Connection != nullptr)
+	{
 		CurrentNodePtr = SelectedPin->Connection->Parent;
-	} else {
+	}
+	else
+	{
 		// No Connection, this is an end node
 		CurrentNodePtr = nullptr;
 	}
 
-	if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::TextNode) {
+	if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::TextNode)
+	{
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
 		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
 
-		if (NodeInfo->CameraIndex == -1) {
+		if (NodeInfo->CameraIndex == -1)
+		{
 			CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
-		} else if (NodeInfo->CameraIndex < DialogueAssetPtr->CameraActors.Num()) {
+		}
+		else if (NodeInfo->CameraIndex < DialogueAssetPtr->CameraActors.Num())
+		{
 			CameraManager->SetViewTarget(DialogueAssetPtr->CameraActors[NodeInfo->CameraIndex]);
 		}
 
@@ -83,8 +91,10 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		int OptionIndex = 0;
 		for (FText Response : NodeInfo->DialogueResponses)
 		{
-			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(DialogueUIPtr->GetOwningPlayer());
-			OptionController->SetClickHandler(OptionIndex, [this] (int OptionIndex){
+			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(
+				DialogueUIPtr->GetOwningPlayer());
+			OptionController->SetClickHandler(OptionIndex, [this](int OptionIndex)
+			{
 				ChooseOptionAtIndex(OptionIndex);
 			});
 
@@ -97,14 +107,19 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		if (OptionIndex == 1)
 		{
 			CurrentSkipTime = NodeInfo->SkipAfterSeconds;
-			if (NodeInfo->SkipAfterSeconds == -1) {
+			if (NodeInfo->SkipAfterSeconds == -1)
+			{
 				CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
-			} else if (NodeInfo->SkipAfterSeconds == 0) {
+			}
+			else if (NodeInfo->SkipAfterSeconds == 0)
+			{
 				return;
 			}
 			AutoSkipDialogue(CurrentSkipTime);
 		}
-	} else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
+	}
+	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode)
+	{
 		DialogueUIPtr->RemoveFromParent();
 		DialogueUIPtr = nullptr;
 

@@ -31,7 +31,8 @@ void UDialogueGraphNodeText::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNo
 		FText::FromString(TEXT("Delete this node")),
 		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
 		FUIAction(FExecuteAction::CreateLambda(
-			[Node] (){
+			[Node]()
+			{
 				Node->GetGraph()->RemoveNode(Node);
 			}
 		))
@@ -47,7 +48,7 @@ UEdGraphPin* UDialogueGraphNodeText::CreateDialoguePin(EEdGraphPinDirection Dir,
 		Dir,
 		Category,
 		Name
-		);
+	);
 	Pin->PinType.PinSubCategory = SubCategory;
 
 	return Pin;
@@ -82,7 +83,7 @@ void UDialogueGraphNodeText::SyncWithNodeResponse()
 		CreateDialoguePin(
 			EGPD_Output,
 			FName(NodeInfo->DialogueResponses[NumGraphNodePins].ToString())
-			);
+		);
 		NumGraphNodePins++;
 	}
 

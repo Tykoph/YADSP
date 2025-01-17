@@ -12,6 +12,7 @@ class YADSPEDITOR_API UDialogueSystemFactory : public UFactory
 public:
 	UDialogueSystemFactory(const FObjectInitializer& ObjectInitializer);
 
-	virtual UObject* FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
+	virtual UObject* FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags,
+	                                  UObject* Context, FFeedbackContext* Warn) override;
 	virtual bool CanCreateNew() const override;
 };

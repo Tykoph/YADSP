@@ -15,20 +15,21 @@ void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& 
 	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
-void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,	UObject* InObject)
+void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
+                                        UObject* InObject)
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
 
 	WorkingAsset = Cast<UDialogueSystem>(InObject);
-	WorkingAsset->SetPreSaveListener([this](){ OnWorkingGraphAssetPreSave(); });
+	WorkingAsset->SetPreSaveListener([this]() { OnWorkingGraphAssetPreSave(); });
 
 	WorkingGraphEditor = FBlueprintEditorUtils::CreateNewGraph(
 		WorkingAsset,
 		NAME_None,
 		UEdGraph::StaticClass(),
 		UDialogueGraphSchema::StaticClass()
-		);
+	);
 
 	InitAssetEditor(
 		Mode,
@@ -38,7 +39,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 		true, // bCreateDefaultStandaloneMenu
 		true, // bCreateDefaultToolbar
 		ObjectsToEdit
-		);
+	);
 
 	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
@@ -75,7 +76,7 @@ void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
 
 void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 {
-	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) {	return;	}
+	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) { return; }
 
 	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
 	WorkingAsset->Graph = RuntimeGraph;
@@ -103,9 +104,12 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 
 			IdToPinMap.Add(UIPin->PinId, RuntimePin);
 
-			if (UIPin->Direction == EGPD_Input) {
+			if (UIPin->Direction == EGPD_Input)
+			{
 				RuntimeNode->InputPin = RuntimePin;
-			} else {
+			}
+			else
+			{
 				RuntimeNode->OutputPins.Add(RuntimePin);
 			}
 		}
@@ -148,10 +152,10 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 		case EDialogueNodeType::StartNode:
 			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
 			break;
-		case EDialogueNodeType::EndNode :
+		case EDialogueNodeType::EndNode:
 			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
 			break;
-		case EDialogueNodeType::TextNode :
+		case EDialogueNodeType::TextNode:
 			NewNode = NewObject<UDialogueGraphNodeText>(WorkingGraphEditor);
 			break;
 		default:
@@ -163,11 +167,16 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 		NewNode->NodePosX = RuntimeNode->NodePosition.X;
 		NewNode->NodePosY = RuntimeNode->NodePosition.Y;
 
-		if (RuntimeNode->NodeInfo != nullptr) {
+		if (RuntimeNode->NodeInfo != nullptr)
+		{
 			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, NewNode));
-		} else {
+		}
+		else
+		{
 			NewNode->InitNodeInfo(NewNode);
-			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."), *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
+			UE_LOG(DialogueGraphEditorAppSub, Error,
+			       TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."),
+			       *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
 		}
 
 		if (RuntimeNode->InputPin != nullptr)
@@ -228,15 +237,19 @@ UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPane
 void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView)
 {
 	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
-	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(
+		this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
 }
 
 void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet)
 {
 	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(SelectionSet);
-	if (SelectedNode != nullptr) {
+	if (SelectedNode != nullptr)
+	{
 		SelectedNodeDetailViewPtr->SetObject(SelectedNode->GetNodeInfo());
-	} else {
+	}
+	else
+	{
 		SelectedNodeDetailViewPtr->SetObject(nullptr);
 	}
 }

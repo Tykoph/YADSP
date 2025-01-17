@@ -12,7 +12,6 @@ UDialogueActorFactory::UDialogueActorFactory(const FObjectInitializer& ObjectIni
 // Create new instance of UDialogueGraph from the context menu in the content drawer
 UObject* UDialogueActorFactory::FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
-
 	ADialogueActor* ProxyObj = NewObject<ADialogueActor>(InParent, InName, Flags);
 	return ProxyObj;
 }

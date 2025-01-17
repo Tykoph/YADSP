@@ -4,7 +4,8 @@
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 
-DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) : FWorkflowTabFactory(FName("GraphPropertyTab"), App)
+DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
+	FWorkflowTabFactory(FName("GraphPropertyTab"), App)
 {
 	DGApp = App;
 	TabLabel = FText::FromString(TEXT("Properties"));
@@ -15,7 +16,8 @@ DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPt
 TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
 	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(
+		TEXT("PropertyEditor"));
 
 	// Detail view args
 	FDetailsViewArgs DetailsViewArgs;

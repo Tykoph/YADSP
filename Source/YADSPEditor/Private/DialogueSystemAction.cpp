@@ -9,7 +9,7 @@ DialogueSystemAction::DialogueSystemAction(EAssetTypeCategories::Type AssetCateg
 }
 
 //  FAssetTypeActions_Base interface
-FText DialogueSystemAction::GetName()  const
+FText DialogueSystemAction::GetName() const
 {
 	return FText::FromString(TEXT("Dialogue Graph"));
 }
@@ -29,7 +29,8 @@ uint32 DialogueSystemAction::GetCategories()
 	return _AssetCategory;
 }
 
-void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects,
+                                           TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects)

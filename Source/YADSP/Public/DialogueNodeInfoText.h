@@ -33,5 +33,4 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FText> DialogueResponses;
-
 };

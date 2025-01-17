@@ -10,11 +10,13 @@ class UDialogueGraphNodeStart : public UDialogueGraphNodeBase
 	GENERATED_BODY()
 
 public:
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override {return FText::FromString(TEXT("Start"));};
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return FText::FromString(TEXT("Start"));
+	};
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Red; }
 	virtual bool CanUserDeleteNode() const override { return false; }
 
-public:
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::StartNode; }
 };

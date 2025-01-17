@@ -16,5 +16,5 @@ void FYADSPModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FYADSPModule, YADSP)

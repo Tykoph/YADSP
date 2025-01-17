@@ -9,9 +9,10 @@ UCLASS()
 class ATestCharacterController : public APlayerController
 {
 	GENERATED_BODY()
+
 public:
 	ATestCharacterController();
-	virtual ~ATestCharacterController();
+	virtual ~ATestCharacterController() override;
 
 	virtual void BeginPlay() override;
 

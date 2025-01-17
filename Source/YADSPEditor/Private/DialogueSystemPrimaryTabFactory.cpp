@@ -7,7 +7,8 @@
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
 
-DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
+DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) :
+	FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
 {
 	DGApp = App;
 	TabLabel = FText::FromString(TEXT("Primary"));
@@ -24,9 +25,9 @@ TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkfl
 
 	TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
-			.IsEditable(true)
-			.GraphEvents(GraphEvents)
-			.GraphToEdit(App->GetGraphEditor());
+		.IsEditable(true)
+		.GraphEvents(GraphEvents)
+		.GraphToEdit(App->GetGraphEditor());
 	App->SetWorkingGraphUi(GraphEditor);
 
 	return SNew(SVerticalBox)

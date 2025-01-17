@@ -10,24 +10,24 @@
 
 class FDialogueSystemEditorModule : public IModuleInterface
 {
-    TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
-    EAssetTypeCategories::Type DialogueGraphAssetCategory = EAssetTypeCategories::None;
+	TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
+	EAssetTypeCategories::Type DialogueGraphAssetCategory = EAssetTypeCategories::None;
 
 public:
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
 
 private:
-    template<class T>
-    void Internal_RegisterTypeActions(const FString& Name)
-    {
-        IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+	template <class T>
+	void Internal_RegisterTypeActions(const FString& Name)
+	{
+		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
-        const auto Action = MakeShared<T>(DialogueGraphAssetCategory, FText::FromString(Name));
-        RegisteredAssetTypeActions.Emplace(Action);
-        AssetTools.RegisterAssetTypeActions(Action);
-    }
+		const auto Action = MakeShared<T>(DialogueGraphAssetCategory, FText::FromString(Name));
+		RegisteredAssetTypeActions.Emplace(Action);
+		AssetTools.RegisterAssetTypeActions(Action);
+	}
 
-    TSharedPtr<FSlateStyleSet> DGStyleSet = nullptr;
-    TSharedPtr<struct FDialoguePinFactory> PinFactory = nullptr;
+	TSharedPtr<FSlateStyleSet> DGStyleSet = nullptr;
+	TSharedPtr<struct FDialoguePinFactory> PinFactory = nullptr;
 };

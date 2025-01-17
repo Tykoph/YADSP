@@ -10,7 +10,7 @@ DialogueActorAction::DialogueActorAction(EAssetTypeCategories::Type AssetCategor
 }
 
 //  FAssetTypeActions_Base interface
-FText DialogueActorAction::GetName()  const
+FText DialogueActorAction::GetName() const
 {
 	return FText::FromString(TEXT("Dialogue Actor"));
 }
@@ -30,7 +30,8 @@ uint32 DialogueActorAction::GetCategories()
 	return _AssetCategory;
 }
 
-void DialogueActorAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void DialogueActorAction::OpenAssetEditor(const TArray<UObject*>& InObjects,
+                                          TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects)

@@ -3,7 +3,8 @@
 #include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueSystemPropertiesTabFactory.h"
 
-DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
+DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(
+	TEXT("DialogueGraphAppMode"))
 {
 	DGApp = App;
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
@@ -31,7 +32,7 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 					->SetSizeCoefficient(0.25)
 					->AddTab("GraphPropertyTab", ETabState::OpenedTab)
 				)
-		));
+			));
 }
 
 void DialogueSystemAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
