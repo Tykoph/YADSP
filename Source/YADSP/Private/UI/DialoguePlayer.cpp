@@ -115,6 +115,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			{
 				return;
 			}
+
 			AutoSkipDialogue(CurrentSkipTime);
 		}
 	}

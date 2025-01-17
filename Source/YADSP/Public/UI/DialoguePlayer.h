@@ -17,6 +17,7 @@ public:
 	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController,
 	                  TArray<AActor*> Cameras, FDialogueEndCallback OnDialogueEnded);
 
+	FTimerManager& GetWorldTimerManager() const { return GetWorld()->GetTimerManager(); }
 	void ChooseOptionAtIndex(int Index);
 	static float CalculateSkipTimer(const FText& Text);
 	void AutoSkipDialogue(float Time);
