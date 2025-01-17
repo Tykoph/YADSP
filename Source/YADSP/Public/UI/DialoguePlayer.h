@@ -1,19 +1,21 @@
 ﻿#pragma once
 
-#include <functional>
-
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoEnd.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "DialoguePlayer.generated.h"
 
-UCLASS()
-class YADSP_API UDialoguePlayer : public UObject
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueEndCallback, EDialogueNodeAction, Action, FString, Data);
+
+UCLASS(ClassGroup = (DialogueSystem), meta = (BlueprintSpawnableComponent))
+class YADSP_API UDialoguePlayer : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	void PlayDialogue(class	UDialogueSystem* DialogueAsset, APlayerController* PlayerController, std::function<void(EDialogueNodeAction Action, FString Data)> OnDialogueEnded);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
+	void PlayDialogue(class	UDialogueSystem* DialogueAsset, APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded);
+
 	void ChooseOptionAtIndex(int Index);
 
 private:
@@ -26,5 +28,7 @@ private:
 	UPROPERTY()
 	class UDialogueUIController* DialogueUIPtr = nullptr;
 
-	std::function<void(EDialogueNodeAction Action, FString Data)> OnDialogueEndedCallback;
+	FDialogueEndCallback OnDialogueEndedCallback;
+
+
 };

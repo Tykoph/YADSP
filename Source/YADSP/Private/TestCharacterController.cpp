@@ -26,18 +26,25 @@ void ATestCharacterController::BeginPlay()
 	Super::BeginPlay();
 
 	// Play the dialogue
-	DialoguePlayerPtr = NewObject<UDialoguePlayer>(this);
-	DialoguePlayerPtr->PlayDialogue(DialogueSystemPtr, this, [this](EDialogueNodeAction Action, FString Data) {
-	if (Action == EDialogueNodeAction::StartQuest)
-	{
-		if (NewQuestControllerPtr != nullptr)
-		{
-			NewQuestControllerPtr->RemoveFromParent();
-		}
-		NewQuestControllerPtr = UNewQuestController::CreateInstance(this);
-		NewQuestControllerPtr->QuestText->SetText(FText::FromString(Data));
-		NewQuestControllerPtr->AddToViewport();
-	}
-	});
+	// FDialogueEndCallback DialogueDelegate;
+	// DialogueDelegate.BindDynamic(this, &ATestCharacterController::OnDialogueEnded);
+	//
+	// DialoguePlayerPtr = NewObject<UDialoguePlayer>(this);
+	// DialoguePlayerPtr->PlayDialogue(DialogueSystemPtr, this, DialogueDelegate);
+}
 
+void ATestCharacterController::OnDialogueEnded(EDialogueNodeAction Action, FString Data)
+{
+	UE_LOG(ATestCharacterControllerSub, Log, TEXT("Dialogue ended with action %d and data %s"), (int32)Action, *Data);
+
+	// if (Action == EDialogueNodeAction::StartQuest)
+	// {
+	// 	if (NewQuestControllerPtr != nullptr)
+	// 	{
+	// 		NewQuestControllerPtr->RemoveFromParent();
+	// 	}
+	// 	NewQuestControllerPtr = UNewQuestController::CreateInstance(this);
+	// 	NewQuestControllerPtr->QuestText->SetText(FText::FromString(Data));
+	// 	NewQuestControllerPtr->AddToViewport();
+	// }
 }

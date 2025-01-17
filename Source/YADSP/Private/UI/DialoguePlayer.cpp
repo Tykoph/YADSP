@@ -12,7 +12,7 @@
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController,
-	std::function<void(EDialogueNodeAction Action, FString Data)> OnDialogueEnded)
+	FDialogueEndCallback OnDialogueEnded)
 {
 	OnDialogueEndedCallback = OnDialogueEnded;
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
@@ -90,6 +90,6 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			ActionData = EndNodeInfo->ActionData;
 		}
 
-		OnDialogueEndedCallback(Action, ActionData);
+		OnDialogueEndedCallback.Execute(Action, ActionData);
 	}
 }

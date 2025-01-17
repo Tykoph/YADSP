@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueNodeInfoEnd.h"
+#include "UI/DialoguePlayer.h"
 #include "TestCharacterController.Generated.h"
 
 UCLASS()
@@ -12,6 +14,9 @@ public:
 	virtual ~ATestCharacterController();
 
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnDialogueEnded(EDialogueNodeAction Action, FString Data);
 
 protected:
 	UPROPERTY()
