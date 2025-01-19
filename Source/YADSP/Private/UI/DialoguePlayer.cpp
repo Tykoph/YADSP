@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
@@ -26,6 +27,7 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 	PlayerControllerPtr->SetShowMouseCursor(true);
 	PlayerControllerPtr->SetIgnoreLookInput(true);
 	PlayerControllerPtr->SetIgnoreMoveInput(true);
+	PlayerControllerPtr->SetInputMode(FInputModeUIOnly());
 
 	// Get the start node
 	for (UDialogueRuntimeGraphNode* Node : Graph->Nodes)
@@ -77,6 +79,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
 		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
+		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueText.ToString());
 
 		if (NodeInfo->CameraIndex == -1)
 		{
@@ -104,19 +107,23 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			OptionIndex++;
 		}
 
-		if (OptionIndex == 1)
+		if (NodeInfo->DialogueResponses.Num() == 1)
 		{
+			UE_LOG(DialoguePlayerSub, Log, TEXT("Auto Skip"));
 			CurrentSkipTime = NodeInfo->SkipAfterSeconds;
 			if (NodeInfo->SkipAfterSeconds == -1)
 			{
 				CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
 			}
-			else if (NodeInfo->SkipAfterSeconds == 0)
+			else if (NodeInfo->DialogueSound != nullptr)
 			{
-				return;
+				CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
 			}
 
-			AutoSkipDialogue(CurrentSkipTime);
+			if (NodeInfo->SkipAfterSeconds != 0)
+			{
+				AutoSkipDialogue(CurrentSkipTime);
+			}
 		}
 	}
 	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode)
@@ -137,6 +144,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		PlayerControllerPtr->SetShowMouseCursor(false);
 		PlayerControllerPtr->SetIgnoreLookInput(false);
 		PlayerControllerPtr->SetIgnoreMoveInput(false);
+		PlayerControllerPtr->SetInputMode(FInputModeGameOnly());
 
 		OnDialogueEndedCallback.Execute(Action, ActionData);
 	}
@@ -144,14 +152,17 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 float UDialoguePlayer::CalculateSkipTimer(const FText& Text)
 {
-	int Length = Text.ToString().Len();
-	Length = Length / 1600;
-	Length = Length * 60;
+	FString Buffer = Text.ToString();
+	float Length = Buffer.Len();
+	Length = Length / 15;
 	Length = Length * 1.2;
 	return Length;
 }
 
 void UDialoguePlayer::AutoSkipDialogue(float Time)
 {
-	ChooseOptionAtIndex(0);
+	GetWorldTimerManager().SetTimer(AutoSkipTimerHandle, [this]()
+	{
+		ChooseOptionAtIndex(0);
+	}, Time, false);
 }

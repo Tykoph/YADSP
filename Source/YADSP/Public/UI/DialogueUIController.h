@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "DialogueUIController.generated.h"
 
 UCLASS()
@@ -14,6 +15,7 @@ public: // Methods
 
 public: // Create Method
     static UDialogueUIController* CreateInstance(APlayerController* PlayerController);
+    static void IsTextWrapping(UTextBlock* InDialogueText, const FString& Text);
 
 public: // Properties
 // ---------- Generated Properties Section ---------- //
@@ -26,6 +28,7 @@ public: // Properties
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UHorizontalBox* ResponseBox = nullptr;
+
 // ---------- End Generated Properties Section ---------- //
 };
 

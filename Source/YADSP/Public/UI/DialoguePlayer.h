@@ -37,5 +37,7 @@ private:
 
 	float CurrentSkipTime = 0.0f;
 
+	FTimerHandle AutoSkipTimerHandle;
+
 	FDialogueEndCallback OnDialogueEndedCallback;
 };

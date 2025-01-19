@@ -1,4 +1,5 @@
 #include "UI/DialogueUIController.h"
+#include "Fonts/FontMeasure.h"
 
 // ---------- Generated Includes Section ---------- //
 //             (Don't modify manually)              //
@@ -8,6 +9,27 @@
 
 UDialogueUIController::UDialogueUIController(const FObjectInitializer& objectInitializer) : UUserWidget(objectInitializer) {
 
+}
+
+void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FString& Text)
+{
+    const FSlateFontInfo FontInfo = InDialogueText->GetFont();
+    const TSharedPtr<FSlateFontMeasure> FontMeasure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
+
+    // Calculate Text Width
+    if (FontMeasure.IsValid())
+    {
+        const FVector2D TextSize = FontMeasure->Measure(Text, FontInfo);
+        const FVector2D ContainerText = InDialogueText->GetCachedGeometry().GetLocalSize();
+        if (TextSize.X > ContainerText.X)
+        {
+            InDialogueText->SetJustification(ETextJustify::Left);
+        }
+        else
+        {
+            InDialogueText->SetJustification(ETextJustify::Center);
+        }
+    }
 }
 
 // ---------- Generated Methods Section ---------- //
