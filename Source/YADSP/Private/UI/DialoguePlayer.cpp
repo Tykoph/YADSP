@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
@@ -123,6 +124,11 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			if (NodeInfo->SkipAfterSeconds != 0)
 			{
 				AutoSkipDialogue(CurrentSkipTime);
+			}
+			if (NodeInfo->DialogueSound != nullptr)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
+				AutoSkipDialogue(NodeInfo->DialogueSound->GetDuration());
 			}
 		}
 	}
