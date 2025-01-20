@@ -73,11 +73,30 @@ private:
 	}
 };
 
-struct FDialoguePinFactory : FGraphPanelPinFactory
+class SDialogueGraphActionPin : public SGraphPin
 {
-	virtual ~FDialoguePinFactory() override
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
 	{
 	}
+
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
+	}
+
+private:
+	virtual FSlateColor GetPinColor() const override
+	{
+		return FColor::Green;
+	}
+};
+
+struct FDialoguePinFactory : FGraphPanelPinFactory
+{
+	virtual ~FDialoguePinFactory() override	{}
 
 	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* Pin) const override
 	{
@@ -93,6 +112,10 @@ struct FDialoguePinFactory : FGraphPanelPinFactory
 		{
 			return SNew(SDialogueGraphEndPin, Pin);
 		}
+		if (FName(TEXT("ActionPin")) == Pin->PinType.PinSubCategory)
+		{
+			return SNew(SDialogueGraphActionPin, Pin);
+		}
 
 		return nullptr;
 	}
@@ -103,8 +126,7 @@ void FDialogueSystemEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools = IAssetTools::Get();
 
-	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(
-		FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
+	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
 	TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
 	AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
@@ -113,10 +135,8 @@ void FDialogueSystemEditorModule::StartupModule()
 	FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
 	DGStyleSet->SetContentRoot(ContentDir);
 
-	FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(
-		DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
-	FSlateImageBrush* IconBrush = new FSlateImageBrush(
-		DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* IconBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
 
 	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailBrush);
 	DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);

@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueAction.h"
-#include "DialogueNodeInfoEnd.generated.h"
+#include "DialogueNodeInfoAction.Generated.h"
 
 UCLASS(BlueprintType)
-class YADSP_API UDialogueNodeInfoEnd : public UDialogueNodeInfoBase
+class YADSP_API UDialogueNodeInfoAction : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 

@@ -1,11 +1,13 @@
 ﻿#include "DialogueGraphEditorApp.h"
+
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueGraphNodeStart.h"
-#include "DialogueGraphNodeEnd.h"
 #include "DialogueGraphNodeText.h"
+#include "DialogueGraphNodeAction.h"
+#include "DialogueGraphNodeEnd.h"
 #include "DialogueGraphNodeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
@@ -15,8 +17,7 @@ void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& 
 	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
-void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
-                                        UObject* InObject)
+void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
@@ -158,6 +159,8 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 		case EDialogueNodeType::TextNode:
 			NewNode = NewObject<UDialogueGraphNodeText>(WorkingGraphEditor);
 			break;
+		case EDialogueNodeType::ActionNode:
+			NewNode = NewObject<UDialogueGraphNodeAction>(WorkingGraphEditor);
 		default:
 			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
 			break;

@@ -1,4 +1,6 @@
 ﻿#include "UI/DialoguePlayer.h"
+
+#include "DialogueNodeInfoAction.h"
 #include "UI/DialogueUIController.h"
 #include "UI/DialogueOptionController.h"
 #include "DialogueSystem.h"
@@ -13,9 +15,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController,
-                                   TArray<AActor*> Cameras,
-                                   FDialogueEndCallback OnDialogueEnded)
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras, FDialogueEndCallback OnDialogueEnded)
 {
 	OnDialogueEndedCallback = OnDialogueEnded;
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
@@ -95,8 +95,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		int OptionIndex = 0;
 		for (FText Response : NodeInfo->DialogueResponses)
 		{
-			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(
-				DialogueUIPtr->GetOwningPlayer());
+			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(DialogueUIPtr->GetOwningPlayer());
 			OptionController->SetClickHandler(OptionIndex, [this](int OptionIndex)
 			{
 				ChooseOptionAtIndex(OptionIndex);
@@ -132,12 +131,24 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
+	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::ActionNode)
+	{
+		EDialogueAction Action = EDialogueAction::None;
+		FString ActionData = TEXT("");
+
+		UDialogueNodeInfoAction* ActionNodeInfo = Cast<UDialogueNodeInfoAction>(CurrentNodePtr->NodeInfo);
+		Action = ActionNodeInfo->Action;
+		ActionData = ActionNodeInfo->ActionData;
+
+		OnDialogueEndedCallback.Execute(Action, ActionData);
+		ChooseOptionAtIndex(0);
+	}
 	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode)
 	{
 		DialogueUIPtr->RemoveFromParent();
 		DialogueUIPtr = nullptr;
 
-		EDialogueNodeAction Action = EDialogueNodeAction::None;
+		EDialogueAction Action = EDialogueAction::None;
 		FString ActionData = TEXT("");
 		if (CurrentNodePtr != nullptr)
 		{

@@ -1,6 +1,6 @@
-﻿#include "DialogueGraphNodeEnd.h"
+﻿#include "DialogueGraphNodeAction.h"
 
-FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
+FText UDialogueGraphNodeAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (NodeInfoPtr != nullptr && NodeInfoPtr->Action != EDialogueAction::None)
 	{
@@ -18,14 +18,14 @@ FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		return FText::FromString(Result);
 	}
 
-	return FText::FromString(TEXT("End"));
+	return FText::FromString(TEXT("Action"));
 }
 
-void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+void UDialogueGraphNodeAction::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("End Node Actions")));
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Node Actions")));
 
-	UDialogueGraphNodeEnd* Node = const_cast<UDialogueGraphNodeEnd*>(this);
+	UDialogueGraphNodeAction* Node = const_cast<UDialogueGraphNodeAction*>(this);
 	Section.AddMenuEntry(
 		"DeleteEntry",
 		FText::FromString(TEXT("Delete Node")),
@@ -40,10 +40,10 @@ void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 	);
 }
 
-UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeAction::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
 	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("EndPin");
+	FName SubCategory = TEXT("ActionPin");
 
 	UEdGraphPin* Pin = CreatePin(
 		Dir,
@@ -55,7 +55,12 @@ UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(EEdGraphPinDirection Dir, 
 	return Pin;
 }
 
-UEdGraphPin* UDialogueGraphNodeEnd::CreateDefaultInputPin()
+UEdGraphPin* UDialogueGraphNodeAction::CreateDefaultInputPin()
 {
-	return CreateDialoguePin(EGPD_Input, FName(TEXT("Finish")));
+	return CreateDialoguePin(EGPD_Input, FName(TEXT("Input")));
+}
+
+void UDialogueGraphNodeAction::CreateDefaultOutputPin()
+{
+	CreateDialoguePin(EGPD_Output, FName(TEXT("Output")));
 }
