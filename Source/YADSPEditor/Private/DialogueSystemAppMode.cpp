@@ -1,10 +1,11 @@
-﻿#include "DialogueSystemAppMode.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueSystemAppMode.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueSystemPropertiesTabFactory.h"
 
-DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(
-	TEXT("DialogueGraphAppMode"))
+DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
 	DGApp = App;
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));

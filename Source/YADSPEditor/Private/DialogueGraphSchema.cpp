@@ -1,5 +1,6 @@
-﻿#include "DialogueGraphSchema.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
 
+#include "DialogueGraphSchema.h"
 #include "DialogueGraphNodeAction.h"
 #include "DialogueGraphNodeStart.h"
 #include "DialogueGraphNodeEnd.h"
@@ -28,19 +29,18 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	);
 
 	TSharedPtr<FNewNodeAction> NewActionNodeAction(
-	new FNewNodeAction(
-		UDialogueGraphNodeAction::StaticClass(),
-		FText::FromString(TEXT("Node")),
-		FText::FromString(TEXT("New Action Node")),
-		FText::FromString(TEXT("Makes a new Action node")),
-		0
-	)
-);
+		new FNewNodeAction(
+			UDialogueGraphNodeAction::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("New Action Node")),
+			FText::FromString(TEXT("Makes a new Action node")),
+			0
+		)
+	);
 
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewTextNodeAction);
 	ContextMenuBuilder.AddAction(NewActionNodeAction);
-
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

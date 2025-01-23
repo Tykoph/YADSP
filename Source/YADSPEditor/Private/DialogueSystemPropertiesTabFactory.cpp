@@ -1,4 +1,6 @@
-﻿#include "DialogueSystemPropertiesTabFactory.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueSystemPropertiesTabFactory.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueSystem.h"
 #include "IDetailsView.h"

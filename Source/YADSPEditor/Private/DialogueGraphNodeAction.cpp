@@ -1,4 +1,6 @@
-﻿#include "DialogueGraphNodeAction.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueGraphNodeAction.h"
 
 FText UDialogueGraphNodeAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

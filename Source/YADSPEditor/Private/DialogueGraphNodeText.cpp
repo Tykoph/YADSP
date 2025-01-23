@@ -1,4 +1,6 @@
-﻿#include "DialogueGraphNodeText.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueGraphNodeText.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
 #include "DialogueNodeInfoText.h"

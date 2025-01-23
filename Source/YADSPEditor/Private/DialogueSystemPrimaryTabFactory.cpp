@@ -1,14 +1,12 @@
-﻿#include "DialogueSystemPrimaryTabFactory.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueSystemPrimaryTabFactory.h"
 #include "DialogueGraphEditorApp.h"
-#include "DialogueSystem.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 #include "GraphEditor.h"
-#include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
-#include "Kismet2/KismetEditorUtilities.h"
 
-DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) :
-	FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
+DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
 {
 	DGApp = App;
 	TabLabel = FText::FromString(TEXT("Primary"));

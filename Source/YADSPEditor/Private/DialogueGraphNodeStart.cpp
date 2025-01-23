@@ -1,4 +1,6 @@
-﻿#include "DialogueGraphNodeStart.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueGraphNodeStart.h"
 
 UEdGraphPin* UDialogueGraphNodeStart::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {

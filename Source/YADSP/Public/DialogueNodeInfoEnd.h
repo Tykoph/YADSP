@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"

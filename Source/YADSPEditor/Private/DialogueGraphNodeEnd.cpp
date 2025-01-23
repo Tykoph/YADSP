@@ -1,4 +1,6 @@
-﻿#include "DialogueGraphNodeEnd.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueGraphNodeEnd.h"
 
 FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

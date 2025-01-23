@@ -1,5 +1,6 @@
-﻿#include "DialogueGraphEditorApp.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
 
+#include "DialogueGraphEditorApp.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -17,7 +18,8 @@ void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& 
 	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
-void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
+void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
+                                        UObject* InObject)
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);

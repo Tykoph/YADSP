@@ -1,3 +1,5 @@
+// Copyright 2025 Tom Duby. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -5,36 +7,35 @@
 #include "NewQuestController.Generated.h"
 
 UCLASS()
-class YADSP_API UNewQuestController : public UUserWidget {
-    GENERATED_BODY()
+class YADSP_API UNewQuestController : public UUserWidget
+{
+	GENERATED_BODY()
 
 public: // Methods
-    UNewQuestController(const FObjectInitializer& objectInitializer);
-    virtual ~UNewQuestController() { }
+	UNewQuestController(const FObjectInitializer& objectInitializer);
 
-public: // Create Method
-    static UNewQuestController* CreateInstance(APlayerController* PlayerController);
+	virtual ~UNewQuestController() override
+	{
+	}
 
-public: // Properties
-// ---------- Generated Properties Section ---------- //
-//             (Don't modify manually)              //
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UTextBlock* QuestText = nullptr;
-// ---------- End Generated Properties Section ---------- //
+	// Create Method
+	static UNewQuestController* CreateInstance(APlayerController* PlayerController);
+
+	// Properties
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* QuestText = nullptr;
 };
 
-// ---------- Generated Loader Section ---------- //
-//             (Don't modify manually)            //
 UCLASS()
-class UNewQuestLoader : public UObject {
-    GENERATED_BODY()
-public:
-    UNewQuestLoader();
-    virtual ~UNewQuestLoader() { }
+class UNewQuestLoader : public UObject
+{
+	GENERATED_BODY()
 
 public:
-    UPROPERTY()
-    UClass* WidgetTemplate = nullptr;
-    static const inline FString WidgetPath = TEXT("/YADSP/WBP_NewQuest");
+	UNewQuestLoader();
+	virtual ~UNewQuestLoader() override {}
+
+	UPROPERTY()
+	UClass* WidgetTemplate = nullptr;
+	static const inline FString WidgetPath = TEXT("/YADSP/WBP_NewQuest");
 };
-// ---------- End Generated Loader Section ---------- //

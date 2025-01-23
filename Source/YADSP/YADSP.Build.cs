@@ -1,4 +1,5 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Tom Duby. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -25,7 +26,7 @@ public class YADSP : ModuleRules
 
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"Core",
 				"CoreUObject",
@@ -39,7 +40,7 @@ public class YADSP : ModuleRules
 
 
 		PrivateDependencyModuleNames.AddRange(
-			new string[]
+			new[]
 			{
 				"CoreUObject",
 				"Engine",

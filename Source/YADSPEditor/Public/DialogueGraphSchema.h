@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraph.h"
@@ -20,18 +22,11 @@ struct FNewNodeAction : public FEdGraphSchemaAction
 {
 	GENERATED_BODY()
 
-	FNewNodeAction()
-	{
-	}
+public :
+	FNewNodeAction() {}
+	FNewNodeAction(UClass* ClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping) : FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGrouping), ClassTemplatePtr(ClassTemplate) { }
 
-	FNewNodeAction(UClass* ClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip,
-	               const int32 InGrouping)
-		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGrouping), ClassTemplatePtr(ClassTemplate)
-	{
-	}
-
-	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location,
-	                                    bool bSelectNewNode = true) override;
+	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
 
 protected:
 	UClass* ClassTemplatePtr = nullptr;

@@ -1,11 +1,13 @@
-﻿#include "DialogueSystemAction.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueSystemAction.h"
 #include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 
 DialogueSystemAction::DialogueSystemAction(EAssetTypeCategories::Type AssetCategory)
 {
-	_AssetCategory = AssetCategory;
+	AssetCategoryPtr = AssetCategory;
 }
 
 //  FAssetTypeActions_Base interface
@@ -26,7 +28,7 @@ UClass* DialogueSystemAction::GetSupportedClass() const
 
 uint32 DialogueSystemAction::GetCategories()
 {
-	return _AssetCategory;
+	return AssetCategoryPtr;
 }
 
 void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)

@@ -1,24 +1,21 @@
-#include "UI/NewQuestController.h"
+// Copyright 2025 Tom Duby. All Rights Reserved.
 
-// ---------- Generated Includes Section ---------- //
-//             (Don't modify manually)              //
+#include "UI/NewQuestController.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
-// ---------- End Generated Includes Section ---------- //
 
-UNewQuestController::UNewQuestController(const FObjectInitializer& objectInitializer) : UUserWidget(objectInitializer) {
-
+UNewQuestController::UNewQuestController(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
 }
 
-// ---------- Generated Methods Section ---------- //
-//             (Don't modify manually)             //
-UNewQuestController* UNewQuestController::CreateInstance(APlayerController* PlayerController) {
-    UNewQuestLoader* Loader = NewObject<UNewQuestLoader>(PlayerController);
-    return Cast<UNewQuestController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
+UNewQuestController* UNewQuestController::CreateInstance(APlayerController* PlayerController)
+{
+	UNewQuestLoader* Loader = NewObject<UNewQuestLoader>(PlayerController);
+	return Cast<UNewQuestController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
 }
 
-UNewQuestLoader::UNewQuestLoader() {
-    static ConstructorHelpers::FClassFinder<UUserWidget> WidgetTemplateFinder(*WidgetPath);
-    WidgetTemplate = WidgetTemplateFinder.Class;
+UNewQuestLoader::UNewQuestLoader()
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetTemplateFinder(*WidgetPath);
+	WidgetTemplate = WidgetTemplateFinder.Class;
 }
-// ---------- End Generated Methods Section ---------- //

@@ -1,3 +1,5 @@
+// Copyright 2025 Tom Duby. All Rights Reserved.
+
 #pragma once
 
 #include <functional>
@@ -7,48 +9,44 @@
 #include "DialogueOptionController.generated.h"
 
 UCLASS()
-class YADSP_API UDialogueOptionController : public UUserWidget {
-    GENERATED_BODY()
+class YADSP_API UDialogueOptionController : public UUserWidget
+{
+	GENERATED_BODY()
 
 public: // Methods
-    UDialogueOptionController(const FObjectInitializer& ObjectInitializer);
-    virtual ~UDialogueOptionController() { }
+	UDialogueOptionController(const FObjectInitializer& ObjectInitializer);
+	virtual ~UDialogueOptionController() override {}
 
-    void SetClickHandler(int Index, std::function<void(int)> ClickHandler);
+	void SetClickHandler(int Index, std::function<void(int)> ClickHandler);
 
-    UFUNCTION()
-    void OnButtonClicked();
+	UFUNCTION()
+	void OnButtonClicked();
 
-public: // Create Method
-    static UDialogueOptionController* CreateInstance(APlayerController* PlayerController);
+	// Create Method
+	static UDialogueOptionController* CreateInstance(APlayerController* PlayerController);
 
-public: // Properties
-// ---------- Generated Properties Section ---------- //
-//             (Don't modify manually)              //
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UButton* ResponseButton = nullptr;
+	// Properties
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UButton* ResponseButton = nullptr;
 
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UTextBlock* ResponseButtonText = nullptr;
-// ---------- End Generated Properties Section ---------- //
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* ResponseButtonText = nullptr;
 
 private: // Fields
-    std::function<void(int)> OnClickHandler;
-    int ButtonIndex;
+	std::function<void(int)> OnClickHandler;
+	int ButtonIndex;
 };
 
-// ---------- Generated Loader Section ---------- //
-//             (Don't modify manually)            //
 UCLASS()
-class UDialogueOptionLoader : public UObject {
-    GENERATED_BODY()
-public:
-    UDialogueOptionLoader();
-    virtual ~UDialogueOptionLoader() { }
+class UDialogueOptionLoader : public UObject
+{
+	GENERATED_BODY()
 
 public:
-    UPROPERTY()
-    UClass* WidgetTemplate = nullptr;
-    static const inline FString WidgetPath = TEXT("/YADSP/WBP_DialogueOption");
+	UDialogueOptionLoader();
+	virtual ~UDialogueOptionLoader() override {}
+
+	UPROPERTY()
+	UClass* WidgetTemplate = nullptr;
+	static const inline FString WidgetPath = TEXT("/YADSP/WBP_DialogueOption");
 };
-// ---------- End Generated Loader Section ---------- //

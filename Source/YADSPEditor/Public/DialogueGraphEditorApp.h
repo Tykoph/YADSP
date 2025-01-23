@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "SGraphPanel.h"
@@ -8,13 +10,12 @@ class DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEdito
 {
 public:
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef) override;
-	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
-	                UObject* ObjectToEdit);
+	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit);
 
 	class UDialogueSystem* GetDialogueGraph() const { return WorkingAsset; }
 	class UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
-	void SetWorkingGraphUi(TSharedPtr<SGraphEditor> WorkingGraphUi) { WorkingGraphUiPtr = WorkingGraphUi; }
+	void SetWorkingGraphUi(const TSharedPtr<SGraphEditor>& WorkingGraphUi) { WorkingGraphUiPtr = WorkingGraphUi; }
 	void SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView);
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
 
@@ -25,13 +26,8 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor(0.15f, 0.2f, 0.5f, 0.5f); }
 	virtual FString GetDocumentationLink() const override { return TEXT("doc link"); }
 
-	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override
-	{
-	}
-
-	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override
-	{
-	}
+	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
+	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
 
 	virtual void OnClose() override;
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event);

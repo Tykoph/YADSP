@@ -1,7 +1,8 @@
-﻿#include "DialogueSystemEditor.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "DialogueSystemEditor.h"
 #include "DialogueSystemAction.h"
 #include "IAssetTools.h"
-#include "AssetToolsModule.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"
@@ -13,10 +14,7 @@
 class SDialogueGraphPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -34,10 +32,7 @@ private:
 class SDialogueGraphStartPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -55,10 +50,7 @@ private:
 class SDialogueGraphEndPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -76,10 +68,7 @@ private:
 class SDialogueGraphActionPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-	{
-	}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -126,7 +115,8 @@ void FDialogueSystemEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools = IAssetTools::Get();
 
-	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
+	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(
+		FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
 	TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
 	AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
@@ -135,8 +125,12 @@ void FDialogueSystemEditorModule::StartupModule()
 	FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
 	DGStyleSet->SetContentRoot(ContentDir);
 
-	FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
-	FSlateImageBrush* IconBrush = new FSlateImageBrush(DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"), TEXT(".png")), FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(
+		DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"),
+		TEXT(".png")), FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* IconBrush = new FSlateImageBrush(
+		DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"),
+		TEXT(".png")), FVector2D(128.0f, 128.0f));
 
 	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailBrush);
 	DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);

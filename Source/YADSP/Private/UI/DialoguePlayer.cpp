@@ -1,4 +1,6 @@
-﻿#include "UI/DialoguePlayer.h"
+﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+
+#include "UI/DialoguePlayer.h"
 
 #include "DialogueNodeInfoAction.h"
 #include "UI/DialogueUIController.h"
