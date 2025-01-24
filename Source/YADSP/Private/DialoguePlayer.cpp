@@ -1,14 +1,12 @@
 ﻿// Copyright 2025 Tom Duby. All Rights Reserved.
 
 #include "DialoguePlayer.h"
-
 #include "DialogueNodeInfoAction.h"
 #include "UI/DialogueUIController.h"
 #include "UI/DialogueOptionController.h"
 #include "DialogueSystem.h"
 #include "DialogueNodeInfoEnd.h"
 #include "DialogueNodeInfoText.h"
-
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -109,6 +107,8 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			OptionIndex++;
 		}
 
+		if (!DialogueAssetPtr->bAutoSkipEnabled) { return; }
+
 		if (NodeInfo->DialogueResponses.Num() == 1)
 		{
 			UE_LOG(DialoguePlayerSub, Log, TEXT("Auto Skip"));
@@ -133,13 +133,11 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
-	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::ActionNode)
+	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType != EDialogueNodeType::TextNode)
 	{
-		EDialogueAction Action = EDialogueAction::None;
 		FString ActionData = TEXT("");
-
 		UDialogueNodeInfoAction* ActionNodeInfo = Cast<UDialogueNodeInfoAction>(CurrentNodePtr->NodeInfo);
-		Action = ActionNodeInfo->Action;
+		EDialogueAction Action = ActionNodeInfo->Action;
 		ActionData = ActionNodeInfo->ActionData;
 
 		OnDialogueEndedCallback.Execute(Action, ActionData);

@@ -16,7 +16,7 @@ public:
 	class UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
 	void SetWorkingGraphUi(const TSharedPtr<SGraphEditor>& WorkingGraphUi) { WorkingGraphUiPtr = WorkingGraphUi; }
-	void SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView);
+	void SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& SelectedNodeDetailView);
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
 
 	// FAssetEditorToolkit interface

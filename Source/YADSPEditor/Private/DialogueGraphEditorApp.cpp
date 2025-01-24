@@ -247,7 +247,7 @@ UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPane
 	return nullptr;
 }
 
-void DialogueGraphEditorApp::SetSelectedNodeDetailView(TSharedPtr<IDetailsView> SelectedNodeDetailView)
+void DialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& SelectedNodeDetailView)
 {
 	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
 	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(
