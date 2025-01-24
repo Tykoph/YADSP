@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueAction.h"
+#include "DialogueCamera.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "DialoguePlayer.generated.h"
 
@@ -17,7 +18,7 @@ class YADSP_API UDialoguePlayer : public UActorComponent
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
-	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras, FDialogueEndCallback OnDialogueEnded);
+	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
 
 	FTimerManager& GetWorldTimerManager() const { return GetWorld()->GetTimerManager(); }
 	void ChooseOptionAtIndex(int Index);

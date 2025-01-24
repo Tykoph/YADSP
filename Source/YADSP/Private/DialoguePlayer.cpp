@@ -1,6 +1,6 @@
 ﻿// Copyright 2025 Tom Duby. All Rights Reserved.
 
-#include "UI/DialoguePlayer.h"
+#include "DialoguePlayer.h"
 
 #include "DialogueNodeInfoAction.h"
 #include "UI/DialogueUIController.h"
@@ -17,7 +17,7 @@
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<AActor*> Cameras, FDialogueEndCallback OnDialogueEnded)
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded)
 {
 	OnDialogueEndedCallback = OnDialogueEnded;
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;

@@ -24,7 +24,7 @@ FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 void UDialogueGraphNodeText::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("End Node Actions")));
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Text Node Actions")));
 
 	UDialogueGraphNodeText* Node = const_cast<UDialogueGraphNodeText*>(this);
 	Section.AddMenuEntry(
@@ -58,7 +58,7 @@ UEdGraphPin* UDialogueGraphNodeText::CreateDialoguePin(EEdGraphPinDirection Dir,
 
 UEdGraphPin* UDialogueGraphNodeText::CreateDefaultInputPin()
 {
-	return CreateDialoguePin(EGPD_Input, FName(TEXT("Finish")));
+	return CreateDialoguePin(EGPD_Input, FName(TEXT("Input")));
 }
 
 void UDialogueGraphNodeText::CreateDefaultOutputPin()

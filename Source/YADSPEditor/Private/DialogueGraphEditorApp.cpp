@@ -8,8 +8,10 @@
 #include "DialogueGraphNodeStart.h"
 #include "DialogueGraphNodeText.h"
 #include "DialogueGraphNodeAction.h"
+#include "DialogueGraphNodeAnimation.h"
 #include "DialogueGraphNodeEnd.h"
 #include "DialogueGraphNodeBase.h"
+#include "DialogueGraphNodeCamera.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
@@ -163,6 +165,12 @@ void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 			break;
 		case EDialogueNodeType::ActionNode:
 			NewNode = NewObject<UDialogueGraphNodeAction>(WorkingGraphEditor);
+			break;
+		case EDialogueNodeType::CameraNode:
+			NewNode = NewObject<UDialogueGraphNodeCamera>(WorkingGraphEditor);
+			break;
+		case EDialogueNodeType::AnimationNode:
+			NewNode = NewObject<UDialogueGraphNodeAnimation>(WorkingGraphEditor);
 		default:
 			UE_LOG(DialogueGraphEditorAppSub, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
 			break;

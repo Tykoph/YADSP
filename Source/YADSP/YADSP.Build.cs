@@ -33,7 +33,8 @@ public class YADSP : ModuleRules
 				"Engine",
 				"InputCore",
 				"EnhancedInput",
-				"UMG"
+				"UMG",
+				"CinematicCamera",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -47,7 +48,8 @@ public class YADSP : ModuleRules
 				"Slate",
 				"SlateCore",
 				"EnhancedInput",
-				"UMG"
+				"UMG",
+				"CinematicCamera"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

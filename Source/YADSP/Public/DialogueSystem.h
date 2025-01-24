@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "UObject/Object.h"
+#include "DialogueCamera.h"
 #include "DialogueSystem.generated.h"
 
 UCLASS(BlueprintType)
@@ -25,7 +26,7 @@ public: // Properties
 	AActor* DefaultCamera = nullptr;
 
 	UPROPERTY()
-	TArray<AActor*> CameraActors;
+	TArray<ADialogueCamera*> CameraActors;
 
 	// Our Interface
 	void SetPreSaveListener(std::function<void()> OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }
