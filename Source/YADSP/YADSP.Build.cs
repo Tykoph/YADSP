@@ -49,7 +49,9 @@ public class YADSP : ModuleRules
 				"SlateCore",
 				"EnhancedInput",
 				"UMG",
-				"CinematicCamera"
+				"CinematicCamera",
+				"YADSPEditor",
+				"UnrealEd",
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

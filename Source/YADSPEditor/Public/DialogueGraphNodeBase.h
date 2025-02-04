@@ -25,4 +25,6 @@ public:
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }
 
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }
+
+	UDialogueSystem* DialogueSystem = nullptr;
 };

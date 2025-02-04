@@ -10,6 +10,16 @@
 #include "DialogueCamera.h"
 #include "DialogueSystem.generated.h"
 
+/**
+ * TODO :
+ *	Dialogue Sys
+ * 		-> String array
+ *		-> Update each node with Dialogue Sys ref
+ *		-> Update relevant nodes with String Array as a drop down list
+ *		-> Update on save
+ *		-> match string array index from camera/dialogue node with camera index
+ */
+
 UCLASS(BlueprintType)
 class YADSP_API UDialogueSystem : public UObject
 {
@@ -30,6 +40,9 @@ public: // Properties
 
 	UPROPERTY()
 	TArray<ADialogueCamera*> CameraActors;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FString> CameraStringArray;
 
 	// Our Interface
 	void SetPreSaveListener(std::function<void()> OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }

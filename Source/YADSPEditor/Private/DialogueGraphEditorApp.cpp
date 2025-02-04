@@ -20,8 +20,7 @@ void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& 
 	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
-void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost,
-                                        UObject* InObject)
+void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
@@ -122,6 +121,11 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
 		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
 		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
+
+		if (WorkingAsset != nullptr)
+		{
+			RuntimeNode->NodeInfo->SetDialogueSystem(WorkingAsset);
+		}
 
 		RuntimeGraph->Nodes.Add(RuntimeNode);
 	}

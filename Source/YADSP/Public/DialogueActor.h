@@ -11,10 +11,17 @@ class YADSP_API ADialogueActor : public AActor
 {
 	GENERATED_BODY()
 
+	ADialogueActor();
+	~ADialogueActor();
+
 public:
 	UPROPERTY(EditAnywhere)
 	UDialogueSystem* DialogueSystem = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, EditFixedSize)
 	TArray<ACameraActor*> CameraActors;
+
+private:
+	UFUNCTION()
+	void UpdateArrayLenght();
 };
