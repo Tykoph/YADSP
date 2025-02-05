@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
+#include "DialogueSkipEnum.h"
 #include "DialogueNodeInfoText.generated.h"
 
 UCLASS(BlueprintType)
@@ -40,10 +41,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	USoundCue* DialogueSound;
 
-	/** Work only if there is one answer.
-	 * -1 will auto-determine skip time base on text length,
-	 * 0 will use the Sound Cue length or disable auto-skip if there is no Cue */
-	UPROPERTY(EditAnywhere, meta = (ClampMin = -1))
+	UPROPERTY(EditAnywhere)
+	ESkipDialogue SkipDialogue = ESkipDialogue::NoSkip;
+
+	UPROPERTY(EditAnywhere, meta=(EditCondition="SkipDialogue == ESkipDialogue::AutoSkipAfterTime"))
 	float SkipAfterSeconds;
 
 	UPROPERTY(EditAnywhere)

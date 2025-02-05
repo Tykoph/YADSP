@@ -29,9 +29,6 @@ public: // Properties
 	UPROPERTY(EditAnywhere)
 	FString DialogueName = TEXT("Enter Dialogue Name here");
 
-	UPROPERTY(EditAnywhere)
-	bool bAutoSkipEnabled = true;
-
 	UPROPERTY()
 	UDialogueSystemRuntimeGraph* Graph = nullptr;
 

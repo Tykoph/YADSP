@@ -107,29 +107,28 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			OptionIndex++;
 		}
 
-		if (!DialogueAssetPtr->bAutoSkipEnabled) { return; }
-
 		if (NodeInfo->DialogueResponses.Num() == 1)
 		{
 			UE_LOG(DialoguePlayerSub, Log, TEXT("Auto Skip"));
-			CurrentSkipTime = NodeInfo->SkipAfterSeconds;
-			if (NodeInfo->SkipAfterSeconds == -1)
-			{
-				CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
-			}
-			else if (NodeInfo->DialogueSound != nullptr)
-			{
-				CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
-			}
 
-			if (NodeInfo->SkipAfterSeconds != 0)
+			switch (NodeInfo->SkipDialogue)
 			{
-				AutoSkipDialogue(CurrentSkipTime);
-			}
-			if (NodeInfo->DialogueSound != nullptr)
-			{
-				UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
-				AutoSkipDialogue(NodeInfo->DialogueSound->GetDuration());
+				case ESkipDialogue::NoSkip:
+					break;
+				case ESkipDialogue::AutoSkipBasedOnText:
+					CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
+					AutoSkipDialogue(CurrentSkipTime);
+					break;
+				case ESkipDialogue::AutoSkipAfterSound:
+					if (NodeInfo->DialogueSound == nullptr) break;
+					CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
+					UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
+					AutoSkipDialogue(CurrentSkipTime);
+					break;
+				case ESkipDialogue::AutoSkipAfterTime:
+					CurrentSkipTime = NodeInfo->SkipAfterSeconds;
+					AutoSkipDialogue(CurrentSkipTime);
+					break;
 			}
 		}
 	}

@@ -124,6 +124,9 @@ UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* 
 	ResultNode->NodePosY = Location.Y;
 	ResultNode->InitNodeInfo(ResultNode);
 
+	UDialogueNodeInfoBase* NodeInfo = ResultNode->GetNodeInfo();
+	NodeInfo->DialogueSystem = Cast<UDialogueSystem>(ParentGraph->GetOuter());
+
 	UEdGraphPin* InputPin = ResultNode->CreateDefaultInputPin();
 	ResultNode->CreateDefaultOutputPin();
 

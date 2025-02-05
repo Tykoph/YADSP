@@ -78,6 +78,7 @@ void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave()
 	UpdateWorkingAssetFromGraph();
 }
 
+// update the openned Dialogue Graph Asset with the current graph editor
 void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 {
 	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) { return; }
@@ -122,11 +123,6 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
 		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
 
-		if (WorkingAsset != nullptr)
-		{
-			RuntimeNode->NodeInfo->SetDialogueSystem(WorkingAsset);
-		}
-
 		RuntimeGraph->Nodes.Add(RuntimeNode);
 	}
 
@@ -141,6 +137,7 @@ void DialogueGraphEditorApp::UpdateWorkingAssetFromGraph()
 	UE_LOG(DialogueGraphEditorAppSub, Log, TEXT("Working Graph Updated."));
 }
 
+// update the graph editor with the current openned Dialogue Graph Asset
 void DialogueGraphEditorApp::UpdateGraphEditorFromWorkingAsset()
 {
 	if (WorkingAsset->Graph == nullptr)
