@@ -16,6 +16,12 @@ ADialogueActor::~ADialogueActor()
 	}
 }
 
+void ADialogueActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	UpdateArrayLenght();
+}
+
 void ADialogueActor::UpdateArrayLenght()
 {
 	UE_LOG(LogTemp, Log, TEXT("UpdateArrayLenght"));

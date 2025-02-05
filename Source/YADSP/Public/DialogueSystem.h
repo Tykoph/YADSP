@@ -10,16 +10,6 @@
 #include "DialogueCamera.h"
 #include "DialogueSystem.generated.h"
 
-/**
- * TODO :
- *	Dialogue Sys
- * 		-> String array
- *		-> Update each node with Dialogue Sys ref
- *		-> Update relevant nodes with String Array as a drop down list
- *		-> Update on save
- *		-> match string array index from camera/dialogue node with camera index
- */
-
 UCLASS(BlueprintType)
 class YADSP_API UDialogueSystem : public UObject
 {

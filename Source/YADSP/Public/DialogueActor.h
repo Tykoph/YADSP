@@ -12,7 +12,9 @@ class YADSP_API ADialogueActor : public AActor
 	GENERATED_BODY()
 
 	ADialogueActor();
-	~ADialogueActor();
+	virtual ~ADialogueActor() override;
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 public:
 	UPROPERTY(EditAnywhere)
