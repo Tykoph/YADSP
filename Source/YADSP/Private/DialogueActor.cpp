@@ -1,4 +1,5 @@
 ﻿#include "DialogueActor.h"
+#include "DialoguePlayer.h"
 
 ADialogueActor::ADialogueActor()
 {
@@ -6,6 +7,8 @@ ADialogueActor::ADialogueActor()
 	{
 		GEditor->OnBlueprintCompiled().AddUObject(this, &ADialogueActor::UpdateArrayLenght);
 	}
+
+	DialoguePlayer = CreateDefaultSubobject<UDialoguePlayer>("DialoguePlayer");
 }
 
 ADialogueActor::~ADialogueActor()
@@ -20,6 +23,11 @@ void ADialogueActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	UpdateArrayLenght();
+}
+
+void ADialogueActor::PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const
+{
+	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, CameraActors, OnDialogueEnded);
 }
 
 void ADialogueActor::UpdateArrayLenght()

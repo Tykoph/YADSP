@@ -132,7 +132,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
-	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType != EDialogueNodeType::TextNode)
+	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::ActionNode)
 	{
 		FString ActionData = TEXT("");
 		UDialogueNodeInfoAction* ActionNodeInfo = Cast<UDialogueNodeInfoAction>(CurrentNodePtr->NodeInfo);

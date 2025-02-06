@@ -18,7 +18,8 @@ class YADSP_API UDialoguePlayer : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
+	// UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
+	UFUNCTION()
 	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
 
 	FTimerManager& GetWorldTimerManager() const { return GetWorld()->GetTimerManager(); }

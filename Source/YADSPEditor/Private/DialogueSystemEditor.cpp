@@ -1,6 +1,8 @@
 ﻿// Copyright 2025 Tom Duby. All Rights Reserved.
 
 #include "DialogueSystemEditor.h"
+
+#include "DialogueActor.h"
 #include "DialogueSystemAction.h"
 #include "IAssetTools.h"
 #include "Styling/SlateStyleRegistry.h"

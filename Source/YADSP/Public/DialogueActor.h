@@ -4,7 +4,10 @@
 
 #include "DialogueSystem.h"
 #include "CoreMinimal.h"
+#include "DialoguePlayer.h"
 #include "DialogueActor.Generated.h"
+
+class UDialoguePlayer;
 
 UCLASS(Blueprintable)
 class YADSP_API ADialogueActor : public AActor
@@ -21,9 +24,15 @@ public:
 	UDialogueSystem* DialogueSystem = nullptr;
 
 	UPROPERTY(EditAnywhere, EditFixedSize)
-	TArray<ACameraActor*> CameraActors;
+	TArray<ADialogueCamera*> CameraActors;
+
+	UFUNCTION(BlueprintCallable)
+	void PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const;
 
 private:
 	UFUNCTION()
 	void UpdateArrayLenght();
+
+	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UDialoguePlayer> DialoguePlayer;
 };
