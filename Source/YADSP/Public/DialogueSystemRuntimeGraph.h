@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-// #include "DialogueNodeInfoBase.h"
 #include "UObject//NameTypes.h"
 #include "DialogueNodeType.h"
 #include "DialogueSystemRuntimeGraph.generated.h"

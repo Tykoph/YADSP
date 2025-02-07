@@ -85,24 +85,6 @@ private:
 	}
 };
 
-class SDialogueGraphCameraPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Orange;
-	}
-};
-
 class SDialogueGraphAnimationPin : public SGraphPin
 {
 public:
@@ -142,10 +124,6 @@ struct FDialoguePinFactory : FGraphPanelPinFactory
 		if (FName(TEXT("ActionPin")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueGraphActionPin, Pin);
-		}
-		if (FName(TEXT("CameraPin")) == Pin->PinType.PinSubCategory)
-		{
-			return SNew(SDialogueGraphCameraPin, Pin);
 		}
 		if (FName(TEXT("AnimationPin")) == Pin->PinType.PinSubCategory)
 		{

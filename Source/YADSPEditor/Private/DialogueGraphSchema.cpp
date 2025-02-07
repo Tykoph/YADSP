@@ -3,7 +3,6 @@
 #include "DialogueGraphSchema.h"
 #include "DialogueGraphNodeAction.h"
 #include "DialogueGraphNodeAnimation.h"
-#include "DialogueGraphNodeCamera.h"
 #include "DialogueGraphNodeStart.h"
 #include "DialogueGraphNodeEnd.h"
 #include "DialogueGraphNodeText.h"
@@ -40,16 +39,6 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	TSharedPtr<FNewNodeAction> NewCameraNodeAction(
-		new FNewNodeAction(
-			UDialogueGraphNodeCamera::StaticClass(),
-			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("New Camera Node")),
-			FText::FromString(TEXT("Makes a new Camera node")),
-			0
-		)
-	);
-
 	TSharedPtr<FNewNodeAction> NewAnimationNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeAnimation::StaticClass(),
@@ -63,7 +52,6 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewTextNodeAction);
 	ContextMenuBuilder.AddAction(NewActionNodeAction);
-	ContextMenuBuilder.AddAction(NewCameraNodeAction);
 	ContextMenuBuilder.AddAction(NewAnimationNodeAction);
 }
 

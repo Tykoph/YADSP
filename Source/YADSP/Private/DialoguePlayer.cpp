@@ -82,13 +82,13 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
 		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueText.ToString());
 
-		if (NodeInfo->CameraIndex == -1)
+		if (NodeInfo->GetCameraIndex() == -1)
 		{
 			CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
 		}
-		else if (NodeInfo->CameraIndex < DialogueAssetPtr->CameraActors.Num())
+		else if (NodeInfo->GetCameraIndex() < DialogueAssetPtr->CameraActors.Num())
 		{
-			CameraManager->SetViewTarget(DialogueAssetPtr->CameraActors[NodeInfo->CameraIndex]);
+			CameraManager->SetViewTarget(DialogueAssetPtr->CameraActors[NodeInfo->GetCameraIndex()]);
 		}
 
 		DialogueUIPtr->ResponseBox->ClearChildren();
@@ -109,8 +109,6 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 		if (NodeInfo->DialogueResponses.Num() == 1)
 		{
-			UE_LOG(DialoguePlayerSub, Log, TEXT("Auto Skip"));
-
 			switch (NodeInfo->SkipDialogue)
 			{
 				case ESkipDialogue::NoSkip:
