@@ -5,6 +5,7 @@
 #include "DialogueSystem.h"
 #include "CoreMinimal.h"
 #include "DialoguePlayer.h"
+#include "Components/BillboardComponent.h"
 #include "DialogueActor.Generated.h"
 
 class UDialoguePlayer;
@@ -28,6 +29,17 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const;
+
+protected:
+#if WITH_EDITORONLY_DATA
+	/** Billboard component displayed in the editor. */
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	TObjectPtr<UBillboardComponent> SpriteComponent;
+#endif
+
+	/** Get the editor only billboard component of the actor. */
+	UFUNCTION(BlueprintPure, Category = "Components", meta = (DevelopmentOnly))
+	UBillboardComponent* GetEditorSpriteComponent() const;
 
 private:
 	UFUNCTION()

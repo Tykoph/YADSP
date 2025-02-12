@@ -140,7 +140,8 @@ void FDialogueSystemEditorModule::StartupModule()
 	IAssetTools& AssetTools = IAssetTools::Get();
 
 	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(
-		FName(TEXT("DialogueGraph")), LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
+		FName(TEXT("DialogueGraph")),
+		LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
 	TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
 	AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
@@ -149,15 +150,25 @@ void FDialogueSystemEditorModule::StartupModule()
 	FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
 	DGStyleSet->SetContentRoot(ContentDir);
 
-	FSlateImageBrush* ThumbnailBrush = new FSlateImageBrush(
-		DGStyleSet->RootToContentDir(TEXT("DialogueGraphThumbnailV2_128"),
-		TEXT(".png")), FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* ThumbnailGraphBrush = new FSlateImageBrush(
+	DGStyleSet->RootToContentDir(
+		TEXT("DialogueGraphThumbnail_128"),
+		TEXT(".png")),
+		FVector2D(128.0f, 128.0f));
+	FSlateImageBrush* ThumbnailActorBrush = new FSlateImageBrush(
+	DGStyleSet->RootToContentDir(
+		TEXT("DialogueActorThumbnail"),
+		TEXT(".png")),
+		FVector2D(128.0f, 128.0f));
 	FSlateImageBrush* IconBrush = new FSlateImageBrush(
-		DGStyleSet->RootToContentDir(TEXT("DialogueGraphIcon_128"),
-		TEXT(".png")), FVector2D(128.0f, 128.0f));
+	DGStyleSet->RootToContentDir(
+		TEXT("DialogueGraphIcon_128"),
+		TEXT(".png")),
+		FVector2D(128.0f, 128.0f));
 
-	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailBrush);
+	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailGraphBrush);
 	DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);
+	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueActor"), ThumbnailActorBrush);
 
 	FSlateStyleRegistry::RegisterSlateStyle(*DGStyleSet);
 
