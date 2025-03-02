@@ -79,7 +79,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	{
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
-		DialogueUIPtr->SpeakerName->SetText(NodeInfo->Speaker);
+		DialogueUIPtr->SpeakerName->SetText(NodeInfo->GetSpeakerName(NodeInfo->Speaker));
 		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueText.ToString());
 
 		if (NodeInfo->GetCameraIndex() == -1)

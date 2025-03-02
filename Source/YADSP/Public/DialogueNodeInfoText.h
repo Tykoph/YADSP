@@ -32,13 +32,14 @@ public:
 		{
 			return TArray<FString>();
 		}
-		return DialogueSystem->SpeakerStringArray.ToString();
+		return ConvertTextAToStringA(DialogueSystem->SpeakerStringArray);
 	}
 
 	UFUNCTION()
 	int GetSpeakerIndex() const
 	{
-		FString StringArray = DialogueSystem->SpeakerStringArray.ToString();
+		const TArray<FString> Speakers = GetSpeakerArray();
+
 		if (DialogueSystem == nullptr)
 		{
 			return -1;
@@ -47,7 +48,7 @@ public:
 		{
 			return -1;
 		}
-		return DialogueSystem->SpeakerStringArray.Find(Speaker);
+		return Speakers.Find(Speaker);
 	}
 
 	UFUNCTION()
@@ -85,4 +86,37 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FText> DialogueResponses;
+
+	UFUNCTION()
+	FText GetSpeakerName(const FString& SpeakerName) const
+	{
+		FText NullText;
+
+		if (DialogueSystem == nullptr)
+		{
+			return NullText;
+		}
+		if (SpeakerName.IsEmpty())
+		{
+			return NullText;
+		}
+
+		const int SpeakerIndex = DialogueSystem->CameraStringArray.Find(SpeakerName);
+		return DialogueSystem->SpeakerStringArray[SpeakerIndex];
+	}
+
+private:
+	// A bit janky, but hey, it supposed to work
+	// TODO: double-check behavior with localized text
+	static TArray<FString> ConvertTextAToStringA(const TArray<FText>& TextArray)
+	{
+		TArray<FString> NewArray;
+
+		for (FText Text : TextArray)
+		{
+			NewArray.Add(Text.ToString());
+		}
+
+		return NewArray;
+	}
 };
