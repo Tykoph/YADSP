@@ -16,14 +16,39 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText Title;
 
-	UPROPERTY(EditAnywhere)
-	FText Speaker;
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerArray"))
+	FString Speaker;
 
 	UPROPERTY(EditAnywhere)
 	FText DialogueText;
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetCameraStringArray"))
 	FString CameraName;
+
+	UFUNCTION()
+	TArray<FString> GetSpeakerArray() const
+	{
+		if (DialogueSystem == nullptr)
+		{
+			return TArray<FString>();
+		}
+		return DialogueSystem->SpeakerStringArray.ToString();
+	}
+
+	UFUNCTION()
+	int GetSpeakerIndex() const
+	{
+		FString StringArray = DialogueSystem->SpeakerStringArray.ToString();
+		if (DialogueSystem == nullptr)
+		{
+			return -1;
+		}
+		if (Speaker.IsEmpty())
+		{
+			return -1;
+		}
+		return DialogueSystem->SpeakerStringArray.Find(Speaker);
+	}
 
 	UFUNCTION()
 	TArray<FString> GetCameraStringArray() const

@@ -23,6 +23,12 @@ public: // Properties
 	UDialogueSystemRuntimeGraph* Graph = nullptr;
 
 	UPROPERTY()
+	TArray<AActor*> SpeakerActors;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FText> SpeakerStringArray;
+
+	UPROPERTY()
 	AActor* DefaultCamera = nullptr;
 
 	UPROPERTY()

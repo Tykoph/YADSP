@@ -62,6 +62,7 @@ void ADialogueActor::UpdateArrayLenght()
 	UE_LOG(LogTemp, Log, TEXT("UpdateArrayLenght"));
 	if (DialogueSystem == nullptr) { return; }
 	CameraActors.SetNum(DialogueSystem->CameraStringArray.Num());
+	TalkingActors.SetNum(DialogueSystem->SpeakerStringArray.Num());
 }
 
 UBillboardComponent* ADialogueActor::GetEditorSpriteComponent() const

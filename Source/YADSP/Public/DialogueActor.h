@@ -25,6 +25,9 @@ public:
 	UDialogueSystem* DialogueSystem = nullptr;
 
 	UPROPERTY(EditAnywhere, EditFixedSize)
+	TArray<AActor*> TalkingActors;
+
+	UPROPERTY(EditAnywhere, EditFixedSize)
 	TArray<ADialogueCamera*> CameraActors;
 
 	UFUNCTION(BlueprintCallable)

@@ -11,14 +11,12 @@
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueEndCallback, EDialogueAction, Action, FString, Data);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueActionCallback, EDialogueAction, Action, FString, Data);
 
-// UCLASS(ClassGroup = (DialogueSystem), meta = (BlueprintSpawnableComponent))
 UCLASS()
 class YADSP_API UDialoguePlayer : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	// UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue"), Category = "Dialogue System")
 	UFUNCTION()
 	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
 
