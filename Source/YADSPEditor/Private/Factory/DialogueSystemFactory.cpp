@@ -11,7 +11,6 @@ UDialogueSystemFactory::UDialogueSystemFactory(const FObjectInitializer& ObjectI
 	SupportedClass = UDialogueSystem::StaticClass();
 }
 
-// Create new instance of UDialogueGraph from the context menu in the content drawer
 UObject* UDialogueSystemFactory::FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
 	UDialogueSystem* ProxyObj = NewObject<UDialogueSystem>(InParent, InName, Flags);

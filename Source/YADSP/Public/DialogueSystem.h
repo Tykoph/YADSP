@@ -54,14 +54,14 @@ public: // Properties
 
 	/**
 	 * Sets a callback function to be executed before the dialogue system is saved
-	 * @param OnPreSaveListener - Function to be called before saving
+	 * @param OnPreSaveListener Function to be called before saving
 	 */
 	void SetPreSaveListener(const std::function<void()>& OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }
 
 	/**
 	 * Called before the dialogue system is saved
 	 * Executes the registered pre-save listener if one exists
-	 * @param SaveContext - Context information for the save operation
+	 * @param SaveContext Context information for the save operation
 	 */
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 

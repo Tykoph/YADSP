@@ -37,7 +37,7 @@ class YADSP_API ADialogueActor : public AActor
 	 * It ensures that the arrays for talking actors and cameras are properly sized according to
 	 * the current DialogueSystem configuration.
 	 *
-	 * @param PropertyChangedEvent - Information about which property was changed
+	 * @param PropertyChangedEvent Information about which property was changed
 	 */
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
@@ -60,8 +60,8 @@ public:
 	 * - Managing the player controller during dialogue
 	 * - Executing callback when dialogue completes
 	 *
-	 * @param PlayerController - The player controller that will be used during dialogue playback
-	 * @param OnDialogueEnded - Callback function that will be executed when the dialogue sequence completes
+	 * @param PlayerController The player controller that will be used during dialogue playback
+	 * @param OnDialogueEnded Callback function that will be executed when the dialogue sequence completes
 	 */
 	UFUNCTION(BlueprintCallable)
 	void PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const;
