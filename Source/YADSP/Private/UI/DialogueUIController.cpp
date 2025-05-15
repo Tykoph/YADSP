@@ -9,6 +9,12 @@ UDialogueUIController::UDialogueUIController(const FObjectInitializer& ObjectIni
 {
 }
 
+UDialogueUIController* UDialogueUIController::CreateInstance(APlayerController* PlayerController)
+{
+	UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
+	return Cast<UDialogueUIController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
+}
+
 void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FString& Text)
 {
 	const FSlateFontInfo FontInfo = InDialogueText->GetFont();
@@ -19,21 +25,13 @@ void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FSt
 	{
 		const FVector2D TextSize = FontMeasure->Measure(Text, FontInfo);
 		const FVector2D ContainerText = InDialogueText->GetCachedGeometry().GetLocalSize();
-		if (TextSize.X > ContainerText.X)
-		{
+		if (TextSize.X > ContainerText.X) {
 			InDialogueText->SetJustification(ETextJustify::Left);
 		}
-		else
-		{
+		else {
 			InDialogueText->SetJustification(ETextJustify::Center);
 		}
 	}
-}
-
-UDialogueUIController* UDialogueUIController::CreateInstance(APlayerController* PlayerController)
-{
-	UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
-	return Cast<UDialogueUIController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
 }
 
 UDialogueUILoader::UDialogueUILoader()

@@ -8,12 +8,20 @@
 #include "Blueprint/UserWidget.h"
 #include "DialogueOptionController.generated.h"
 
+/**
+ * Controller class for handling individual dialogue response options in the UI.
+ * Manages a single response button with associated text and click handling functionality.
+ * Used as part of the dialogue system to display and handle player dialogue choices.
+ * 
+ * Each instance represents one clickable dialogue option that the player can select during conversations.
+ * Provides functionality to set up click handlers and manage button states.
+ */
 UCLASS()
 class YADSP_API UDialogueOptionController : public UUserWidget
 {
 	GENERATED_BODY()
 
-public: // Methods
+public:
 	UDialogueOptionController(const FObjectInitializer& ObjectInitializer);
 	virtual ~UDialogueOptionController() override {}
 
@@ -22,10 +30,14 @@ public: // Methods
 	UFUNCTION()
 	void OnButtonClicked();
 
-	// Create Method
+	/**
+	* Creates and returns a new instance of DialogueOptionController widget.
+	* @param PlayerController - The player controller that will own the widget
+	* @return A new instance of DialogueOptionController widget
+	*/
 	static UDialogueOptionController* CreateInstance(APlayerController* PlayerController);
 
-	// Properties
+public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UButton* ResponseButton = nullptr;
 

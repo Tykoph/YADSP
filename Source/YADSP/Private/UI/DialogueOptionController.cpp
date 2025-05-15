@@ -19,8 +19,7 @@ void UDialogueOptionController::SetClickHandler(int Index, std::function<void(in
 
 void UDialogueOptionController::OnButtonClicked()
 {
-	if (OnClickHandler)
-	{
+	if (OnClickHandler)	{
 		OnClickHandler(ButtonIndex);
 	}
 }

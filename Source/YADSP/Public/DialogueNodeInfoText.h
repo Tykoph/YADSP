@@ -28,10 +28,10 @@ public:
 	UFUNCTION()
 	TArray<FString> GetSpeakerArray() const
 	{
-		if (DialogueSystem == nullptr)
-		{
+		if (DialogueSystem == nullptr) {
 			return TArray<FString>();
 		}
+
 		return ConvertTextAToStringA(DialogueSystem->SpeakerStringArray);
 	}
 
@@ -40,22 +40,20 @@ public:
 	{
 		const TArray<FString> Speakers = GetSpeakerArray();
 
-		if (DialogueSystem == nullptr)
-		{
+		if (DialogueSystem == nullptr) {
 			return -1;
 		}
-		if (Speaker.IsEmpty())
-		{
+		if (Speaker.IsEmpty()) {
 			return -1;
 		}
+
 		return Speakers.Find(Speaker);
 	}
 
 	UFUNCTION()
 	TArray<FString> GetCameraStringArray() const
 	{
-		if (DialogueSystem == nullptr)
-		{
+		if (DialogueSystem == nullptr) {
 			return TArray<FString>();
 		}
 		return DialogueSystem->CameraStringArray;
@@ -64,14 +62,13 @@ public:
 	UFUNCTION()
 	int GetCameraIndex() const
 	{
-		if (DialogueSystem == nullptr)
-		{
+		if (DialogueSystem == nullptr) {
 			return -1;
 		}
-		if (CameraName.IsEmpty())
-		{
+		if (CameraName.IsEmpty()) {
 			return -1;
 		}
+		
 		return DialogueSystem->CameraStringArray.Find(CameraName);
 	}
 
@@ -92,12 +89,10 @@ public:
 	{
 		FText NullText;
 
-		if (DialogueSystem == nullptr)
-		{
+		if (DialogueSystem == nullptr) {
 			return NullText;
 		}
-		if (SpeakerName.IsEmpty())
-		{
+		if (SpeakerName.IsEmpty()) {
 			return NullText;
 		}
 
@@ -106,14 +101,13 @@ public:
 	}
 
 private:
-	// A bit janky, but hey, it supposed to work
+	// A bit janky, but hey, it works
 	// TODO: double-check behavior with localized text
 	static TArray<FString> ConvertTextAToStringA(const TArray<FText>& TextArray)
 	{
 		TArray<FString> NewArray;
 
-		for (FText Text : TextArray)
-		{
+		for (FText Text : TextArray)	{
 			NewArray.Add(Text.ToString());
 		}
 
