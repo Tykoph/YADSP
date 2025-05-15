@@ -70,8 +70,8 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 	// Navigate to the selected node
 	UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
-	if (SelectedPin->Connection != nullptr) {
-		CurrentNodePtr = SelectedPin->Connection->Parent;
+	if (SelectedPin->ConnectedPin != nullptr) {
+		CurrentNodePtr = SelectedPin->ConnectedPin->ParentNode;
 	}
 	else {
 		// No Connection, this is an end node

@@ -64,11 +64,11 @@ public:
 private:
 	// Pointers to the dialogue system asset being used for the dialogue playback
 	UPROPERTY()
-	class UDialogueSystem* DialogueAssetPtr = nullptr;
+	UDialogueSystem* DialogueAssetPtr = nullptr;
 
 	// Pointers to the current node being played
 	UPROPERTY()
-	class UDialogueRuntimeGraphNode* CurrentNodePtr = nullptr;
+	UDialogueRuntimeGraphNode* CurrentNodePtr = nullptr;
 
 	// Pointer to the UI controller
 	UPROPERTY()
@@ -76,7 +76,7 @@ private:
 
 	// Pointer to the player controller
 	UPROPERTY()
-	class APlayerController* PlayerControllerPtr = nullptr;
+	APlayerController* PlayerControllerPtr = nullptr;
 
 	float CurrentSkipTime = 0.0f;
 
