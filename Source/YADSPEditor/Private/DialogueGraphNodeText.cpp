@@ -9,11 +9,9 @@ FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(NodeInfoPtr);
 
-	if (NodeInfo->Title.IsEmpty())
-	{
+	if (NodeInfo->Title.IsEmpty()) {
 		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
-		if (DialogueTextStr.Len() > 15)
-		{
+		if (DialogueTextStr.Len() > 15) {
 			DialogueTextStr = DialogueTextStr.Left(15) + TEXT("...");
 		}
 		return FText::FromString(DialogueTextStr);
@@ -74,14 +72,12 @@ void UDialogueGraphNodeText::SyncWithNodeResponse()
 	int NumGraphNodePins = Pins.Num() - 1;
 	int NumInfoPins = NodeInfo->DialogueResponses.Num();
 
-	while (NumGraphNodePins > NumInfoPins)
-	{
+	while (NumGraphNodePins > NumInfoPins) {
 		RemovePinAt(NumGraphNodePins - 1, EGPD_Output);
 		NumGraphNodePins--;
 	}
 
-	while (NumInfoPins > NumGraphNodePins)
-	{
+	while (NumInfoPins > NumGraphNodePins) {
 		CreateDialoguePin(
 			EGPD_Output,
 			FName(NodeInfo->DialogueResponses[NumGraphNodePins].ToString())
@@ -90,8 +86,7 @@ void UDialogueGraphNodeText::SyncWithNodeResponse()
 	}
 
 	int Index = 1;
-	for (const FText& Response : NodeInfo->DialogueResponses)
-	{
+	for (const FText& Response : NodeInfo->DialogueResponses) {
 		GetPinAt(Index)->PinName = FName(Response.ToString());
 		Index++;
 	}

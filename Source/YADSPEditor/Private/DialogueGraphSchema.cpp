@@ -57,33 +57,26 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
 {
-	if (A == nullptr || B == nullptr)
-	{
+	if (A == nullptr || B == nullptr) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Pins are null"));
 	}
 
-	if (A->Direction == B->Direction)
-	{
+	if (A->Direction == B->Direction) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of the same direction"));
 	}
 
-	if (A->GetOwningNode() == B->GetOwningNode())
-	{
+	if (A->GetOwningNode() == B->GetOwningNode()) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of the same node"));
 	}
 
-	if (B->Direction == EGPD_Output)
-	{
-		if (B->LinkedTo.Num() > 0)
-		{
+	if (B->Direction == EGPD_Output) {
+		if (B->LinkedTo.Num() > 0) {
 			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_B, TEXT("Break B"));
 		}
 	}
 
-	if (A->Direction == EGPD_Output)
-	{
-		if (A->LinkedTo.Num() > 0)
-		{
+	if (A->Direction == EGPD_Output) {
+		if (A->LinkedTo.Num() > 0) {
 			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT("Break A"));
 		}
 	}
@@ -106,23 +99,27 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
 {
+	// Create a new node instance of the specified class
 	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr);
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;
 	ResultNode->InitNodeInfo(ResultNode);
 
+	// Setup node info and dialogue system reference
 	UDialogueNodeInfoBase* NodeInfo = ResultNode->GetNodeInfo();
 	NodeInfo->DialogueSystem = Cast<UDialogueSystem>(ParentGraph->GetOuter());
 
+	// Create input and output pins
 	UEdGraphPin* InputPin = ResultNode->CreateDefaultInputPin();
 	ResultNode->CreateDefaultOutputPin();
 
-	if (FromPin != nullptr)
-	{
+	// Connect to an existing pin if provided
+	if (FromPin != nullptr) {
 		ResultNode->GetSchema()->TryCreateConnection(InputPin, FromPin);
 	}
 
+	// Add node to the graph
 	ParentGraph->Modify();
 	ParentGraph->AddNode(ResultNode, true, bSelectNewNode);
 
