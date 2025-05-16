@@ -14,5 +14,5 @@ public:
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
-	TWeakPtr<class DialogueGraphEditorApp> DGApp;
+	TWeakPtr<class DialogueGraphEditorApp> DialogueGraphApp;
 };

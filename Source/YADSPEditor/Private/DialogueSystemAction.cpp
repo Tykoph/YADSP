@@ -35,6 +35,7 @@ void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TS
 {
 	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects) {
+		// Cast the object to dialogue system and initialize the editor if valid
 		UDialogueSystem* DialogueGraph = Cast<UDialogueSystem>(Object);
 		if (DialogueGraph != nullptr) {
 			TSharedRef<DialogueGraphEditorApp> GraphEditorApp(new DialogueGraphEditorApp());

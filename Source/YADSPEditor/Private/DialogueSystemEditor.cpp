@@ -13,10 +13,17 @@
 
 #define LOCTEXT_NAMESPACE "FYADSPEditorModule"
 
+/**
+ * Custom graph pin for dialogue text connections
+ * Displays with blue color
+ */
 class SDialogueGraphPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -31,10 +38,17 @@ private:
 	}
 };
 
+/**
+ * Custom graph pin for dialogue start node connections
+ * Displays with red color
+ */
 class SDialogueGraphStartPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -49,10 +63,17 @@ private:
 	}
 };
 
+/**
+ * Custom graph pin for dialogue end node connections
+ * Displays with purple color
+ */
 class SDialogueGraphEndPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -67,10 +88,17 @@ private:
 	}
 };
 
+/**
+ * Custom graph pin for dialogue action node connections
+ * Displays with green color
+ */
 class SDialogueGraphActionPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -85,10 +113,17 @@ private:
 	}
 };
 
+/**
+ * Custom graph pin for dialogue animation node connections
+ * Displays with yellow color
+ */
 class SDialogueGraphAnimationPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin) {}
+	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+		{
+		}
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -105,28 +140,25 @@ private:
 
 struct FDialoguePinFactory : FGraphPanelPinFactory
 {
-	virtual ~FDialoguePinFactory() override	{}
+	virtual ~FDialoguePinFactory() override
+	{
+	}
 
 	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* Pin) const override
 	{
-		if (FName(TEXT("TextPin")) == Pin->PinType.PinSubCategory)
-		{
+		if (FName(TEXT("TextPin")) == Pin->PinType.PinSubCategory) {
 			return SNew(SDialogueGraphPin, Pin);
 		}
-		if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory)
-		{
+		if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory) {
 			return SNew(SDialogueGraphStartPin, Pin);
 		}
-		if (FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory)
-		{
+		if (FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory) {
 			return SNew(SDialogueGraphEndPin, Pin);
 		}
-		if (FName(TEXT("ActionPin")) == Pin->PinType.PinSubCategory)
-		{
+		if (FName(TEXT("ActionPin")) == Pin->PinType.PinSubCategory) {
 			return SNew(SDialogueGraphActionPin, Pin);
 		}
-		if (FName(TEXT("AnimationPin")) == Pin->PinType.PinSubCategory)
-		{
+		if (FName(TEXT("AnimationPin")) == Pin->PinType.PinSubCategory) {
 			return SNew(SDialogueGraphAnimationPin, Pin);
 		}
 
@@ -134,7 +166,12 @@ struct FDialoguePinFactory : FGraphPanelPinFactory
 	}
 };
 
-// Create the DialogueGraph asset category and register the DialogueGraph asset in the context menu
+/**
+ * Initializes the Dialogue System editor module
+ * Registers DialogueGraph asset category in the content browser
+ * Creates and registers custom style set for icons and thumbnails
+ * Registers custom pin factory for different dialogue graph node connections
+ */
 void FDialogueSystemEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools = IAssetTools::Get();
@@ -151,19 +188,19 @@ void FDialogueSystemEditorModule::StartupModule()
 	DGStyleSet->SetContentRoot(ContentDir);
 
 	FSlateImageBrush* ThumbnailGraphBrush = new FSlateImageBrush(
-	DGStyleSet->RootToContentDir(
-		TEXT("DialogueGraphThumbnail_128"),
-		TEXT(".png")),
+		DGStyleSet->RootToContentDir(
+			TEXT("DialogueGraphThumbnail_128"),
+			TEXT(".png")),
 		FVector2D(128.0f, 128.0f));
 	FSlateImageBrush* ThumbnailActorBrush = new FSlateImageBrush(
-	DGStyleSet->RootToContentDir(
-		TEXT("DialogueActorThumbnail"),
-		TEXT(".png")),
+		DGStyleSet->RootToContentDir(
+			TEXT("DialogueActorThumbnail"),
+			TEXT(".png")),
 		FVector2D(128.0f, 128.0f));
 	FSlateImageBrush* IconBrush = new FSlateImageBrush(
-	DGStyleSet->RootToContentDir(
-		TEXT("DialogueGraphIcon_128"),
-		TEXT(".png")),
+		DGStyleSet->RootToContentDir(
+			TEXT("DialogueGraphIcon_128"),
+			TEXT(".png")),
 		FVector2D(128.0f, 128.0f));
 
 	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailGraphBrush);
@@ -172,10 +209,15 @@ void FDialogueSystemEditorModule::StartupModule()
 
 	FSlateStyleRegistry::RegisterSlateStyle(*DGStyleSet);
 
+	// Create and register custom pin factory for dialogue graph pins
 	PinFactory = MakeShareable(new FDialoguePinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
 }
 
+/**
+ * Cleans up the Dialogue System editor module
+ * Unregisters styles and pin factory
+ */
 void FDialogueSystemEditorModule::ShutdownModule()
 {
 	FSlateStyleRegistry::UnRegisterSlateStyle(*DGStyleSet);

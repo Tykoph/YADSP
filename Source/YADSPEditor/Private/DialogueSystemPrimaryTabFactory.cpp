@@ -8,7 +8,7 @@
 
 DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
 {
-	DGApp = App;
+	DialogueGraphApp = App;
 	TabLabel = FText::FromString(TEXT("Primary"));
 	ViewMenuDescription = FText::FromString(TEXT("Display a primary view for the dialogue graph editor"));
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Primary view"));
@@ -16,7 +16,7 @@ DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPt
 
 TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
+	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
 
 	SGraphEditor::FGraphEditorEvents GraphEvents;
 	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &DialogueGraphEditorApp::OnGraphSelectionChanged);

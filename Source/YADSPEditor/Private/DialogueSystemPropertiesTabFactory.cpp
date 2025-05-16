@@ -9,7 +9,7 @@
 DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
 	FWorkflowTabFactory(FName("GraphPropertyTab"), App)
 {
-	DGApp = App;
+	DialogueGraphApp = App;
 	TabLabel = FText::FromString(TEXT("Properties"));
 	ViewMenuDescription = FText::FromString(TEXT("Display a Properties view for the dialogue graph editor"));
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Properties view"));
@@ -17,7 +17,7 @@ DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPt
 
 TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
+	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(
 		TEXT("PropertyEditor"));
 
