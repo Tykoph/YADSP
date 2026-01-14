@@ -23,8 +23,7 @@ public class YADSP : ModuleRules
 				// ... add other private include paths required here ...
 			}
 		);
-
-
+		
 		PublicDependencyModuleNames.AddRange(
 			new[]
 			{
@@ -34,7 +33,8 @@ public class YADSP : ModuleRules
 				"InputCore",
 				"EnhancedInput",
 				"UMG",
-				"CinematicCamera",
+				"CinematicCamera", 
+				"GSheetLocSystem",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -52,6 +52,7 @@ public class YADSP : ModuleRules
 				"CinematicCamera",
 				"YADSPEditor",
 				"UnrealEd",
+				"GSheetLocSystem",
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

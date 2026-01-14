@@ -24,7 +24,12 @@
 			"Name": "YADSPEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
-		}
+		},
+        { 
+          "Name": "GSheetLocSystem",
+          "Type": "Runtime",
+          "LoadingPhase": "Default"
+        }
 	],
 	"Plugins": [
 		{

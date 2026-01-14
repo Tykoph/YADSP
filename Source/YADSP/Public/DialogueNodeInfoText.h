@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueSkipEnum.h"
+#include "GSheetLocSystemDefinitions.h"
 #include "DialogueNodeInfoText.generated.h"
+
 
 UCLASS(BlueprintType)
 class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
@@ -14,10 +16,10 @@ class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
 
 public:
 	UPROPERTY(EditAnywhere)
-	FText Title;
+	FString Title;
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerArray"))
-	FString Speaker;
+	FName Speaker;
 
 	UPROPERTY(EditAnywhere)
 	FText DialogueText;
@@ -26,24 +28,24 @@ public:
 	FString CameraName;
 
 	UFUNCTION()
-	TArray<FString> GetSpeakerArray() const
+	TArray<FName> GetSpeakerArray() const
 	{
 		if (DialogueSystem == nullptr) {
-			return TArray<FString>();
+			return TArray<FName>();
 		}
 
-		return ConvertTextAToStringA(DialogueSystem->SpeakerStringArray);
+		return DialogueSystem->SpeakerStringArray->GetRowNames();
 	}
 
 	UFUNCTION()
 	int GetSpeakerIndex() const
 	{
-		const TArray<FString> Speakers = GetSpeakerArray();
+		const TArray<FName> Speakers = GetSpeakerArray();
 
 		if (DialogueSystem == nullptr) {
 			return -1;
 		}
-		if (Speaker.IsEmpty()) {
+		if (Speaker.IsNone()) {
 			return -1;
 		}
 
@@ -85,32 +87,17 @@ public:
 	TArray<FText> DialogueResponses;
 
 	UFUNCTION()
-	FText GetSpeakerName(const FString& SpeakerName) const
+	FString GetSpeakerName(const FName& SpeakerName) const
 	{
-		FText NullText;
+		FString NullText;
 
 		if (DialogueSystem == nullptr) {
 			return NullText;
 		}
-		if (SpeakerName.IsEmpty()) {
+		if (SpeakerName.IsNone()) {
 			return NullText;
 		}
-
-		const int SpeakerIndex = DialogueSystem->CameraStringArray.Find(SpeakerName);
-		return DialogueSystem->SpeakerStringArray[SpeakerIndex];
-	}
-
-private:
-	// A bit janky, but hey, it works
-	// TODO: double-check behavior with localized text
-	static TArray<FString> ConvertTextAToStringA(const TArray<FText>& TextArray)
-	{
-		TArray<FString> NewArray;
-
-		for (FText Text : TextArray)	{
-			NewArray.Add(Text.ToString());
-		}
-
-		return NewArray;
+		FGSheetLocDataLine* Line = DialogueSystem->SpeakerStringArray->FindRow<FGSheetLocDataLine>(SpeakerName, "");
+		return Line->english_US;
 	}
 };

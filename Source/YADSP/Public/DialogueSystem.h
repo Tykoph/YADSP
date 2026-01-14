@@ -36,8 +36,8 @@ public: // Properties
 	TArray<AActor*> SpeakerActors;
 
 	// Array of text identifiers for speakers, maps positionally to SpeakerActors
-	UPROPERTY(EditAnywhere)
-	TArray<FText> SpeakerStringArray;
+	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
+	UDataTable* SpeakerStringArray;
 
 	// Default camera to use when no specific camera is active.
 	// By default, keeps the active camera at the start of the dialogue.
