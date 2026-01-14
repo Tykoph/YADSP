@@ -25,7 +25,7 @@ public: // Properties
 
 	// Name identifier for the dialogue sequence
 	UPROPERTY(EditAnywhere)
-	FString DialogueName = TEXT("Enter Dialogue Name here");
+	FString DialogueName = TEXT("Dialogue Name");
 
 	// Runtime graph that manages dialogue node execution and connections
 	UPROPERTY()
@@ -35,9 +35,13 @@ public: // Properties
 	UPROPERTY()
 	TArray<AActor*> SpeakerActors;
 
-	// Array of text identifiers for speakers, maps positionally to SpeakerActors
+	// DataTable containing speakers names
 	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
-	UDataTable* SpeakerStringArray;
+	UDataTable* SpeakerDataTable;
+
+	// DataTable containing dialogue text
+	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
+	UDataTable* DialogueDataTable;
 
 	// Default camera to use when no specific camera is active.
 	// By default, keeps the active camera at the start of the dialogue.

@@ -62,7 +62,7 @@ void ADialogueActor::UpdateArrayLenght()
 	UE_LOG(LogTemp, Log, TEXT("UpdateArrayLenght"));
 	if (DialogueSystem == nullptr) { return; }
 	CameraActors.SetNum(DialogueSystem->CameraStringArray.Num());
-	TalkingActors.SetNum(DialogueSystem->SpeakerStringArray.Num());
+	// TalkingActors.SetNum(DialogueSystem->SpeakerStringArray.Num());
 }
 
 // Returns the editor-only billboard component used for visualization in the editor

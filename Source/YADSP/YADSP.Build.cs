@@ -34,7 +34,7 @@ public class YADSP : ModuleRules
 				"EnhancedInput",
 				"UMG",
 				"CinematicCamera", 
-				"GSheetLocSystem",
+				"GSheetLocSystemPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -50,9 +50,8 @@ public class YADSP : ModuleRules
 				"EnhancedInput",
 				"UMG",
 				"CinematicCamera",
-				"YADSPEditor",
 				"UnrealEd",
-				"GSheetLocSystem",
+				"GSheetLocSystemPlugin",
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

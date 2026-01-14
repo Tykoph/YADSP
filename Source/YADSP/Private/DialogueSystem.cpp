@@ -5,8 +5,7 @@
 
 void UDialogueSystem::PreSave(FObjectPreSaveContext SaveContext)
 {
-	if (OnPreSaveListenerPtr)
-	{
+	if (OnPreSaveListenerPtr) {
 		OnPreSaveListenerPtr();
 	}
 }

@@ -17,6 +17,15 @@ DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded)
 {
+	if (DialogueAsset == nullptr) {
+		UE_LOG(DialoguePlayerSub, Error, TEXT("No dialogue asset provided"));
+		return;
+	}
+	if (PlayerController == nullptr) {
+		UE_LOG(DialoguePlayerSub, Error, TEXT("No player controller provided"));
+		return;
+	}
+	
 	// Save the callback so we can call it when the dialogue ends
 	OnDialogueEndedCallback = OnDialogueEnded;
 
@@ -83,13 +92,13 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
 
 		// Set the dialogue text
-		DialogueUIPtr->DialogueText->SetText(NodeInfo->DialogueText);
+		DialogueUIPtr->DialogueText->SetText(FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)));
 
 		// Set the speaker name
-		DialogueUIPtr->SpeakerName->SetText(NodeInfo->GetSpeakerName(NodeInfo->Speaker));
+		DialogueUIPtr->SpeakerName->SetText(FText::FromString(NodeInfo->GetSpeakerName(NodeInfo->SpeakerID)));
 
 		// Check if the dialogue text is too long to fit in the dialogue box
-		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueText.ToString());
+		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueID.ToString());
 
 		// Set the camera target
 		if (NodeInfo->GetCameraIndex() == -1) {
@@ -129,7 +138,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 				break;
 			case ESkipDialogue::AutoSkipBasedOnText:
 				// Calculate the skip time based on the text length
-				CurrentSkipTime = CalculateSkipTimer(NodeInfo->DialogueText);
+				CurrentSkipTime = CalculateSkipTimer(NodeInfo->GetDialogueText(NodeInfo->DialogueID));
 				AutoSkipDialogue(CurrentSkipTime);
 				break;
 			case ESkipDialogue::AutoSkipAfterSound:
@@ -155,7 +164,10 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		EDialogueAction Action = ActionNodeInfo->Action;
 		ActionData = ActionNodeInfo->ActionData;
 
-		OnDialogueEndedCallback.Execute(Action, ActionData);
+		if (OnDialogueEndedCallback.IsBound())
+		{
+			OnDialogueEndedCallback.Execute(Action, ActionData);
+		}
 		ChooseOptionAtIndex(0);
 	}
 
@@ -178,14 +190,17 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		PlayerControllerPtr->SetIgnoreLookInput(false);
 		PlayerControllerPtr->SetIgnoreMoveInput(false);
 
-		OnDialogueEndedCallback.Execute(Action, ActionData);
+		if (OnDialogueEndedCallback.IsBound())
+		{
+			OnDialogueEndedCallback.Execute(Action, ActionData);
+		}
 	}
 }
 
-float UDialoguePlayer::CalculateSkipTimer(const FText& Text)
+float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
 {
 	// Convert the FText to an FString to get its length
-	FString Buffer = Text.ToString();
+	FString Buffer = Text;
 
 	// Calculate the length of the text in seconds at a reading rate of 15 words per second
 	float Length = Buffer.Len();

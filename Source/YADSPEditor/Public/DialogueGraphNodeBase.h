@@ -26,5 +26,5 @@ public:
 
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }
 
-	UDialogueSystem* DialogueSystem = nullptr;
+	TWeakPtr<UDialogueSystem*> DialogueSystem = nullptr;
 };

@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueSkipEnum.h"
-#include "GSheetLocSystemDefinitions.h"
 #include "DialogueNodeInfoText.generated.h"
 
+class USoundCue;
 
 UCLASS(BlueprintType)
 class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
@@ -17,62 +17,15 @@ class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
 public:
 	UPROPERTY(EditAnywhere)
 	FString Title;
+	
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerOptions"))
+	FName SpeakerID;
 
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerArray"))
-	FName Speaker;
-
-	UPROPERTY(EditAnywhere)
-	FText DialogueText;
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueOptions"))
+	FName DialogueID;
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetCameraStringArray"))
 	FString CameraName;
-
-	UFUNCTION()
-	TArray<FName> GetSpeakerArray() const
-	{
-		if (DialogueSystem == nullptr) {
-			return TArray<FName>();
-		}
-
-		return DialogueSystem->SpeakerStringArray->GetRowNames();
-	}
-
-	UFUNCTION()
-	int GetSpeakerIndex() const
-	{
-		const TArray<FName> Speakers = GetSpeakerArray();
-
-		if (DialogueSystem == nullptr) {
-			return -1;
-		}
-		if (Speaker.IsNone()) {
-			return -1;
-		}
-
-		return Speakers.Find(Speaker);
-	}
-
-	UFUNCTION()
-	TArray<FString> GetCameraStringArray() const
-	{
-		if (DialogueSystem == nullptr) {
-			return TArray<FString>();
-		}
-		return DialogueSystem->CameraStringArray;
-	}
-
-	UFUNCTION()
-	int GetCameraIndex() const
-	{
-		if (DialogueSystem == nullptr) {
-			return -1;
-		}
-		if (CameraName.IsEmpty()) {
-			return -1;
-		}
-		
-		return DialogueSystem->CameraStringArray.Find(CameraName);
-	}
 
 	UPROPERTY(EditAnywhere)
 	USoundCue* DialogueSound;
@@ -86,18 +39,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<FText> DialogueResponses;
 
+public:
 	UFUNCTION()
-	FString GetSpeakerName(const FName& SpeakerName) const
-	{
-		FString NullText;
+	TArray<FString> GetSpeakerOptions() const;
 
-		if (DialogueSystem == nullptr) {
-			return NullText;
-		}
-		if (SpeakerName.IsNone()) {
-			return NullText;
-		}
-		FGSheetLocDataLine* Line = DialogueSystem->SpeakerStringArray->FindRow<FGSheetLocDataLine>(SpeakerName, "");
-		return Line->english_US;
-	}
+	UFUNCTION()
+	FString GetSpeakerName(const FName& SpeakerName) const;
+
+	UFUNCTION()
+	TArray<FString> GetDialogueOptions() const;
+	
+	UFUNCTION()
+	FString GetDialogueText(const FName& DialogueText) const;
+	
+	UFUNCTION()
+	TArray<FString> GetCameraStringArray() const;
+
+	UFUNCTION()
+	int GetCameraIndex() const;
 };

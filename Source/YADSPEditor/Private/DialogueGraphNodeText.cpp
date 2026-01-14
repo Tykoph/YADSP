@@ -10,14 +10,14 @@ FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 	UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(NodeInfoPtr);
 
 	if (NodeInfo->Title.IsEmpty()) {
-		FString DialogueTextStr = NodeInfo->DialogueText.ToString();
+		FString DialogueTextStr = NodeInfo->DialogueID.ToString();
 		if (DialogueTextStr.Len() > 15) {
 			DialogueTextStr = DialogueTextStr.Left(15) + TEXT("...");
 		}
 		return FText::FromString(DialogueTextStr);
 	}
 
-	return NodeInfo->Title;
+	return FText::FromString(NodeInfo->Title);
 }
 
 void UDialogueGraphNodeText::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const

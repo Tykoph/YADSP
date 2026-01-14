@@ -52,7 +52,7 @@ public:
 	 * @param Text The FText to calculate the skip timer for
 	 * @return A float representing the time in seconds until the dialogue should automatically be skipped.
 	 */
-	static float CalculateSkipTimer(const FText& Text);
+	static float CalculateSkipTimer(const FString& Text);
 
 	/**
 	 * Sets up a timer to automatically skip the current dialogue after a given amount of time.
