@@ -41,7 +41,7 @@ FString UDialogueNodeInfoText::GetSpeakerName(const FName& SpeakerName) const
 	DataTableRowHandle.DataTable = DialogueSystem->SpeakerDataTable;
 	DataTableRowHandle.RowName = SpeakerName;
 	
-	FString LocalizedName = UGSheetLocSystemLibrary::GetLocalizedStringManual(DataTableRowHandle, "en-US");
+	FString LocalizedName = UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle);
 	
 	return LocalizedName;
 }
@@ -83,7 +83,7 @@ FString UDialogueNodeInfoText::GetDialogueText(const FName& DialogueText) const
 	DataTableRowHandle.DataTable = DialogueSystem->DialogueDataTable;
 	DataTableRowHandle.RowName = DialogueText;
 	
-	FString LocalizedText = UGSheetLocSystemLibrary::GetLocalizedStringManual(DataTableRowHandle, "en-US");
+	FString LocalizedText = UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle);
 	
 	return LocalizedText;
 }
