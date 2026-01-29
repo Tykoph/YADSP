@@ -11,6 +11,10 @@
 #include "DialogueGraphNodeAnimation.h"
 #include "DialogueGraphNodeEnd.h"
 #include "DialogueGraphNodeBase.h"
+#include "GSheetLocSystemDefinitions.h"
+#include "K2Node_GetDataTableRow.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "Widgets/Input/SComboBox.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueGraphEditorAppSub, Log, All)
 
@@ -46,12 +50,70 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 		ObjectsToEdit
 	);
 
+	// Add Toolbar Extension for Language Selection
+	TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
+	ToolbarExtender->AddToolBarExtension(
+		"Asset",
+		EExtensionHook::After,
+		GetToolkitCommands(),
+		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& Builder)
+		{
+			Builder.AddSeparator();
+			Builder.AddWidget(
+				SNew(SBox)
+				.WidthOverride(100.0f)
+				[
+					SNew(SComboBox<TSharedPtr<FString>>)
+					.OptionsSource(&LanguageOptions)
+					.OnGenerateWidget_Lambda([](TSharedPtr<FString> Item)
+					{
+						return SNew(STextBlock).Text(FText::FromString(*Item));
+					})
+					.OnSelectionChanged_Lambda([this](TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+					{
+						if (NewSelection.IsValid()) {
+							SetPreviewLanguage(*NewSelection);
+						}
+					})
+					[
+						SNew(STextBlock)
+						.Text_Lambda([this]()
+						{
+							return FText::FromString(PreviewLanguage);
+						})
+					]
+				]
+			);
+		})
+	);
+	AddToolbarExtender(ToolbarExtender);
+
+	// Initialize Language Options
+	LanguageOptions.Add(MakeShared<FString>(TEXT("zh-Hans")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("en-150")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("en-US")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("fr")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("ja")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("pt-BR")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("es-ES")));
+
+
 	// set the current mode to the DialogueGraphAppMode
 	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
 
 	// update the graph editor from the working asset
 	UpdateGraphEditorFromWorkingAsset();
+}
+
+void DialogueGraphEditorApp::SetPreviewLanguage(const FString& NewLanguage)
+{
+	if (PreviewLanguage != NewLanguage) {
+		PreviewLanguage = NewLanguage;
+		if (WorkingGraphUiPtr.IsValid()) {
+			WorkingGraphUiPtr->NotifyGraphChanged();
+		}
+	}
 }
 
 void DialogueGraphEditorApp::OnClose()

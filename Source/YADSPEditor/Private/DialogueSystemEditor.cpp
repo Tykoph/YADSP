@@ -2,8 +2,8 @@
 
 #include "DialogueSystemEditor.h"
 
-#include "DialogueActor.h"
 #include "DialogueSystemAction.h"
+#include "DialogueGraphNodeText.h"
 #include "IAssetTools.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
@@ -166,6 +166,17 @@ struct FDialoguePinFactory : FGraphPanelPinFactory
 	}
 };
 
+struct FDialogueGraphNodeFactory : FGraphPanelNodeFactory
+{
+	virtual TSharedPtr<SGraphNode> CreateNode(UEdGraphNode* Node) const override
+	{
+		if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Node)) {
+			return SNew(SDialogueGraphNodeText, TextNode);
+		}
+		return nullptr;
+	}
+};
+
 /**
  * Initializes the Dialogue System editor module
  * Registers DialogueGraph asset category in the content browser
@@ -212,6 +223,10 @@ void FDialogueSystemEditorModule::StartupModule()
 	// Create and register custom pin factory for dialogue graph pins
 	PinFactory = MakeShareable(new FDialoguePinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
+
+	// Create and register custom node factory for dialogue graph nodes
+	NodeFactory = MakeShareable(new FDialogueGraphNodeFactory());
+	FEdGraphUtilities::RegisterVisualNodeFactory(NodeFactory);
 }
 
 /**
@@ -222,6 +237,7 @@ void FDialogueSystemEditorModule::ShutdownModule()
 {
 	FSlateStyleRegistry::UnRegisterSlateStyle(*DGStyleSet);
 	FEdGraphUtilities::UnregisterVisualPinFactory(PinFactory);
+	FEdGraphUtilities::UnregisterVisualNodeFactory(NodeFactory);
 }
 
 #undef LOCTEXT_NAMESPACE

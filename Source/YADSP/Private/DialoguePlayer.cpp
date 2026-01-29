@@ -95,7 +95,16 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		DialogueUIPtr->DialogueText->SetText(FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)));
 
 		// Set the speaker name
-		DialogueUIPtr->SpeakerName->SetText(FText::FromString(NodeInfo->GetSpeakerName(NodeInfo->SpeakerID)));
+		FString CombinedSpeakerNames;
+		for (const FName& ID : NodeInfo->SpeakerIDs)
+		{
+			if (!CombinedSpeakerNames.IsEmpty())
+			{
+				CombinedSpeakerNames += TEXT(", ");
+			}
+			CombinedSpeakerNames += NodeInfo->GetSpeakerName(ID);
+		}
+		DialogueUIPtr->SpeakerName->SetText(FText::FromString(CombinedSpeakerNames));
 
 		// Check if the dialogue text is too long to fit in the dialogue box
 		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueID.ToString());

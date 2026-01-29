@@ -19,7 +19,7 @@ public:
 	FString Title;
 	
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerOptions"))
-	FName SpeakerID;
+	TArray<FName> SpeakerIDs;
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueOptions"))
 	FName DialogueID;

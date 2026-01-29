@@ -29,7 +29,10 @@ public class YADSPEditor : ModuleRules
 				"PropertyEditor",
 				"Projects",
 				"ToolMenus",
-				"GraphEditor"
+				"GraphEditor",
+				"InputCore",
+				"GSheetLocSystemPlugin",
+				"EditorFramework"
 			}
 		);
 	}

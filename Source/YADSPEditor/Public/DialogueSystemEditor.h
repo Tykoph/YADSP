@@ -32,4 +32,5 @@ private:
 
 	TSharedPtr<FSlateStyleSet> DGStyleSet = nullptr;
 	TSharedPtr<struct FDialoguePinFactory> PinFactory = nullptr;
+	TSharedPtr<struct FDialogueGraphNodeFactory> NodeFactory = nullptr;
 };

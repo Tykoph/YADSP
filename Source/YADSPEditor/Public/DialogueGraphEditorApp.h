@@ -15,7 +15,6 @@
 class DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
-	
 	/**
 	 * Registers tab spawners with the provided tab manager.
 	 * Sets up the available tabs for the dialogue graph editor interface.
@@ -62,29 +61,46 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor(0.15f, 0.2f, 0.5f, 0.5f); }
 	virtual FString GetDocumentationLink() const override { return TEXT("doc link"); }
 
-	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
-	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
+	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override
+	{
+	}
+
+	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override
+	{
+	}
 
 	virtual void OnClose() override;
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event);
 	void OnWorkingGraphAssetPreSave();
 
+	/**
+	 * Gets the currently selected language code for previewing localized text.
+	 * @return The language code (e.g., "en-US", "fr").
+	 */
+	FString GetPreviewLanguage() const { return PreviewLanguage; }
+
+	/**
+	 * Sets the language code for previewing localized text.
+	 * Triggers a refresh of the graph editor to update text displays.
+	 * @param NewLanguage The new language code to use.
+	 */
+	void SetPreviewLanguage(const FString& NewLanguage);
+
 protected:
-	
 	/**
 	 * Updates the working asset with the current state of the graph editor.
 	 * Synchronizes changes made in the graph editor UI with the underlying asset data structure.
 	 * This ensures that visual changes in the editor are properly reflected in the asset.
 	 */
 	void UpdateWorkingAssetFromGraph() const;
-	
+
 	/**
 	 * Updates the graph editor UI with the current state of the working asset.
 	 * Synchronizes the visual representation in the editor with the underlying asset data.
 	 * This ensures that changes in the asset are properly reflected in the graph editor.
 	 */
 	void UpdateGraphEditorFromWorkingAsset() const;
-	
+
 	/**
 	 * Retrieves the currently selected node from the graph editor.
 	 * @param SelectionSet The set of currently selected graph elements
@@ -106,4 +122,13 @@ private:
 
 	// The slate widget with details of the selected node
 	TSharedPtr<IDetailsView> SelectedNodeDetailViewPtr = nullptr;
+
+	// Currently selected language for preview
+
+	FString PreviewLanguage = TEXT("en-US");
+
+
+	// Available language options for the dropdown
+
+	TArray<TSharedPtr<FString>> LanguageOptions;
 };

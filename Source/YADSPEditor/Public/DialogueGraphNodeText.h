@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "DialogueGraphEditorApp.h"
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
 #include "DialogueNodeInfoText.h"
+#include "SGraphNode.h"
 #include "DialogueGraphNodeText.Generated.h"
 
 UCLASS()
@@ -43,4 +45,55 @@ public: // UEdGraphNode interface
 protected:
 	UPROPERTY()
 	UDialogueNodeInfoText* NodeInfoPtr = nullptr;
+};
+
+//
+// Custom node format
+//
+class SDialogueGraphNodeText : public SGraphNode
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphNodeText)
+		{
+		}
+
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArgs, UDialogueGraphNodeText* InNode);
+	virtual void CreateBelowPinControls(TSharedPtr<SVerticalBox> MainBox) override;
+	virtual void UpdateGraphNode() override;
+
+protected:
+	FText GetPreviewSpeakerText() const;
+	FText GetPreviewDialogueText() const;
+
+	// Helper to get the hosting editor app to access settings like Language
+	TSharedPtr<DialogueGraphEditorApp> GetGraphEditorApp() const;
+
+	TSharedPtr<FString> CurrentSpeakerSelection;
+	TSharedPtr<FString> CurrentDialogueSelection;
+
+	void OnDialogueSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
+
+	FText GetDialogueComboText() const;
+
+	// Multiple Speakers Support
+	TSharedPtr<SVerticalBox> SpeakerListContainer;
+	void RefreshSpeakerList();
+	void OnAddSpeaker();
+	void OnRemoveSpeaker(int32 Index);
+	void OnSpeakerComboChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo, int32 Index);
+	FText GetSpeakerComboText(int32 Index) const;
+
+	void UpdateSpeakerPreview();
+	void UpdateDialoguePreview();
+
+private:
+	TArray<TSharedPtr<FString>> SpeakerOptions;
+	TArray<TSharedPtr<FString>> DialogueOptions;
+
+	// Cache for preview text to avoid redundant lookups
+	FText CachedSpeakerPreview;
+	FText CachedDialoguePreview;
+	mutable FString LastPreviewLanguage;
 };
