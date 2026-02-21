@@ -8,7 +8,7 @@
 #include "DialogueGraphNodeBase.h"
 #include "DialogueNodeInfoText.h"
 #include "SGraphNode.h"
-#include "DialogueGraphNodeText.Generated.h"
+#include "DialogueGraphNodeText.generated.h"
 
 UCLASS()
 class UDialogueGraphNodeText : public UDialogueGraphNodeBase

@@ -6,7 +6,7 @@
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
 #include "DialogueNodeInfoEnd.h"
-#include "DialogueGraphNodeEnd.Generated.h"
+#include "DialogueGraphNodeEnd.generated.h"
 
 UCLASS()
 class UDialogueGraphNodeEnd : public UDialogueGraphNodeBase

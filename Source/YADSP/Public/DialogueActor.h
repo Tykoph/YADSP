@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "DialoguePlayer.h"
 #include "Components/BillboardComponent.h"
-#include "DialogueActor.Generated.h"
+#include "DialogueActor.generated.h"
 
 class UDialoguePlayer;
 

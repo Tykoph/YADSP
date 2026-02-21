@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "NewQuestController.Generated.h"
+#include "NewQuestController.generated.h"
 
 UCLASS()
 class YADSP_API UNewQuestController : public UUserWidget

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueAction.h"
-#include "DialogueNodeInfoAction.Generated.h"
+#include "DialogueNodeInfoAction.generated.h"
 
 UCLASS(BlueprintType)
 class YADSP_API UDialogueNodeInfoAction : public UDialogueNodeInfoBase
