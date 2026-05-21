@@ -1,4 +1,4 @@
-// Copyright 2025 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "UI/NewQuestController.h"
 #include "Components/TextBlock.h"
