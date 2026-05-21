@@ -1,11 +1,11 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "DialogueNodeInfoAction.h"
+#include "YADSP/Public/Nodes/DialogueNodeInfoAction.h"
 #include "DialogueGraphNodeAction.generated.h"
 
 UCLASS()
@@ -27,7 +27,7 @@ public: // UEdGraphNode interface
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::ActionNode; }
 	virtual void OnPropertiesChanged() override { Modify(); }
 
-	// Our Interface
+	// YADSP Interface
 	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoAction>(Output); }
 
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override

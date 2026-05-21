@@ -11,7 +11,7 @@ UDialogueUIController::UDialogueUIController(const FObjectInitializer& ObjectIni
 
 UDialogueUIController* UDialogueUIController::CreateInstance(APlayerController* PlayerController)
 {
-	UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
+	const UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
 	return Cast<UDialogueUIController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
 }
 

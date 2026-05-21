@@ -1,8 +1,10 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueGraphNodeAction.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeAnimation.h"
 
-FText UDialogueGraphNodeAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
+#include "DialogueAction.h"
+
+FText UDialogueGraphNodeAnimation::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (NodeInfoPtr != nullptr && NodeInfoPtr->Action != EDialogueAction::None)
 	{
@@ -20,14 +22,14 @@ FText UDialogueGraphNodeAction::GetNodeTitle(ENodeTitleType::Type TitleType) con
 		return FText::FromString(Result);
 	}
 
-	return FText::FromString(TEXT("Action"));
+	return FText::FromString(TEXT("Animation"));
 }
 
-void UDialogueGraphNodeAction::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+void UDialogueGraphNodeAnimation::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Node Actions")));
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Animation Node Actions")));
 
-	UDialogueGraphNodeAction* Node = const_cast<UDialogueGraphNodeAction*>(this);
+	UDialogueGraphNodeAnimation* Node = const_cast<UDialogueGraphNodeAnimation*>(this);
 	Section.AddMenuEntry(
 		"DeleteEntry",
 		FText::FromString(TEXT("Delete Node")),
@@ -42,10 +44,10 @@ void UDialogueGraphNodeAction::GetNodeContextMenuActions(UToolMenu* Menu, UGraph
 	);
 }
 
-UEdGraphPin* UDialogueGraphNodeAction::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeAnimation::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
 	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("ActionPin");
+	FName SubCategory = TEXT("AnimationPin");
 
 	UEdGraphPin* Pin = CreatePin(
 		Dir,
@@ -57,12 +59,12 @@ UEdGraphPin* UDialogueGraphNodeAction::CreateDialoguePin(EEdGraphPinDirection Di
 	return Pin;
 }
 
-UEdGraphPin* UDialogueGraphNodeAction::CreateDefaultInputPin()
+UEdGraphPin* UDialogueGraphNodeAnimation::CreateDefaultInputPin()
 {
 	return CreateDialoguePin(EGPD_Input, FName(TEXT("Input")));
 }
 
-void UDialogueGraphNodeAction::CreateDefaultOutputPin()
+void UDialogueGraphNodeAnimation::CreateDefaultOutputPin()
 {
 	CreateDialoguePin(EGPD_Output, FName(TEXT("Output")));
 }

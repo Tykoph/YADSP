@@ -36,6 +36,8 @@ public:
 	* @param Text - String content to measure for wrapping
 	*/
 	static void IsTextWrapping(UTextBlock* InDialogueText, const FString& Text);
+	
+	// void UpdateDisplay(FText Text, FString Speaker, TArray<FText> Options, FOnOptionSelected Callback);
 
 public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

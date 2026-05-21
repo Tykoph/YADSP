@@ -1,6 +1,8 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueGraphNodeEnd.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeEnd.h"
+
+#include "DialogueAction.h"
 
 FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

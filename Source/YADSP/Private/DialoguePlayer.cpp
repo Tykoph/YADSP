@@ -1,12 +1,15 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialoguePlayer.h"
-#include "DialogueNodeInfoAction.h"
+#include "DialogueSystem.h"
+
 #include "UI/DialogueUIController.h"
 #include "UI/DialogueOptionController.h"
-#include "DialogueSystem.h"
-#include "DialogueNodeInfoEnd.h"
-#include "DialogueNodeInfoText.h"
+
+#include "Nodes/DialogueNodeInfoAction.h"
+#include "Nodes/DialogueNodeInfoEnd.h"
+#include "Nodes/DialogueNodeInfoText.h"
+
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -96,10 +99,8 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 		// Set the speaker name
 		FString CombinedSpeakerNames;
-		for (const FName& ID : NodeInfo->SpeakerIDs)
-		{
-			if (!CombinedSpeakerNames.IsEmpty())
-			{
+		for (const FName& ID : NodeInfo->SpeakerIDs) {
+			if (!CombinedSpeakerNames.IsEmpty()) {
 				CombinedSpeakerNames += TEXT(", ");
 			}
 			CombinedSpeakerNames += NodeInfo->GetSpeakerName(ID);
@@ -139,31 +140,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			OptionIndex++;
 		}
 
-		// If there is only one response, auto skip the dialogue
-		if (NodeInfo->DialogueResponses.Num() == 1) {
-			// Check the skip dialogue type
-			switch (NodeInfo->SkipDialogue) {
-			case ESkipDialogue::NoSkip:
-				break;
-			case ESkipDialogue::AutoSkipBasedOnText:
-				// Calculate the skip time based on the text length
-				CurrentSkipTime = CalculateSkipTimer(NodeInfo->GetDialogueText(NodeInfo->DialogueID));
-				AutoSkipDialogue(CurrentSkipTime);
-				break;
-			case ESkipDialogue::AutoSkipAfterSound:
-				// Play the sound and skip after it finishes
-				if (NodeInfo->DialogueSound == nullptr) break;
-				CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
-				UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
-				AutoSkipDialogue(CurrentSkipTime);
-				break;
-			case ESkipDialogue::AutoSkipAfterTime:
-				// Skip after the specified time
-				CurrentSkipTime = NodeInfo->SkipAfterSeconds;
-				AutoSkipDialogue(CurrentSkipTime);
-				break;
-			}
-		}
+		AutoSkipDialogueSelector(NodeInfo);
 	}
 
 	// If the current node is an action node, execute the action
@@ -173,8 +150,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		EDialogueAction Action = ActionNodeInfo->Action;
 		ActionData = ActionNodeInfo->ActionData;
 
-		if (OnDialogueEndedCallback.IsBound())
-		{
+		if (OnDialogueEndedCallback.IsBound()) {
 			OnDialogueEndedCallback.Execute(Action, ActionData);
 		}
 		ChooseOptionAtIndex(0);
@@ -199,8 +175,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		PlayerControllerPtr->SetIgnoreLookInput(false);
 		PlayerControllerPtr->SetIgnoreMoveInput(false);
 
-		if (OnDialogueEndedCallback.IsBound())
-		{
+		if (OnDialogueEndedCallback.IsBound()) {
 			OnDialogueEndedCallback.Execute(Action, ActionData);
 		}
 	}
@@ -229,4 +204,32 @@ void UDialoguePlayer::AutoSkipDialogue(float Time)
 		// When the timer completes, choose the first option in the current node
 		ChooseOptionAtIndex(0);
 	}, Time, false);
+}
+
+void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo)
+{
+	if (NodeInfo->DialogueResponses.Num() == 1) {
+		switch (NodeInfo->SkipDialogue) {
+			case ESkipDialogue::NoSkip:
+				break;
+			case ESkipDialogue::AutoSkipBasedOnText:
+				CurrentSkipTime = CalculateSkipTimer(NodeInfo->GetDialogueText(NodeInfo->DialogueID));
+				AutoSkipDialogue(CurrentSkipTime);
+				break;
+			
+			case ESkipDialogue::AutoSkipAfterSound:
+				if (NodeInfo->DialogueSound == nullptr) break;
+				CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
+				
+				// TODO: see how to properly play sound
+				UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
+				AutoSkipDialogue(CurrentSkipTime);
+				break;
+			
+			case ESkipDialogue::AutoSkipAfterTime:
+				CurrentSkipTime = NodeInfo->SkipAfterSeconds;
+				AutoSkipDialogue(CurrentSkipTime);
+				break;
+		}
+	}
 }

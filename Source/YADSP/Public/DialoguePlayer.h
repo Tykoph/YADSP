@@ -6,6 +6,7 @@
 #include "DialogueAction.h"
 #include "DialogueCamera.h"
 #include "DialogueSystemRuntimeGraph.h"
+#include "Nodes/DialogueNodeInfoText.h"
 #include "DialoguePlayer.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueEndCallback, EDialogueAction, Action, FString, Data);
@@ -32,7 +33,7 @@ public:
 	 * @param OnDialogueEnded The callback to call when the dialogue ends.
 	 */
 	UFUNCTION()
-	void PlayDialogue(class UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
+	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
 
 	/**
 	 * @brief Chooses the option at the given index in the current dialogue node.
@@ -62,19 +63,15 @@ public:
 	void AutoSkipDialogue(float Time);
 
 private:
-	// Pointers to the dialogue system asset being used for the dialogue playback
 	UPROPERTY()
 	UDialogueSystem* DialogueAssetPtr = nullptr;
 
-	// Pointers to the current node being played
 	UPROPERTY()
 	UDialogueRuntimeGraphNode* CurrentNodePtr = nullptr;
 
-	// Pointer to the UI controller
 	UPROPERTY()
 	class UDialogueUIController* DialogueUIPtr = nullptr;
 
-	// Pointer to the player controller
 	UPROPERTY()
 	APlayerController* PlayerControllerPtr = nullptr;
 
@@ -83,4 +80,6 @@ private:
 	FTimerHandle AutoSkipTimerHandle;
 
 	FDialogueEndCallback OnDialogueEndedCallback;
+	
+	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
 };

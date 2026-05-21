@@ -1,6 +1,6 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueGraphNodeStart.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeStart.h"
 
 UEdGraphPin* UDialogueGraphNodeStart::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {

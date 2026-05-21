@@ -1,142 +1,18 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueSystemEditor.h"
+#include "YADSPEditor/Public/DialogueSystemEditor.h"
 
-#include "DialogueSystemAction.h"
-#include "DialogueGraphNodeText.h"
+#include "YADSPEditor/Public/DialogueSystemAction.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
 #include "IAssetTools.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"
-#include "KismetPins/SGraphPinColor.h"
 #include "EdGraph/EdGraphPin.h"
+#include "YADSPEditor/Public/UI/SDialogueGraphNodeText.h"
+#include "YADSPEditor/Public/UI/SDialogueGraphPins.h"
 
 #define LOCTEXT_NAMESPACE "FYADSPEditorModule"
-
-/**
- * Custom graph pin for dialogue text connections
- * Displays with blue color
- */
-class SDialogueGraphPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Blue;
-	}
-};
-
-/**
- * Custom graph pin for dialogue start node connections
- * Displays with red color
- */
-class SDialogueGraphStartPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Red;
-	}
-};
-
-/**
- * Custom graph pin for dialogue end node connections
- * Displays with purple color
- */
-class SDialogueGraphEndPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Purple;
-	}
-};
-
-/**
- * Custom graph pin for dialogue action node connections
- * Displays with green color
- */
-class SDialogueGraphActionPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Green;
-	}
-};
-
-/**
- * Custom graph pin for dialogue animation node connections
- * Displays with yellow color
- */
-class SDialogueGraphAnimationPin : public SGraphPin
-{
-public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
-		{
-		}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
-	{
-		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
-	}
-
-private:
-	virtual FSlateColor GetPinColor() const override
-	{
-		return FColor::Yellow;
-	}
-};
 
 struct FDialoguePinFactory : FGraphPanelPinFactory
 {

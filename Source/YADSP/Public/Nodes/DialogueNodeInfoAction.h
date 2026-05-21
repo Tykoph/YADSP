@@ -1,14 +1,14 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueAction.h"
-#include "DialogueNodeInfoEnd.generated.h"
+#include "DialogueNodeInfoAction.generated.h"
 
 UCLASS(BlueprintType)
-class YADSP_API UDialogueNodeInfoEnd : public UDialogueNodeInfoBase
+class YADSP_API UDialogueNodeInfoAction : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 

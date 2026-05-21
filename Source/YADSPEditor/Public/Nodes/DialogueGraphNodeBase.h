@@ -1,10 +1,10 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
-#include "DialogueNodeInfoBase.h"
+#include "YADSP/Public/Nodes/DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.generated.h"
 
 UCLASS()
