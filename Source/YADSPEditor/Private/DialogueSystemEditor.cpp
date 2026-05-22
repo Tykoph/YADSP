@@ -3,55 +3,15 @@
 #include "YADSPEditor/Public/DialogueSystemEditor.h"
 
 #include "YADSPEditor/Public/DialogueSystemAction.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+#include "Factory/DialogueGraphFactories.h"
+
 #include "IAssetTools.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 #include "EdGraphUtilities.h"
 #include "EdGraph/EdGraphPin.h"
-#include "YADSPEditor/Public/UI/SDialogueGraphNodeText.h"
-#include "YADSPEditor/Public/UI/SDialogueGraphPins.h"
 
 #define LOCTEXT_NAMESPACE "FYADSPEditorModule"
-
-struct FDialoguePinFactory : FGraphPanelPinFactory
-{
-	virtual ~FDialoguePinFactory() override
-	{
-	}
-
-	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* Pin) const override
-	{
-		if (FName(TEXT("TextPin")) == Pin->PinType.PinSubCategory) {
-			return SNew(SDialogueGraphPin, Pin);
-		}
-		if (FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory) {
-			return SNew(SDialogueGraphStartPin, Pin);
-		}
-		if (FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory) {
-			return SNew(SDialogueGraphEndPin, Pin);
-		}
-		if (FName(TEXT("ActionPin")) == Pin->PinType.PinSubCategory) {
-			return SNew(SDialogueGraphActionPin, Pin);
-		}
-		if (FName(TEXT("AnimationPin")) == Pin->PinType.PinSubCategory) {
-			return SNew(SDialogueGraphAnimationPin, Pin);
-		}
-
-		return nullptr;
-	}
-};
-
-struct FDialogueGraphNodeFactory : FGraphPanelNodeFactory
-{
-	virtual TSharedPtr<SGraphNode> CreateNode(UEdGraphNode* Node) const override
-	{
-		if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Node)) {
-			return SNew(SDialogueGraphNodeText, TextNode);
-		}
-		return nullptr;
-	}
-};
 
 /**
  * Initializes the Dialogue System editor module

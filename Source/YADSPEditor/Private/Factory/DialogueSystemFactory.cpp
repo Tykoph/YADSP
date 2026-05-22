@@ -1,6 +1,6 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueSystemFactory.h"
+#include "Factory/DialogueSystemFactory.h"
 #include "DialogueSystem.h"
 
 /*

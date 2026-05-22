@@ -9,10 +9,10 @@
  * Custom graph pin for dialogue text connections
  * Displays with blue color
  */
-class SDialogueGraphPin : public SGraphPin
+class SDialogueGraphTextPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphTextPin)
 		{
 		}
 
@@ -34,7 +34,7 @@ protected:
 class SDialogueGraphStartPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphStartPin)
 		{
 		}
 
@@ -56,7 +56,7 @@ protected:
 class SDialogueGraphEndPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphEndPin)
 		{
 		}
 
@@ -78,7 +78,7 @@ protected:
 class SDialogueGraphActionPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphActionPin)
 		{
 		}
 
@@ -100,7 +100,7 @@ protected:
 class SDialogueGraphAnimationPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphAnimationPin)
 		{
 		}
 
