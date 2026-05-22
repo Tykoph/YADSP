@@ -96,7 +96,6 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	LanguageOptions.Add(MakeShared<FString>(TEXT("pt-BR")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("es-ES")));
 
-
 	// set the current mode to the DialogueGraphAppMode
 	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));

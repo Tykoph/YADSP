@@ -1,11 +1,12 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSchema.h"
-#include "DialogueGraphNodeAction.h"
-#include "DialogueGraphNodeAnimation.h"
-#include "DialogueGraphNodeStart.h"
-#include "DialogueGraphNodeEnd.h"
-#include "DialogueGraphNodeText.h"
+
+#include "Nodes/DialogueGraphNodeAction.h"
+#include "Nodes/DialogueGraphNodeAnimation.h"
+#include "Nodes/DialogueGraphNodeEnd.h"
+#include "Nodes/DialogueGraphNodeText.h"
+#include "Nodes/DialogueGraphNodeStart.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
