@@ -1,19 +1,16 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphEditorApp.h"
+#include "DialogueGraphSchema.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
-#include "Kismet2/BlueprintEditorUtils.h"
-#include "DialogueGraphSchema.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeStart.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeAction.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeAnimation.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeEnd.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
-#include "GSheetLocSystemDefinitions.h"
-#include "K2Node_GetDataTableRow.h"
 #include "Compiler/DialogueGraphCompiler.h"
+
+#include "DialogueGraphSettings.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
+
+#include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "Widgets/Input/SComboBox.h"
 
@@ -63,7 +60,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 				.WidthOverride(100.0f)
 				[
 					SNew(SComboBox<TSharedPtr<FString>>)
-					.OptionsSource(&LanguageOptions)
+					.OptionsSource(UDialogueGraphSettings::Get()->GetLanguageOptions())
 					.OnGenerateWidget_Lambda([](const TSharedPtr<FString>& Item)
 					{
 						return SNew(STextBlock).Text(FText::FromString(*Item));
@@ -71,14 +68,14 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 					.OnSelectionChanged_Lambda([this](const TSharedPtr<FString>& NewSelection, ESelectInfo::Type SelectInfo)
 					{
 						if (NewSelection.IsValid()) {
-							SetPreviewLanguage(*NewSelection);
+							UDialogueGraphSettings::SetPreviewLanguage(*NewSelection);
 						}
 					})
 					[
 						SNew(STextBlock)
 						.Text_Lambda([this]()
 						{
-							return FText::FromString(PreviewLanguage);
+							return FText::FromString(UDialogueGraphSettings::Get()->GetPreviewLanguage());
 						})
 					]
 				]
@@ -86,33 +83,22 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 		})
 	);
 	AddToolbarExtender(ToolbarExtender);
-
-	// Initialize Language Options
-	LanguageOptions.Add(MakeShared<FString>(TEXT("zh-Hans")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("en-150")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("en-US")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("fr")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("ja")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("pt-BR")));
-	LanguageOptions.Add(MakeShared<FString>(TEXT("es-ES")));
-
+	
 	// set the current mode to the DialogueGraphAppMode
 	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
 
 	// update the graph editor from the working asset
 	DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(WorkingAsset, WorkingGraphEditor);
-}
 
-void DialogueGraphEditorApp::SetPreviewLanguage(const FString& NewLanguage)
-{
-	if (PreviewLanguage != NewLanguage) {
-		PreviewLanguage = NewLanguage;
+	UDialogueGraphSettings::Get()->OnPreviewLanguageChanged.AddLambda([this]()
+	{
 		if (WorkingGraphUiPtr.IsValid()) {
 			WorkingGraphUiPtr->NotifyGraphChanged();
 		}
-	}
+	});
 }
+
 
 void DialogueGraphEditorApp::OnClose()
 {

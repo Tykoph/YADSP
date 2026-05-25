@@ -14,7 +14,7 @@ TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* Pin) const
 {
 	if (Pin->PinType.PinSubCategory == FName(TEXT("TextPin")))
 	{
-		return SNew(SDialogueGraphStartPin, Pin);
+		return SNew(SDialogueGraphTextPin, Pin);
 	}
 	if (Pin->PinType.PinSubCategory == FName(TEXT("StartPin")))
 	{

@@ -2,10 +2,12 @@
 
 #include "YADSPEditor/Public/UI/SDialogueGraphNodeText.h"
 
+#include "DialogueGraphSettings.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+
 #include "DialogueSystem.h"
 #include "GSheetLocSystemLibrary.h"
 #include "Toolkits/ToolkitManager.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
 
 SDialogueGraphNodeText::~SDialogueGraphNodeText()
 {
@@ -26,19 +28,19 @@ void SDialogueGraphNodeText::UpdateGraphNode()
 
 TSharedPtr<DialogueGraphEditorApp> SDialogueGraphNodeText::GetGraphEditorApp() const
 {
-	if (UEdGraph* Graph = GraphNode->GetGraph()) {
-		if (UDialogueSystem* Asset = Cast<UDialogueSystem>(Graph->GetOuter())) {
-			TSharedPtr<IToolkit> Toolkit = FToolkitManager::Get().FindEditorForAsset(Asset);
+	if (const UEdGraph* Graph = GraphNode->GetGraph()) {
+		if (const UDialogueSystem* Asset = Cast<UDialogueSystem>(Graph->GetOuter())) {
+			const TSharedPtr<IToolkit> Toolkit = FToolkitManager::Get().FindEditorForAsset(Asset);
 			return StaticCastSharedPtr<DialogueGraphEditorApp>(Toolkit);
 		}
 	}
 	return nullptr;
 }
 
-void SDialogueGraphNodeText::CreateBelowPinControls(TSharedPtr<SVerticalBox> MainBox)
+void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBox> MainBox)
 {
-	UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
-	UDialogueNodeInfoText* NodeInfo = TextNode ? TextNode->GetDialogueNodeInfo() : nullptr;
+	const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
+	const UDialogueNodeInfoText* NodeInfo = TextNode ? TextNode->GetDialogueNodeInfo() : nullptr;
 
 	if (!NodeInfo) {
 		return;
@@ -343,7 +345,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview()
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-				Language = App->GetPreviewLanguage();
+				Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 			}
 			
 			FString CombinedSpeakers;
@@ -379,7 +381,7 @@ void SDialogueGraphNodeText::UpdateDialoguePreview()
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-				Language = App->GetPreviewLanguage();
+				Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 			}
 
 			if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueID.IsNone()) {
@@ -405,7 +407,7 @@ FText SDialogueGraphNodeText::GetPreviewSpeakerText() const
 {
 	FString CurrentLanguage = TEXT("en-US");
 	if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-		CurrentLanguage = App->GetPreviewLanguage();
+		CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 	}
 
 	if (CurrentLanguage != LastPreviewLanguage) {
@@ -422,7 +424,7 @@ FText SDialogueGraphNodeText::GetPreviewDialogueText() const
 	// Language check is done in GetPreviewSpeakerText typically, but to be safe:
 	FString CurrentLanguage = TEXT("en-US");
 	if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-		CurrentLanguage = App->GetPreviewLanguage();
+		CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 	}
 
 	if (CurrentLanguage != LastPreviewLanguage) {

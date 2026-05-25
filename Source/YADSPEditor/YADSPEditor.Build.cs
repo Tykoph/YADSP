@@ -32,7 +32,8 @@ public class YADSPEditor : ModuleRules
 				"GraphEditor",
 				"InputCore",
 				"GSheetLocSystemPlugin",
-				"EditorFramework"
+				"EditorFramework",
+				"DeveloperSettings"
 			}
 		);
 	}

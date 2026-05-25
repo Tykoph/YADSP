@@ -3,7 +3,7 @@
 #include "YADSPEditor/Public/UI/SDialogueGraphPins.h"
 
 
-FSlateColor SDialogueGraphPin::GetPinColor() const
+FSlateColor SDialogueGraphTextPin::GetPinColor() const
 {
 	return FColor::Blue;
 }
@@ -23,7 +23,7 @@ FSlateColor SDialogueGraphActionPin::GetPinColor() const
 	return FColor::Green;
 }
 
-FSlateColor SDialogueGraphAnimationPin::GetPinColor() const
+FSlateColor SDialogueGraphAnimationPin::GetPinColor() const	
 {
 	return FColor::Yellow;
 }

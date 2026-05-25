@@ -1,6 +1,6 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueSystemPropertiesTabFactory.h"
+#include "Factory/DialogueSystemPropertiesTabFactory.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueSystem.h"
 #include "IDetailsView.h"
@@ -33,10 +33,10 @@ TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWor
 	DetailsViewArgs.bShowModifiedPropertiesOption = false;
 	DetailsViewArgs.bShowScrollBar = false;
 
-	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	const TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(App->GetDialogueGraph());
 
-	TSharedPtr<IDetailsView> SelectedNodeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	const TSharedPtr<IDetailsView> SelectedNodeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	SelectedNodeDetailsView->SetObject(nullptr);
 	App->SetSelectedNodeDetailView(SelectedNodeDetailsView);
 

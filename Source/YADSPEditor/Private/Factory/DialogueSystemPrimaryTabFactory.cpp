@@ -1,6 +1,6 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "DialogueSystemPrimaryTabFactory.h"
+#include "Factory/DialogueSystemPrimaryTabFactory.h"
 #include "DialogueGraphEditorApp.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
@@ -16,12 +16,12 @@ DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPt
 
 TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
+	const TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
 
 	SGraphEditor::FGraphEditorEvents GraphEvents;
 	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &DialogueGraphEditorApp::OnGraphSelectionChanged);
 
-	TSharedPtr<SGraphEditor> GraphEditor =
+	const TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
 		.IsEditable(true)
 		.GraphEvents(GraphEvents)

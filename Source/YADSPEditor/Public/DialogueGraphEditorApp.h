@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SGraphPanel.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
 /**
@@ -73,19 +72,6 @@ public:
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const;
 	void OnWorkingGraphAssetPreSave() const;
 
-	/**
-	 * Gets the currently selected language code for previewing localized text.
-	 * @return The language code (e.g., "en-US", "fr").
-	 */
-	FString GetPreviewLanguage() const { return PreviewLanguage; }
-
-	/**
-	 * Sets the language code for previewing localized text.
-	 * Triggers a refresh of the graph editor to update text displays.
-	 * @param NewLanguage The new language code to use.
-	 */
-	void SetPreviewLanguage(const FString& NewLanguage);
-
 protected:
 	/**
 	 * Retrieves the currently selected node from the graph editor.
@@ -106,10 +92,4 @@ private:
 
 	// The slate widget with details of the selected node
 	TSharedPtr<IDetailsView> SelectedNodeDetailViewPtr = nullptr;
-
-	// Currently selected language for preview
-	FString PreviewLanguage = TEXT("en-US");
-
-	// Available language options for the dropdown
-	TArray<TSharedPtr<FString>> LanguageOptions;
 };
