@@ -9,7 +9,7 @@ UDialogueOptionController::UDialogueOptionController(const FObjectInitializer& O
 {
 }
 
-void UDialogueOptionController::SetClickHandler(int Index, std::function<void(int)> ClickHandler)
+void UDialogueOptionController::SetClickHandler(int Index, const TFunction<void(int)>& ClickHandler)
 {
 	ButtonIndex = Index;
 	OnClickHandler = ClickHandler;

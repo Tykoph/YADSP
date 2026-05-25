@@ -60,7 +60,7 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 	}
 	
 	TSharedPtr<FString> CurrentDialogue = nullptr;
-	FString CurrentDialogueID = NodeInfo->DialogueID.ToString();
+	const FString CurrentDialogueID = NodeInfo->DialogueID.ToString();
 	for (const auto& Ptr : DialogueOptions) {
 		if (*Ptr == CurrentDialogueID) {
 			CurrentDialogue = Ptr;
@@ -182,7 +182,8 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 void SDialogueGraphNodeText::RefreshSpeakerList()
 {
 	SpeakerListContainer->ClearChildren();
-	UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
+	
+	const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
 	UDialogueNodeInfoText* NodeInfo = TextNode ? TextNode->GetDialogueNodeInfo() : nullptr;
 	
 	if (!NodeInfo) return;
@@ -317,7 +318,7 @@ void SDialogueGraphNodeText::OnDialogueSelected(TSharedPtr<FString> NewSelection
 
 FText SDialogueGraphNodeText::GetSpeakerComboText(int32 Index) const
 {
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
+	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
 			if (NodeInfo->SpeakerIDs.IsValidIndex(Index)) {
 				return FText::FromName(NodeInfo->SpeakerIDs[Index]);
@@ -329,8 +330,8 @@ FText SDialogueGraphNodeText::GetSpeakerComboText(int32 Index) const
 
 FText SDialogueGraphNodeText::GetDialogueComboText() const
 {
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
-		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
+	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
+		if (const UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
 			return FText::FromName(NodeInfo->DialogueID);
 		}
 	}
@@ -340,7 +341,7 @@ FText SDialogueGraphNodeText::GetDialogueComboText() const
 
 void SDialogueGraphNodeText::UpdateSpeakerPreview()
 {
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
+	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
 			FString Language = TEXT("en-US");
 
@@ -374,9 +375,8 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview()
 
 void SDialogueGraphNodeText::UpdateDialoguePreview()
 {
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
-		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
-			// Get Language from Editor App
+	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
+		if (const UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
 
 			FString Language = TEXT("en-US");
 
@@ -406,9 +406,8 @@ void SDialogueGraphNodeText::UpdateDialoguePreview()
 FText SDialogueGraphNodeText::GetPreviewSpeakerText() const
 {
 	FString CurrentLanguage = TEXT("en-US");
-	if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-		CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
-	}
+	CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+	
 
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;
@@ -423,9 +422,8 @@ FText SDialogueGraphNodeText::GetPreviewDialogueText() const
 {
 	// Language check is done in GetPreviewSpeakerText typically, but to be safe:
 	FString CurrentLanguage = TEXT("en-US");
-	if (TSharedPtr<DialogueGraphEditorApp> App = GetGraphEditorApp()) {
-		CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
-	}
+	CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+	
 
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;

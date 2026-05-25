@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "EdGraph/EdGraphNode.h"
+#include "YADSP/Public/Nodes/DialogueNodeInfoText.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoText.h"
+#include "EdGraph/EdGraphNode.h"
 #include "DialogueGraphNodeText.generated.h"
 
 UCLASS()

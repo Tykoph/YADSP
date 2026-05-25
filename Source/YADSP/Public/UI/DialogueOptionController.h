@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <functional>
-
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "DialogueOptionController.generated.h"
@@ -25,7 +23,7 @@ public:
 	UDialogueOptionController(const FObjectInitializer& ObjectInitializer);
 	virtual ~UDialogueOptionController() override {}
 
-	void SetClickHandler(int Index, std::function<void(int)> ClickHandler);
+	void SetClickHandler(int Index, const TFunction<void(int)>& ClickHandler);
 
 	UFUNCTION()
 	void OnButtonClicked();
@@ -45,7 +43,7 @@ public:
 	class UTextBlock* ResponseButtonText = nullptr;
 
 private: // Fields
-	std::function<void(int)> OnClickHandler;
+	TFunction<void(int)> OnClickHandler;
 	int ButtonIndex;
 };
 

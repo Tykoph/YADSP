@@ -1,10 +1,10 @@
 ﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+#include "YADSP/Public/Nodes/DialogueNodeInfoText.h"
 
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoText.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/SBoxPanel.h"

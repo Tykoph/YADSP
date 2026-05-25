@@ -22,7 +22,7 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
 	WorkingAsset->Graph = RuntimeGraph;
 
-	TArray<std::pair<FGuid, FGuid>> Connections;
+	TArray<TPair<FGuid, FGuid>> Connections;
 	TMap<FGuid, UDialogueRuntimeGraphPin*> IdToPinMap;
 
 	// Loop through all the nodes in the graph editor
@@ -39,7 +39,7 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 
 			// If the pin is an output pin and has any connections, add the connection to the list
 			if (UIPin->HasAnyConnections() && UIPin->Direction == EGPD_Output) {
-				std::pair<FGuid, FGuid> Connection = std::make_pair(UIPin->PinId, UIPin->LinkedTo[0]->PinId);
+				TPair<FGuid, FGuid> Connection = TPair<FGuid, FGuid>(UIPin->PinId, UIPin->LinkedTo[0]->PinId);
 				Connections.Add(Connection);
 			}
 
@@ -57,7 +57,7 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 		}
 
 		// Duplicate the node info from the graph editor and add it to the runtime node
-		UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		const UDialogueGraphNodeBase* UiGraphNode = Cast<UDialogueGraphNodeBase>(UiNode);
 		RuntimeNode->NodeInfo = DuplicateObject(UiGraphNode->GetNodeInfo(), RuntimeNode);
 		RuntimeNode->NodeType = UiGraphNode->GetNodeType();
 
@@ -66,9 +66,9 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 	}
 
 	// Loop through all the connections and set the connected pin on the output pin
-	for (std::pair<FGuid, FGuid> Connection : Connections) {
-		UDialogueRuntimeGraphPin* OutputPin = IdToPinMap[Connection.first];
-		UDialogueRuntimeGraphPin* InputPin = IdToPinMap[Connection.second];
+	for (TPair<FGuid, FGuid> Connection : Connections) {
+		UDialogueRuntimeGraphPin* OutputPin = IdToPinMap[Connection.Key];
+		UDialogueRuntimeGraphPin* InputPin = IdToPinMap[Connection.Value];
 
 		OutputPin->ConnectedPin = InputPin;
 	}
@@ -89,7 +89,7 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 	}
 
 	// Collections for managing connections and pin mappings
-	TArray<std::pair<FGuid, FGuid>> Connections;
+	TArray<TPair<FGuid, FGuid>> Connections;
 	TMap<FGuid, UEdGraphPin*> IdToPinMap;
 
 	// Iterate over each node in the runtime graph
@@ -143,7 +143,7 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 
 			// Add connection if the input pin is connected
 			if (InputPin->ConnectedPin != nullptr) {
-				Connections.Add(std::make_pair(InputPin->PinId, InputPin->ConnectedPin->PinId));
+				Connections.Add(TPair<FGuid, FGuid>(InputPin->PinId, InputPin->ConnectedPin->PinId));
 			}
 
 			IdToPinMap.Add(InputPin->PinId, UIPin);
@@ -156,7 +156,7 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 
 			// Add connection if the output pin is connected
 			if (OutputPin->ConnectedPin != nullptr) {
-				Connections.Add(std::make_pair(OutputPin->PinId, OutputPin->ConnectedPin->PinId));
+				Connections.Add(TPair<FGuid, FGuid>(OutputPin->PinId, OutputPin->ConnectedPin->PinId));
 			}
 
 			IdToPinMap.Add(OutputPin->PinId, UIPin);
@@ -167,9 +167,9 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 	}
 
 	// Establish connections between pins based on the collected data
-	for (std::pair<FGuid, FGuid> Connection : Connections) {
-		UEdGraphPin* FromPin = IdToPinMap[Connection.first];
-		UEdGraphPin* ToPin = IdToPinMap[Connection.second];
+	for (TPair<FGuid, FGuid> Connection : Connections) {
+		UEdGraphPin* FromPin = IdToPinMap[Connection.Key];
+		UEdGraphPin* ToPin = IdToPinMap[Connection.Value];
 
 		FromPin->LinkedTo.Add(ToPin);
 		ToPin->LinkedTo.Add(FromPin);

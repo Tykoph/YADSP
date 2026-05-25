@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <functional>
-
 #include "CoreMinimal.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "UObject/Object.h"
@@ -60,7 +58,7 @@ public: // Properties
 	 * Sets a callback function to be executed before the dialogue system is saved
 	 * @param OnPreSaveListener Function to be called before saving
 	 */
-	void SetPreSaveListener(const std::function<void()>& OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }
+	void SetPreSaveListener(const TFunction<void()>& OnPreSaveListener) { OnPreSaveListenerPtr = OnPreSaveListener; }
 
 	/**
 	 * Called before the dialogue system is saved
@@ -72,5 +70,5 @@ public: // Properties
 private: // Members
 
 	// Function pointer to callback executed before saving
-	std::function<void()> OnPreSaveListenerPtr = nullptr;
+	TFunction<void()> OnPreSaveListenerPtr = nullptr;
 };
