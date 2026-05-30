@@ -1,25 +1,23 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialoguePlayer.h"
-#include "DialogueSystem.h"
 
-#include "UI/DialogueUIController.h"
-#include "UI/DialogueOptionController.h"
+#include "DialogueSubsystem.h"
+#include "DialogueSystem.h"
 
 #include "Nodes/DialogueNodeInfoAction.h"
 #include "Nodes/DialogueNodeInfoEnd.h"
 #include "Nodes/DialogueNodeInfoText.h"
 
-#include "Components/TextBlock.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded)
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded)
 {
+	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>(); 
+	
 	if (DialogueAsset == nullptr) {
 		UE_LOG(DialoguePlayerSub, Error, TEXT("No dialogue asset provided"));
 		return;
@@ -29,25 +27,12 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 		return;
 	}
 	
-	// Save the callback so we can call it when the dialogue ends
 	OnDialogueEndedCallback = OnDialogueEnded;
-
-	// Get the dialogue graph
+	
 	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
 
-	// Save the dialogue asset and player controller
 	DialogueAssetPtr = DialogueAsset;
-	DialogueAssetPtr->CameraActors = Cameras;
-	DialogueAssetPtr->DefaultCamera = PlayerController->PlayerCameraManager->GetViewTarget();
-
 	PlayerControllerPtr = PlayerController;
-
-	// Disable player input
-	// TODO : Add an option to not disable player input (dialogue during gameplay)
-	PlayerControllerPtr->SetShowMouseCursor(true);
-	PlayerControllerPtr->SetIgnoreLookInput(true);
-	PlayerControllerPtr->SetIgnoreMoveInput(true);
-	PlayerControllerPtr->SetInputMode(FInputModeUIOnly());
 
 	// Find the start node
 	for (UDialogueRuntimeGraphNode* Node : Graph->Nodes) {
@@ -62,10 +47,9 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 		return;
 	}
 
-	// Display Dialogue UI
-	DialogueUIPtr = UDialogueUIController::CreateInstance(PlayerController);
-	DialogueUIPtr->AddToViewport();
-
+	DialogueSubsystem->OnDialogueStarted.Broadcast(DialogueAsset, PlayerController);
+    DialogueSubsystem->OnOptionSelected.AddDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
+	
 	// Play the first node
 	ChooseOptionAtIndex(0);
 }
@@ -77,9 +61,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		UE_LOG(DialoguePlayerSub, Error, TEXT("Invalid option index %d"), Index);
 		return;
 	}
-
-	APlayerCameraManager* CameraManager = DialogueUIPtr->GetOwningPlayer()->PlayerCameraManager;
-
+	
 	// Navigate to the selected node
 	UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
 	if (SelectedPin->ConnectedPin != nullptr) {
@@ -93,10 +75,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	// If the current node is a text node, display the dialogue UI
 	if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::TextNode) {
 		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNodePtr->NodeInfo);
-
-		// Set the dialogue text
-		DialogueUIPtr->DialogueText->SetText(FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)));
-
+		
 		// Set the speaker name
 		FString CombinedSpeakerNames;
 		for (const FName& ID : NodeInfo->SpeakerIDs) {
@@ -105,41 +84,9 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			}
 			CombinedSpeakerNames += NodeInfo->GetSpeakerName(ID);
 		}
-		DialogueUIPtr->SpeakerName->SetText(FText::FromString(CombinedSpeakerNames));
 
-		// Check if the dialogue text is too long to fit in the dialogue box
-		DialogueUIPtr->IsTextWrapping(DialogueUIPtr->DialogueText, NodeInfo->DialogueID.ToString());
-
-		// Set the camera target
-		if (NodeInfo->GetCameraIndex() == -1) {
-			CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
-		}
-		else if (NodeInfo->GetCameraIndex() < DialogueAssetPtr->CameraActors.Num()) {
-			CameraManager->SetViewTarget(DialogueAssetPtr->CameraActors[NodeInfo->GetCameraIndex()]);
-		}
-
-		// Add the response buttons to the dialogue box
-		DialogueUIPtr->ResponseBox->ClearChildren();
-		int OptionIndex = 0;
-		for (FText Response : NodeInfo->DialogueResponses) {
-			// Create a new response button
-			UDialogueOptionController* OptionController = UDialogueOptionController::CreateInstance(DialogueUIPtr->GetOwningPlayer());
-
-			// Set the click handler to navigate to the selected node
-			OptionController->SetClickHandler(OptionIndex, [this](int OptionIndex)
-			{
-				ChooseOptionAtIndex(OptionIndex);
-			});
-
-			// Set the response text
-			OptionController->ResponseButtonText->SetText(Response);
-
-			// Add the response button to the dialogue box
-			UHorizontalBoxSlot* Slot = DialogueUIPtr->ResponseBox->AddChildToHorizontalBox(OptionController);
-			Slot->SetPadding(FMargin(10));
-			OptionIndex++;
-		}
-
+		DialogueSubsystem->OnDialogueLineRequested.Broadcast(NodeInfo->GetDialogueText(NodeInfo->DialogueID), CombinedSpeakerNames, NodeInfo->DialogueResponses);
+		
 		AutoSkipDialogueSelector(NodeInfo);
 	}
 
@@ -158,9 +105,6 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 	// If the current node is an end node, end the dialogue
 	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
-		DialogueUIPtr->RemoveFromParent();
-		DialogueUIPtr = nullptr;
-
 		EDialogueAction Action = EDialogueAction::None;
 		FString ActionData = TEXT("");
 		if (CurrentNodePtr != nullptr) {
@@ -169,22 +113,14 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			ActionData = EndNodeInfo->ActionData;
 		}
 
-		// Restore player input settings and set the camera target after dialogue ends
-		CameraManager->SetViewTarget(DialogueAssetPtr->DefaultCamera);
-		PlayerControllerPtr->SetShowMouseCursor(false);
-		PlayerControllerPtr->SetIgnoreLookInput(false);
-		PlayerControllerPtr->SetIgnoreMoveInput(false);
-
-		if (OnDialogueEndedCallback.IsBound()) {
-			OnDialogueEndedCallback.Execute(Action, ActionData);
-		}
+		DialogueSubsystem->OnDialogueEnded.Broadcast(Action, ActionData);
 	}
 }
 
 float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
 {
 	// Convert the FText to an FString to get its length
-	FString Buffer = Text;
+	const FString Buffer = Text;
 
 	// Calculate the length of the text in seconds at a reading rate of 15 words per second
 	float Length = Buffer.Len();

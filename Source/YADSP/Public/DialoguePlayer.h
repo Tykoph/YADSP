@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueAction.h"
-#include "DialogueCamera.h"
+#include "DialogueSubsystem.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "DialoguePlayer.generated.h"
@@ -24,27 +24,26 @@ public:
 	/**
 	 * @brief Starts playing the given dialogue asset.
 	 *
-	 * Will start playing the dialogue asset with the given player controller and cameras.
+	 * Will start playing the dialogue asset with the given player controller.
 	 * When the dialogue ends, the given callback will be called with the action and data of the action.
 	 *
 	 * @param DialogueAsset The dialogue asset to play.
 	 * @param PlayerController The player controller to use for the dialogue.
-	 * @param Cameras The cameras to use for the dialogue.
 	 * @param OnDialogueEnded The callback to call when the dialogue ends.
 	 */
 	UFUNCTION()
-	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, TArray<ADialogueCamera*> Cameras, FDialogueEndCallback OnDialogueEnded);
+	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded);
 
 	/**
 	 * @brief Chooses the option at the given index in the current dialogue node.
 	 *
 	 * Will choose the option at the given index in the current dialogue node.
 	 * If the option is a connection to another node, the player will be moved to that node.
-	 * If the option is a camera, the camera will be activated.
 	 * If the option is an action, the action will be called with the given data.
 	 *
 	 * @param Index The index of the option to choose.
 	 */
+	UFUNCTION()
 	void ChooseOptionAtIndex(int Index);
 
 	/**
@@ -70,16 +69,17 @@ private:
 	UDialogueRuntimeGraphNode* CurrentNodePtr = nullptr;
 
 	UPROPERTY()
-	class UDialogueUIController* DialogueUIPtr = nullptr;
-
-	UPROPERTY()
 	APlayerController* PlayerControllerPtr = nullptr;
 
+	UPROPERTY()
+	UDialogueSubsystem* DialogueSubsystem;
+	
 	float CurrentSkipTime = 0.0f;
 
 	FTimerHandle AutoSkipTimerHandle;
 
 	FDialogueEndCallback OnDialogueEndedCallback;
+	
 	
 	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
 };

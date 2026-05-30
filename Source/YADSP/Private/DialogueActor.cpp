@@ -4,10 +4,6 @@
 // Constructor: Initializes the dialogue actor, sets up editor sprite component and registers blueprint compilation callback
 ADialogueActor::ADialogueActor()
 {
-	if (GEditor) {
-		GEditor->OnBlueprintCompiled().AddUObject(this, &ADialogueActor::UpdateArrayLenght);
-	}
-
 	DialoguePlayer = CreateDefaultSubobject<UDialoguePlayer>("DialoguePlayer");
 
 #if WITH_EDITORONLY_DATA
@@ -49,19 +45,11 @@ ADialogueActor::~ADialogueActor()
 void ADialogueActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
-	UpdateArrayLenght();
 }
 
 void ADialogueActor::PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const
 {
-	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, CameraActors, OnDialogueEnded);
-}
-
-void ADialogueActor::UpdateArrayLenght()
-{
-	UE_LOG(LogTemp, Log, TEXT("UpdateArrayLenght"));
-	if (DialogueSystem == nullptr) { return; }
-	CameraActors.SetNum(DialogueSystem->CameraStringArray.Num());
+	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, OnDialogueEnded);
 }
 
 // Returns the editor-only billboard component used for visualization in the editor

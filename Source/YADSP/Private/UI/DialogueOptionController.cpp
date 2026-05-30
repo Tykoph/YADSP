@@ -3,7 +3,6 @@
 #include "UI/DialogueOptionController.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "UI/NewQuestController.h"
 
 UDialogueOptionController::UDialogueOptionController(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {

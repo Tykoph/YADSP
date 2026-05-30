@@ -78,19 +78,6 @@ protected:
 	UBillboardComponent* GetEditorSpriteComponent() const;
 
 private:
-	/**
-	 * @brief Updates the length of TalkingActors and CameraActors arrays.
-	 *
-	 * This method ensures that the arrays for talking actors and cameras match
-	 * the size of corresponding arrays in the DialogueSystem. It is called:
-	 * - When properties are changed in the editor
-	 * - When blueprints are compiled.
-	 * 
-	 * If DialogueSystem is null, no updates are performed.
-	 */
-	UFUNCTION()
-	void UpdateArrayLenght();
-
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UDialoguePlayer> DialoguePlayer;
 };

@@ -29,10 +29,6 @@ public: // Properties
 	UPROPERTY()
 	UDialogueSystemRuntimeGraph* Graph = nullptr;
 
-	// Array of actor references that can be speakers in this dialogue
-	UPROPERTY()
-	TArray<AActor*> SpeakerActors;
-
 	// DataTable containing speakers names
 	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
 	UDataTable* SpeakerDataTable;
@@ -40,20 +36,7 @@ public: // Properties
 	// DataTable containing dialogue text
 	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
 	UDataTable* DialogueDataTable;
-
-	// Default camera to use when no specific camera is active.
-	// By default, keeps the active camera at the start of the dialogue.
-	UPROPERTY()
-	AActor* DefaultCamera = nullptr;
-
-	//Array of specialized dialogue cameras available for this dialogue
-	UPROPERTY()
-	TArray<ADialogueCamera*> CameraActors;
-
-	// String identifiers for cameras, maps positionally to CameraActors
-	UPROPERTY(EditAnywhere)
-	TArray<FString> CameraStringArray;
-
+	
 	/**
 	 * Sets a callback function to be executed before the dialogue system is saved
 	 * @param OnPreSaveListener Function to be called before saving

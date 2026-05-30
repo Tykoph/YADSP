@@ -88,23 +88,3 @@ FString UDialogueNodeInfoText::GetDialogueText(const FName& DialogueText) const
 	
 	return LocalizedText;
 }
-
-TArray<FString> UDialogueNodeInfoText::GetCameraStringArray() const
-{
-	if (DialogueSystem == nullptr) {
-		return TArray<FString>();
-	}
-	return DialogueSystem->CameraStringArray;
-}
-
-int UDialogueNodeInfoText::GetCameraIndex() const
-{
-	if (DialogueSystem == nullptr) {
-		return -1;
-	}
-	if (CameraName.IsEmpty()) {
-		return -1;
-	}
-	
-	return DialogueSystem->CameraStringArray.Find(CameraName);
-}

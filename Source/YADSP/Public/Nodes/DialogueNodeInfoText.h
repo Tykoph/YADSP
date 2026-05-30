@@ -24,9 +24,6 @@ public:
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueOptions"))
 	FName DialogueID;
 
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetCameraStringArray"))
-	FString CameraName;
-
 	UPROPERTY(EditAnywhere)
 	USoundCue* DialogueSound;
 
@@ -51,10 +48,4 @@ public:
 	
 	UFUNCTION()
 	FString GetDialogueText(const FName& DialogueText) const;
-	
-	UFUNCTION()
-	TArray<FString> GetCameraStringArray() const;
-
-	UFUNCTION()
-	int GetCameraIndex() const;
 };
