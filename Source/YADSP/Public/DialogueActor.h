@@ -45,12 +45,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	UDialogueSystem* DialogueSystem = nullptr;
 
-	UPROPERTY(EditAnywhere, EditFixedSize)
-	TArray<AActor*> TalkingActors;
-
-	UPROPERTY(EditAnywhere, EditFixedSize)
-	TArray<ADialogueCamera*> CameraActors;
-
 	/**
 	 * @brief Initiates playback of the dialogue sequence.
 	 *

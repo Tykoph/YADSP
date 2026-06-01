@@ -33,7 +33,6 @@ public class YADSP : ModuleRules
 				"InputCore",
 				"EnhancedInput",
 				"UMG",
-				"CinematicCamera", 
 				"GSheetLocSystemPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -45,11 +44,7 @@ public class YADSP : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				"EnhancedInput",
-				"UMG",
-				"CinematicCamera",
 				"UnrealEd",
 				"GSheetLocSystemPlugin",
 				// ... add private dependencies that you statically link with here ...

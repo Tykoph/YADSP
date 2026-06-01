@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
-#include "DialogueNodeInfoAnimation.generated.h"
+#include "DialogueNodeInfoGameAction.generated.h"
 
 UCLASS(BlueprintType)
-class YADSP_API UDialogueNodeInfoAnimation : public UDialogueNodeInfoBase
+class YADSP_API UDialogueNodeInfoGameAction : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 
 public:
+
 };

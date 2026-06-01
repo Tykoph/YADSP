@@ -11,8 +11,6 @@ enum class EDialogueNodeType
 	StartNode,
 	DialogueNode,
 	EndNode,
-	ActionNode,
+	GameActionNode,
 	TextNode,
-	CameraNode,
-	AnimationNode,
 };

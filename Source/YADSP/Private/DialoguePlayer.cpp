@@ -5,7 +5,7 @@
 #include "DialogueSubsystem.h"
 #include "DialogueSystem.h"
 
-#include "Nodes/DialogueNodeInfoAction.h"
+#include "Nodes/DialogueNodeInfoGameAction.h"
 #include "Nodes/DialogueNodeInfoEnd.h"
 #include "Nodes/DialogueNodeInfoText.h"
 
@@ -91,29 +91,23 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	}
 
 	// If the current node is an action node, execute the action
-	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::ActionNode) {
+	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::GameActionNode) {
 		FString ActionData = TEXT("");
-		UDialogueNodeInfoAction* ActionNodeInfo = Cast<UDialogueNodeInfoAction>(CurrentNodePtr->NodeInfo);
-		EDialogueAction Action = ActionNodeInfo->Action;
-		ActionData = ActionNodeInfo->ActionData;
+		UDialogueNodeInfoGameAction* ActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNodePtr->NodeInfo);
 
 		if (OnDialogueEndedCallback.IsBound()) {
-			OnDialogueEndedCallback.Execute(Action, ActionData);
+			OnDialogueEndedCallback.Execute();
 		}
 		ChooseOptionAtIndex(0);
 	}
 
 	// If the current node is an end node, end the dialogue
 	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
-		EDialogueAction Action = EDialogueAction::None;
-		FString ActionData = TEXT("");
 		if (CurrentNodePtr != nullptr) {
 			UDialogueNodeInfoEnd* EndNodeInfo = Cast<UDialogueNodeInfoEnd>(CurrentNodePtr->NodeInfo);
-			Action = EndNodeInfo->Action;
-			ActionData = EndNodeInfo->ActionData;
 		}
 
-		DialogueSubsystem->OnDialogueEnded.Broadcast(Action, ActionData);
+		DialogueSubsystem->OnDialogueEnded.Broadcast();
 	}
 }
 

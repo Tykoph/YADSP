@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueAction.h"
 #include "DialogueSubsystem.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "DialoguePlayer.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueEndCallback, EDialogueAction, Action, FString, Data);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDialogueActionCallback, EDialogueAction, Action, FString, Data);
+DECLARE_DYNAMIC_DELEGATE(FDialogueEndCallback);
+DECLARE_DYNAMIC_DELEGATE(FDialogueActionCallback);
 
 /**
  * @brief A component that manages dialogue playback within the game.

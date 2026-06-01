@@ -2,7 +2,7 @@
 
 #include "DialogueGraphSchema.h"
 
-#include "Nodes/DialogueGraphNodeAction.h"
+#include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeAnimation.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeText.h"
@@ -32,7 +32,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 
 	TSharedPtr<FNewNodeAction> NewActionNodeAction(
 		new FNewNodeAction(
-			UDialogueGraphNodeAction::StaticClass(),
+			UDialogueGraphNodeGameAction::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New Action Node")),
 			FText::FromString(TEXT("Makes a new Action node")),

@@ -3,7 +3,7 @@
 #include "YADSPEditor/Public/Compiler/DialogueGraphCompiler.h"
 
 #include "DialogueSystemRuntimeGraph.h"
-#include "Nodes/DialogueGraphNodeAction.h"
+#include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeAnimation.h"
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
@@ -107,8 +107,8 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 		case EDialogueNodeType::TextNode:
 			NewNode = NewObject<UDialogueGraphNodeText>(WorkingGraphEditor);
 			break;
-		case EDialogueNodeType::ActionNode:
-			NewNode = NewObject<UDialogueGraphNodeAction>(WorkingGraphEditor);
+		case EDialogueNodeType::GameActionNode:
+			NewNode = NewObject<UDialogueGraphNodeGameAction>(WorkingGraphEditor);
 			break;
 		case EDialogueNodeType::AnimationNode:
 			NewNode = NewObject<UDialogueGraphNodeAnimation>(WorkingGraphEditor);
