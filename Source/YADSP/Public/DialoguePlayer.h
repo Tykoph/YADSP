@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_DELEGATE(FDialogueActionCallback);
 /**
  * @brief A component that manages dialogue playback within the game.
  */
-UCLASS()
+UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class YADSP_API UDialoguePlayer : public UActorComponent
 {
 	GENERATED_BODY()
@@ -30,7 +30,7 @@ public:
 	 * @param PlayerController The player controller to use for the dialogue.
 	 * @param OnDialogueEnded The callback to call when the dialogue ends.
 	 */
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue", Category = "YADSP"))
 	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded);
 
 	/**

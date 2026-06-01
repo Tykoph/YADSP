@@ -42,11 +42,6 @@ ADialogueActor::~ADialogueActor()
 	}
 }
 
-void ADialogueActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-}
-
 void ADialogueActor::PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const
 {
 	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, OnDialogueEnded);

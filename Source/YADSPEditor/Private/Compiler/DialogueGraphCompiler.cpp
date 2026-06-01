@@ -4,7 +4,6 @@
 
 #include "DialogueSystemRuntimeGraph.h"
 #include "Nodes/DialogueGraphNodeGameAction.h"
-#include "Nodes/DialogueGraphNodeAnimation.h"
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeStart.h"
@@ -109,9 +108,6 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 			break;
 		case EDialogueNodeType::GameActionNode:
 			NewNode = NewObject<UDialogueGraphNodeGameAction>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::AnimationNode:
-			NewNode = NewObject<UDialogueGraphNodeAnimation>(WorkingGraphEditor);
 			break;
 		default:
 			// Log an error for unknown node types

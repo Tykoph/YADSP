@@ -85,7 +85,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			CombinedSpeakerNames += NodeInfo->GetSpeakerName(ID);
 		}
 
-		DialogueSubsystem->OnDialogueLineRequested.Broadcast(NodeInfo->GetDialogueText(NodeInfo->DialogueID), CombinedSpeakerNames, NodeInfo->DialogueResponses);
+		DialogueSubsystem->OnDialogueLineRequested.Broadcast(FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)), FText::FromString(CombinedSpeakerNames), NodeInfo->DialogueResponses);
 		
 		AutoSkipDialogueSelector(NodeInfo);
 	}

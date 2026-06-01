@@ -30,17 +30,6 @@ class YADSP_API ADialogueActor : public AActor
 	ADialogueActor();
 	virtual ~ADialogueActor() override;
 
-	/**
-	 * @brief Called when a property is changed in the editor.
-	 *
-	 * This method is triggered whenever a property of the DialogueActor is modified in the editor.
-	 * It ensures that the arrays for talking actors and cameras are properly sized according to
-	 * the current DialogueSystem configuration.
-	 *
-	 * @param PropertyChangedEvent Information about which property was changed
-	 */
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
 public:
 	UPROPERTY(EditAnywhere)
 	UDialogueSystem* DialogueSystem = nullptr;

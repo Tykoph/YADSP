@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "DialogueSystemRuntimeGraph.h"
 #include "UObject/Object.h"
-#include "DialogueCamera.h"
 #include "DialogueSystem.generated.h"
 
 /**

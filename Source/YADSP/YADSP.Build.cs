@@ -33,6 +33,8 @@ public class YADSP : ModuleRules
 				"InputCore",
 				"EnhancedInput",
 				"UMG",
+				"Slate",
+				"SlateCore",
 				"GSheetLocSystemPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
