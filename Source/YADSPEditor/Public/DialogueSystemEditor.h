@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
@@ -31,5 +31,7 @@ private:
 	}
 
 	TSharedPtr<FSlateStyleSet> DGStyleSet = nullptr;
+	
 	TSharedPtr<struct FDialoguePinFactory> PinFactory = nullptr;
+	TSharedPtr<struct FDialogueGraphNodeFactory> NodeFactory = nullptr;
 };

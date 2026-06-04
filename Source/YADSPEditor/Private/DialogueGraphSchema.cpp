@@ -1,11 +1,11 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSchema.h"
-#include "DialogueGraphNodeAction.h"
-#include "DialogueGraphNodeAnimation.h"
-#include "DialogueGraphNodeStart.h"
-#include "DialogueGraphNodeEnd.h"
-#include "DialogueGraphNodeText.h"
+
+#include "Nodes/DialogueGraphNodeGameAction.h"
+#include "Nodes/DialogueGraphNodeEnd.h"
+#include "Nodes/DialogueGraphNodeText.h"
+#include "Nodes/DialogueGraphNodeStart.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -29,30 +29,20 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	TSharedPtr<FNewNodeAction> NewActionNodeAction(
+	TSharedPtr<FNewNodeAction> NewActionNodeGameAction(
 		new FNewNodeAction(
-			UDialogueGraphNodeAction::StaticClass(),
+			UDialogueGraphNodeGameAction::StaticClass(),
 			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("New Action Node")),
-			FText::FromString(TEXT("Makes a new Action node")),
+			FText::FromString(TEXT("New GameAction Node")),
+			FText::FromString(TEXT("Makes a new GameAction node")),
 			0
 		)
 	);
-
-	TSharedPtr<FNewNodeAction> NewAnimationNodeAction(
-		new FNewNodeAction(
-			UDialogueGraphNodeAnimation::StaticClass(),
-			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("New Animation Node")),
-			FText::FromString(TEXT("Makes a new Animation node")),
-			0
-		)
-	);
+	
 
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewTextNodeAction);
-	ContextMenuBuilder.AddAction(NewActionNodeAction);
-	ContextMenuBuilder.AddAction(NewAnimationNodeAction);
+	ContextMenuBuilder.AddAction(NewActionNodeGameAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

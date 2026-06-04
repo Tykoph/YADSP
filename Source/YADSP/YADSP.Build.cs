@@ -1,5 +1,5 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
-// Copyright 2025 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -23,8 +23,7 @@ public class YADSP : ModuleRules
 				// ... add other private include paths required here ...
 			}
 		);
-
-
+		
 		PublicDependencyModuleNames.AddRange(
 			new[]
 			{
@@ -34,7 +33,9 @@ public class YADSP : ModuleRules
 				"InputCore",
 				"EnhancedInput",
 				"UMG",
-				"CinematicCamera",
+				"Slate",
+				"SlateCore",
+				"GSheetLocSystemPlugin",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -45,13 +46,9 @@ public class YADSP : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				"EnhancedInput",
-				"UMG",
-				"CinematicCamera",
-				"YADSPEditor",
 				"UnrealEd",
+				"GSheetLocSystemPlugin",
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

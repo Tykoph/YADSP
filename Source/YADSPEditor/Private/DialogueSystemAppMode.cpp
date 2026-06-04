@@ -1,9 +1,9 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueSystemAppMode.h"
 #include "DialogueGraphEditorApp.h"
-#include "DialogueSystemPrimaryTabFactory.h"
-#include "DialogueSystemPropertiesTabFactory.h"
+#include "Factory/DialogueSystemPrimaryTabFactory.h"
+#include "Factory/DialogueSystemPropertiesTabFactory.h"
 
 DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {

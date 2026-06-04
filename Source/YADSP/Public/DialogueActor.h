@@ -1,4 +1,4 @@
-﻿// Copyright 2025 Tom Duby. All Rights Reserved.
+﻿// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "DialoguePlayer.h"
 #include "Components/BillboardComponent.h"
-#include "DialogueActor.Generated.h"
+#include "DialogueActor.generated.h"
 
 class UDialoguePlayer;
 
@@ -30,26 +30,9 @@ class YADSP_API ADialogueActor : public AActor
 	ADialogueActor();
 	virtual ~ADialogueActor() override;
 
-	/**
-	 * @brief Called when a property is changed in the editor.
-	 *
-	 * This method is triggered whenever a property of the DialogueActor is modified in the editor.
-	 * It ensures that the arrays for talking actors and cameras are properly sized according to
-	 * the current DialogueSystem configuration.
-	 *
-	 * @param PropertyChangedEvent Information about which property was changed
-	 */
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
 public:
 	UPROPERTY(EditAnywhere)
 	UDialogueSystem* DialogueSystem = nullptr;
-
-	UPROPERTY(EditAnywhere, EditFixedSize)
-	TArray<AActor*> TalkingActors;
-
-	UPROPERTY(EditAnywhere, EditFixedSize)
-	TArray<ADialogueCamera*> CameraActors;
 
 	/**
 	 * @brief Initiates playback of the dialogue sequence.
@@ -78,19 +61,6 @@ protected:
 	UBillboardComponent* GetEditorSpriteComponent() const;
 
 private:
-	/**
-	 * @brief Updates the length of TalkingActors and CameraActors arrays.
-	 *
-	 * This method ensures that the arrays for talking actors and cameras match
-	 * the size of corresponding arrays in the DialogueSystem. It is called:
-	 * - When properties are changed in the editor
-	 * - When blueprints are compiled.
-	 * 
-	 * If DialogueSystem is null, no updates are performed.
-	 */
-	UFUNCTION()
-	void UpdateArrayLenght();
-
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UDialoguePlayer> DialoguePlayer;
 };

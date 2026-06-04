@@ -1,18 +1,48 @@
-// Copyright 2025 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "UI/DialogueUIController.h"
+
+#include "DialogueSubsystem.h"
 #include "Fonts/FontMeasure.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
 
-UDialogueUIController::UDialogueUIController(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+
+void UDialogueUIController::NativeConstruct()
 {
+	Super::NativeConstruct();
+	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>();
+	DialogueSubsystem->OnDialogueLineRequested.AddDynamic(this, &UDialogueUIController::UpdateDisplay);
+	DialogueSubsystem->OnDialogueEnded.AddDynamic(this, &UDialogueUIController::OnDialogueEnded);
 }
 
-UDialogueUIController* UDialogueUIController::CreateInstance(APlayerController* PlayerController)
+void UDialogueUIController::NativeDestruct()
 {
-	UDialogueUILoader* Loader = NewObject<UDialogueUILoader>(PlayerController);
-	return Cast<UDialogueUIController>(CreateWidget(PlayerController, Loader->WidgetTemplate));
+	Super::NativeDestruct();
+	DialogueSubsystem->OnDialogueLineRequested.RemoveDynamic(this, &UDialogueUIController::UpdateDisplay);
+	DialogueSubsystem->OnDialogueEnded.RemoveDynamic(this, &UDialogueUIController::OnDialogueEnded);
+}
+
+void UDialogueUIController::UpdateDisplay_Implementation(const FText& Text, const FText& Speaker, const TArray<FText>& Options)
+{
+	SpeakerName->SetText(Speaker);
+	DialogueText->SetText(Text);
+	IsTextWrapping(DialogueText, Text.ToString());
+	
+	ResponseBox->ClearChildren();
+	DialogueOptionsWidgets.Empty();
+	
+	DialogueOptions = Options;
+	DisplayDialogueOptions();
+}
+
+void UDialogueUIController::DisplayDialogueOptions()
+{
+	for (int i = 0; i < DialogueOptions.Num(); ++i) {
+		DialogueOptionsWidgets.Add(CreateWidget(this, DialogueOptionClass));
+		ResponseBox->AddChild(DialogueOptionsWidgets[i]);
+		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->SetDialogueOption(DialogueOptions[i], i);
+	}
 }
 
 void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FString& Text)
@@ -34,9 +64,7 @@ void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FSt
 	}
 }
 
-UDialogueUILoader::UDialogueUILoader()
+void UDialogueUIController::OnDialogueEnded()
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> WidgetTemplateFinder(*WidgetPath);
-	WidgetTemplate = WidgetTemplateFinder.Class;
+	RemoveFromParent();
 }
-

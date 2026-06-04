@@ -1,9 +1,8 @@
-// Copyright 2025 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SGraphPanel.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
 /**
@@ -15,7 +14,6 @@
 class DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
-	
 	/**
 	 * Registers tab spawners with the provided tab manager.
 	 * Sets up the available tabs for the dialogue graph editor interface.
@@ -62,29 +60,19 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor(0.15f, 0.2f, 0.5f, 0.5f); }
 	virtual FString GetDocumentationLink() const override { return TEXT("doc link"); }
 
-	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
-	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
+	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override
+	{
+	}
+
+	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override
+	{
+	}
 
 	virtual void OnClose() override;
-	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event);
-	void OnWorkingGraphAssetPreSave();
+	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const;
+	void OnWorkingGraphAssetPreSave() const;
 
 protected:
-	
-	/**
-	 * Updates the working asset with the current state of the graph editor.
-	 * Synchronizes changes made in the graph editor UI with the underlying asset data structure.
-	 * This ensures that visual changes in the editor are properly reflected in the asset.
-	 */
-	void UpdateWorkingAssetFromGraph() const;
-	
-	/**
-	 * Updates the graph editor UI with the current state of the working asset.
-	 * Synchronizes the visual representation in the editor with the underlying asset data.
-	 * This ensures that changes in the asset are properly reflected in the graph editor.
-	 */
-	void UpdateGraphEditorFromWorkingAsset() const;
-	
 	/**
 	 * Retrieves the currently selected node from the graph editor.
 	 * @param SelectionSet The set of currently selected graph elements
@@ -94,11 +82,9 @@ protected:
 
 private:
 	// This property holds the reference to the currently edited asset.
-	UPROPERTY()
 	UDialogueSystem* WorkingAsset = nullptr;
 
 	// This property holds the reference to the currently edited graph in the editor.
-	UPROPERTY()
 	UEdGraph* WorkingGraphEditor = nullptr;
 
 	// The slate widget for the graph editor
