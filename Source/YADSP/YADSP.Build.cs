@@ -36,6 +36,7 @@ public class YADSP : ModuleRules
 				"Slate",
 				"SlateCore",
 				"GSheetLocSystemPlugin",
+				"GameActionPlugin"
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);

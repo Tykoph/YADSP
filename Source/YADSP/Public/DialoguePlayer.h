@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DialogueSubsystem.h"
 #include "DialogueSystemRuntimeGraph.h"
+#include "GameActionSubsystem.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "DialoguePlayer.generated.h"
 
@@ -30,7 +31,7 @@ public:
 	 * @param PlayerController The player controller to use for the dialogue.
 	 * @param OnDialogueEnded The callback to call when the dialogue ends.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue", Category = "YADSP"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue", Category = "YADSP", AutoCreateRefTerm = "OnDialogueEnded"))
 	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded);
 
 	/**
@@ -61,6 +62,9 @@ public:
 	void AutoSkipDialogue(float Time);
 
 private:
+	UFUNCTION()
+	void OnGameActionFinished();
+	
 	UPROPERTY()
 	UDialogueSystem* DialogueAssetPtr = nullptr;
 
@@ -73,12 +77,14 @@ private:
 	UPROPERTY()
 	UDialogueSubsystem* DialogueSubsystem;
 	
+	UPROPERTY()
+	UGameActionSubsystem* GameActionSubsystem;
+	
 	float CurrentSkipTime = 0.0f;
 
 	FTimerHandle AutoSkipTimerHandle;
 
 	FDialogueEndCallback OnDialogueEndedCallback;
-	
 	
 	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
 };

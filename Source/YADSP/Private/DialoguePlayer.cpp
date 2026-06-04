@@ -6,7 +6,6 @@
 #include "DialogueSystem.h"
 
 #include "Nodes/DialogueNodeInfoGameAction.h"
-#include "Nodes/DialogueNodeInfoEnd.h"
 #include "Nodes/DialogueNodeInfoText.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -17,7 +16,8 @@ DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded)
 {
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>(); 
-	
+	GameActionSubsystem = GetWorld()->GetSubsystem<UGameActionSubsystem>(); 
+
 	if (DialogueAsset == nullptr) {
 		UE_LOG(DialoguePlayerSub, Error, TEXT("No dialogue asset provided"));
 		return;
@@ -92,21 +92,49 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 
 	// If the current node is an action node, execute the action
 	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::GameActionNode) {
-		FString ActionData = TEXT("");
-		UDialogueNodeInfoGameAction* ActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNodePtr->NodeInfo);
+		const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNodePtr->NodeInfo);
 
-		if (OnDialogueEndedCallback.IsBound()) {
-			OnDialogueEndedCallback.Execute();
+		if (GameActionNodeInfo->GameAction.Num() > 0) {
+			const FGameActionContext NewContext;
+			
+			TArray<UGameActionBase*> InstancedActions;
+			for (const UGameActionBase* ActionTemplate : GameActionNodeInfo->GameAction) {
+				if (ActionTemplate) {
+					UGameActionBase* InstancedAction = DuplicateObject<UGameActionBase>(ActionTemplate, this);
+					InstancedActions.Add(InstancedAction);
+				}
+			}
+			
+			if (GameActionNodeInfo->GameAction.Num() == 1) {
+				FOnGameActionCompleted OnCompleted;
+				OnCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+				
+				GameActionSubsystem->ExecuteGameAction(InstancedActions[0], NewContext, OnCompleted);
+			}
+			else {
+				FOnGameActionSequenceCompleted OnSequenceCompleted;
+				OnSequenceCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+			
+				FOnParallelGameActionCompleted OnParallelCompleted;
+				OnParallelCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+				
+				switch (GameActionNodeInfo->GameActionExecutionMode) {
+					case EGameActionExecutionMode::Sequence:
+						GameActionSubsystem->ExecuteGameActionSequence(InstancedActions, NewContext, OnSequenceCompleted);
+						break;
+					case EGameActionExecutionMode::Parallel:
+						GameActionSubsystem->ExecuteParallelGameAction(InstancedActions, NewContext, OnParallelCompleted);
+						break;
+				}
+			}
 		}
-		ChooseOptionAtIndex(0);
+		else {
+			ChooseOptionAtIndex(0);
+		}
 	}
 
 	// If the current node is an end node, end the dialogue
 	else if (CurrentNodePtr == nullptr || CurrentNodePtr->NodeType == EDialogueNodeType::EndNode) {
-		if (CurrentNodePtr != nullptr) {
-			UDialogueNodeInfoEnd* EndNodeInfo = Cast<UDialogueNodeInfoEnd>(CurrentNodePtr->NodeInfo);
-		}
-
 		DialogueSubsystem->OnDialogueEnded.Broadcast();
 	}
 }
@@ -134,6 +162,11 @@ void UDialoguePlayer::AutoSkipDialogue(float Time)
 		// When the timer completes, choose the first option in the current node
 		ChooseOptionAtIndex(0);
 	}, Time, false);
+}
+
+void UDialoguePlayer::OnGameActionFinished()
+{
+		ChooseOptionAtIndex(0);
 }
 
 void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo)
