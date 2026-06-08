@@ -18,12 +18,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	FString Title;
 	
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerOptions"))
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerFromTable"))
 	TArray<FName> SpeakerIDs;
 
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueOptions"))
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
 	FName DialogueID;
-
+	
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
+	TArray<FName> DialogueResponses;
+	
 	UPROPERTY(EditAnywhere)
 	USoundCue* DialogueSound;
 
@@ -33,19 +36,19 @@ public:
 	UPROPERTY(EditAnywhere, meta=(EditCondition="SkipDialogue == ESkipDialogue::AutoSkipAfterTime", ClampMin = 0))
 	float SkipAfterSeconds;
 
-	UPROPERTY(EditAnywhere)
-	TArray<FText> DialogueResponses;
-
 public:
 	UFUNCTION()
-	TArray<FString> GetSpeakerOptions() const;
+	TArray<FString> GetSpeakerFromTable() const;
 
 	UFUNCTION()
 	FString GetSpeakerName(const FName& SpeakerName) const;
 
 	UFUNCTION()
-	TArray<FString> GetDialogueOptions() const;
+	TArray<FString> GetDialogueFromTable() const;
 	
 	UFUNCTION()
 	FString GetDialogueText(const FName& DialogueText) const;
+	
+	UFUNCTION()
+	TArray<FString> GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const;
 };

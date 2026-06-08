@@ -5,7 +5,7 @@
 #include "DialogueSystem.h"
 #include "GSheetLocSystemLibrary.h"
 
-TArray<FString> UDialogueNodeInfoText::GetSpeakerOptions() const
+TArray<FString> UDialogueNodeInfoText::GetSpeakerFromTable() const
 {
 	TArray<FString> Options;
 
@@ -47,7 +47,7 @@ FString UDialogueNodeInfoText::GetSpeakerName(const FName& SpeakerName) const
 	return LocalizedName;
 }
 
-TArray<FString> UDialogueNodeInfoText::GetDialogueOptions() const
+TArray<FString> UDialogueNodeInfoText::GetDialogueFromTable() const
 {
 	TArray<FString> Options;
 
@@ -86,5 +86,31 @@ FString UDialogueNodeInfoText::GetDialogueText(const FName& DialogueText) const
 	
 	FString LocalizedText = UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle);
 	
+	return LocalizedText;
+}
+
+TArray<FString> UDialogueNodeInfoText::GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const
+{
+	TArray<FString> NullText;
+
+	if (DialogueSystem == nullptr) {
+		return NullText;
+	}
+	if (DialogueOptionText.Num() <= 0) {
+		return NullText;
+	}
+	if (DialogueSystem->DialogueDataTable == nullptr) {
+		return NullText;
+	}
+
+	FDataTableRowHandle DataTableRowHandle;
+	DataTableRowHandle.DataTable = DialogueSystem->DialogueDataTable;
+	TArray<FString> LocalizedText;
+	
+	for (const FName Text : DialogueOptionText) {
+		DataTableRowHandle.RowName = Text;
+		LocalizedText.Add(UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle));
+	} 
+		
 	return LocalizedText;
 }

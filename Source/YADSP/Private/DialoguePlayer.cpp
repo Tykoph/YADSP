@@ -85,11 +85,14 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			CombinedSpeakerNames += NodeInfo->GetSpeakerName(ID);
 		}
 
-		DialogueSubsystem->OnDialogueLineRequested.Broadcast(FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)), FText::FromString(CombinedSpeakerNames), NodeInfo->DialogueResponses);
+		DialogueSubsystem->OnDialogueLineRequested.Broadcast(
+			FText::FromString(NodeInfo->GetDialogueText(NodeInfo->DialogueID)),
+			FText::FromString(CombinedSpeakerNames), 
+			StringArrayConverter(NodeInfo->GetDialogueOptionText(NodeInfo->DialogueResponses)));
 		
 		AutoSkipDialogueSelector(NodeInfo);
 	}
-
+	
 	// If the current node is an action node, execute the action
 	else if (CurrentNodePtr != nullptr && CurrentNodePtr->NodeType == EDialogueNodeType::GameActionNode) {
 		const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNodePtr->NodeInfo);
@@ -196,3 +199,16 @@ void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* Node
 		}
 	}
 }
+
+
+TArray<FText> UDialoguePlayer::StringArrayConverter(TArray<FString> StringArray)
+{
+	TArray<FText> Result;
+
+	for (FString& String : StringArray) {
+		Result.Add(FText::FromString(String));
+	}
+	
+	return Result;
+}
+

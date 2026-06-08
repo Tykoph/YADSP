@@ -69,7 +69,7 @@ void UDialogueGraphNodeText::CreateDefaultOutputPin()
 {
 	FString DefaultResponse = TEXT("Continue");
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
-	GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(DefaultResponse));
+	GetDialogueNodeInfo()->DialogueResponses.Add(FName(DefaultResponse));
 }
 
 void UDialogueGraphNodeText::SyncWithNodeResponse()
@@ -92,7 +92,7 @@ void UDialogueGraphNodeText::SyncWithNodeResponse()
 	}
 
 	int Index = 1;
-	for (const FText& Response : NodeInfo->DialogueResponses) {
+	for (const FName& Response : NodeInfo->DialogueResponses) {
 		GetPinAt(Index)->PinName = FName(Response.ToString());
 		Index++;
 	}

@@ -48,13 +48,13 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 	
 	// Initialize Options
 	SpeakerOptions.Empty();
-	TArray<FString> Speakers = NodeInfo->GetSpeakerOptions();
+	TArray<FString> Speakers = NodeInfo->GetSpeakerFromTable();
 	for (const FString& S : Speakers) {
 		SpeakerOptions.Add(MakeShared<FString>(S));
 	}
 	
 	DialogueOptions.Empty();
-	TArray<FString> Dialogues = NodeInfo->GetDialogueOptions();
+	TArray<FString> Dialogues = NodeInfo->GetDialogueFromTable();
 	for (const FString& D : Dialogues) {
 		DialogueOptions.Add(MakeShared<FString>(D));
 	}

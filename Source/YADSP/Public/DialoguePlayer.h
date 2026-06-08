@@ -87,4 +87,6 @@ private:
 	FDialogueEndCallback OnDialogueEndedCallback;
 	
 	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
+	static TArray<FText> StringArrayConverter(TArray<FString> StringArray);
+
 };
