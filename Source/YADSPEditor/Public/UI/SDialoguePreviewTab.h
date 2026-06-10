@@ -1,0 +1,33 @@
+// Copyright 2026 Tom Duby. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "DialogueGraphEditorApp.h"
+#include "Components/RichTextBlockDecorator.h"
+#include "Widgets/SCompoundWidget.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Widgets/Text/SRichTextBlock.h"
+
+class YADSPEDITOR_API SDialoguePreviewTab : public SCompoundWidget
+{
+public:
+	SLATE_BEGIN_ARGS(SDialoguePreviewTab) {}
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArgs, TSharedPtr<DialogueGraphEditorApp> InApp);
+
+	virtual ~SDialoguePreviewTab() override;
+
+private:
+	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
+	void RefreshPreview();
+
+	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
+	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
+	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;
+	TArray<URichTextBlockDecorator*> InstantiatedDecorators;
+	FGraphPanelSelectionSet CachedSelection;
+	FDelegateHandle SelectionChangedHandle;
+	
+};

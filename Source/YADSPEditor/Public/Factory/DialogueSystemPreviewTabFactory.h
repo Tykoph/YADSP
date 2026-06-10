@@ -1,0 +1,18 @@
+// Copyright 2026 Tom Duby. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "WorkflowOrientedApp/WorkflowTabFactory.h"
+
+class YADSPEDITOR_API DialogueSystemPreviewTabFactory : public FWorkflowTabFactory
+{
+public:
+	DialogueSystemPreviewTabFactory(TSharedPtr<class DialogueGraphEditorApp> App);
+
+	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
+	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
+
+private:
+	TWeakPtr<class DialogueGraphEditorApp> DialogueGraphApp;
+};

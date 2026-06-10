@@ -1,7 +1,11 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSettings.h"
-
+#include "Engine/DataTable.h"
+#include "Styling/SlateStyle.h"
+#include "Components/RichTextBlock.h"
+#include "Components/RichTextBlockImageDecorator.h"
+#include "Brushes/SlateImageBrush.h"
 UDialogueGraphSettings::UDialogueGraphSettings()
 {
 	InitLanguageOptions();
@@ -27,11 +31,28 @@ const TArray<TSharedPtr<FString>>* UDialogueGraphSettings::GetLanguageOptions() 
 
 void UDialogueGraphSettings::InitLanguageOptions()
 {
-	LanguageOptions.Add(MakeShared<FString>(TEXT("zh-Hans")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("en-150")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("en-US")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("fr")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("ja")));
+	LanguageOptions.Add(MakeShared<FString>(TEXT("zh-Hans")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("pt-BR")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("es-ES")));
+}
+
+TSharedPtr<ISlateStyle> UDialogueGraphSettings::GetRichTextStyleSet()
+{
+	if (!CachedStyleInstance.IsValid()) {
+		CachedStyleInstance = MakeShareable(new FSlateStyleSet(TEXT("DialogueRichTextStyle")));
+		
+		UDataTable* Table = PreviewRichTextStyleSet.LoadSynchronous();
+		if (Table && Table->GetRowStruct()->IsChildOf(FRichTextStyleRow::StaticStruct())) {
+			for (const auto& Entry : Table->GetRowMap()) {
+				const FName SubStyleName = Entry.Key;
+				const FRichTextStyleRow* RichTextStyle = reinterpret_cast<FRichTextStyleRow*>(Entry.Value);
+				CachedStyleInstance->Set(SubStyleName, RichTextStyle->TextStyle);
+			}
+		}
+	}
+	return CachedStyleInstance;
 }

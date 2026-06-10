@@ -33,12 +33,12 @@ uint32 DialogueSystemAction::GetCategories()
 
 void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
-	EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
+	const EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects) {
 		// Cast the object to dialogue system and initialize the editor if valid
 		UDialogueSystem* DialogueGraph = Cast<UDialogueSystem>(Object);
 		if (DialogueGraph != nullptr) {
-			TSharedRef<DialogueGraphEditorApp> GraphEditorApp(new DialogueGraphEditorApp());
+			const TSharedRef<DialogueGraphEditorApp> GraphEditorApp(new DialogueGraphEditorApp());
 			GraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, DialogueGraph);
 		}
 	}

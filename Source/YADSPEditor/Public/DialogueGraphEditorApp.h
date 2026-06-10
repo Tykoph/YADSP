@@ -45,6 +45,9 @@ public:
 	 */
 	void SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& SelectedNodeDetailView);
 
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnGraphSelectionChangedDelegate, const FGraphPanelSelectionSet&);
+	FOnGraphSelectionChangedDelegate OnGraphSelectionChangedDelegate;
+
 	/**
 	 * Called when the selection in the graph editor changes.
 	 * Updates the node detail view with properties of the newly selected node.

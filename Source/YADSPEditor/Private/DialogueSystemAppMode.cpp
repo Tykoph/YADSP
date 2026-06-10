@@ -1,15 +1,17 @@
-﻿// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueSystemAppMode.h"
 #include "DialogueGraphEditorApp.h"
 #include "Factory/DialogueSystemPrimaryTabFactory.h"
 #include "Factory/DialogueSystemPropertiesTabFactory.h"
+#include "Factory/DialogueSystemPreviewTabFactory.h"
 
 DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
 	DGApp = App;
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPreviewTabFactory(App)));
 
 	// Slate UI
 	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v1")
@@ -29,9 +31,21 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 				)
 				->Split
 				(
-					FTabManager::NewStack()
+					FTabManager::NewSplitter()
+					->SetOrientation(Orient_Vertical)
 					->SetSizeCoefficient(0.25)
-					->AddTab("GraphPropertyTab", ETabState::OpenedTab)
+					->Split
+					(
+						FTabManager::NewStack()
+						->SetSizeCoefficient(0.5)
+						->AddTab("GraphPropertyTab", ETabState::OpenedTab)
+					)
+					->Split
+					(
+						FTabManager::NewStack()
+						->SetSizeCoefficient(0.5)
+						->AddTab("GraphPreviewTab", ETabState::OpenedTab)
+					)
 				)
 			));
 }

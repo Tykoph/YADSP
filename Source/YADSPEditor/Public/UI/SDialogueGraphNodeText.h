@@ -9,7 +9,7 @@
 class SDialogueGraphNodeText : public SGraphNode
 {
 public:
-	virtual ~SDialogueGraphNodeText();
+	virtual ~SDialogueGraphNodeText() override;
 	SLATE_BEGIN_ARGS(SDialogueGraphNodeText)
 		{
 		}

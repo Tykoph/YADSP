@@ -1,4 +1,4 @@
-﻿// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphEditorApp.h"
 #include "DialogueGraphSchema.h"
@@ -47,7 +47,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	);
 
 	// Add Toolbar Extension for Language Selection
-	TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
+	const TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
 	ToolbarExtender->AddToolBarExtension(
 		"Asset",
 		EExtensionHook::After,
@@ -156,4 +156,6 @@ void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionS
 	else {
 		SelectedNodeDetailViewPtr->SetObject(nullptr);
 	}
+
+	OnGraphSelectionChangedDelegate.Broadcast(SelectionSet);
 }

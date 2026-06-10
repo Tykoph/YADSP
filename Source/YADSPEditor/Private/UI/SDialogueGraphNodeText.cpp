@@ -8,6 +8,7 @@
 #include "DialogueSystem.h"
 #include "GSheetLocSystemLibrary.h"
 #include "Toolkits/ToolkitManager.h"
+#include "Widgets/Text/SRichTextBlock.h"
 
 SDialogueGraphNodeText::~SDialogueGraphNodeText()
 {
@@ -67,7 +68,10 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 			break;
 		}
 	}
-
+	
+	TArray<TSharedRef<ITextDecorator>> TextDecorators;
+	TextDecorators.Add(SRichTextBlock::ImageDecorator());
+	
 	// Prepare Speaker List Container
 	SAssignNew(SpeakerListContainer, SVerticalBox);
 	RefreshSpeakerList();
@@ -143,41 +147,40 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 				.Text(this, &SDialogueGraphNodeText::GetDialogueComboText)
 			]
 		]
-
+		
 		// Preview Separator
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(0.0f, 5.0f)
-		[
-			SNew(SBox)
-			.HeightOverride(1.0f)
-			[
-				SNew(SImage)
-				.ColorAndOpacity(FLinearColor::Gray)
-			]
-		]
+        + SVerticalBox::Slot()
+        .AutoHeight()
+        .Padding(0.0f, 5.0f)
+        [
+        	SNew(SBox)
+        	.HeightOverride(1.0f)
+        	[
+        		SNew(SImage)
+        		.ColorAndOpacity(FLinearColor::Gray)
+        	]
+        ]
 
-		// Preview Text
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-			SNew(STextBlock)
-			.Text(this, &SDialogueGraphNodeText::GetPreviewSpeakerText)
-			.Font(FCoreStyle::GetDefaultFontStyle("Bold", 10))
-			.ColorAndOpacity(FLinearColor::Yellow)
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(0.0f, 2.0f, 0.0f, 0.0f)
-		[
-			SNew(STextBlock)
-			.Text(this, &SDialogueGraphNodeText::GetPreviewDialogueText)
-			.AutoWrapText(true)
-			.WrapTextAt(200.0f)
-		]
+        // Preview Text
+        + SVerticalBox::Slot()
+        .AutoHeight()
+        [
+        	SNew(STextBlock)
+        	.Text(this, &SDialogueGraphNodeText::GetPreviewSpeakerText)
+        	.Font(FCoreStyle::GetDefaultFontStyle("Bold", 10))
+        	.ColorAndOpacity(FLinearColor::Yellow)
+        ]
+        + SVerticalBox::Slot()
+        .AutoHeight()
+        .Padding(0.0f, 2.0f, 0.0f, 0.0f)
+        [
+        	SNew(STextBlock)
+        	.Text(this, &SDialogueGraphNodeText::GetPreviewDialogueText)
+        	.AutoWrapText(true)
+        	.WrapTextAt(200.0f)
+        ]
 	];
 }
-
 
 void SDialogueGraphNodeText::RefreshSpeakerList()
 {
@@ -339,6 +342,21 @@ FText SDialogueGraphNodeText::GetDialogueComboText() const
 	return FText::GetEmpty();
 }
 
+static FString StripRichTextTags(const FString& Input)
+{
+	FString Result = Input;
+	while (true) {
+		const int32 OpenIndex = Result.Find(TEXT("<"));
+		if (OpenIndex == INDEX_NONE) break;
+
+		const int32 CloseIndex = Result.Find(TEXT(">"), ESearchCase::IgnoreCase, ESearchDir::FromStart, OpenIndex);
+		if (CloseIndex == INDEX_NONE) break;
+		
+		Result.RemoveAt(OpenIndex, CloseIndex - OpenIndex + 1);
+	}
+	return Result;
+}
+
 void SDialogueGraphNodeText::UpdateSpeakerPreview()
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
@@ -365,7 +383,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview()
 					CombinedSpeakers += ID.ToString();
 				}
 			}
-			CachedSpeakerPreview = FText::FromString(CombinedSpeakers);
+			CachedSpeakerPreview = FText::FromString(StripRichTextTags(CombinedSpeakers));
 		}
 	}
 	else {
@@ -388,7 +406,8 @@ void SDialogueGraphNodeText::UpdateDialoguePreview()
 				FDataTableRowHandle Handle;
 				Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
 				Handle.RowName = NodeInfo->DialogueID;
-				CachedDialoguePreview = FText::FromString(UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language));
+				const FString LocalizedStr = UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language);
+				CachedDialoguePreview = FText::FromString(StripRichTextTags(LocalizedStr));
 			}
 			else if (!NodeInfo->DialogueID.IsNone()) {
 				CachedDialoguePreview = FText::FromString(NodeInfo->DialogueID.ToString());
@@ -407,7 +426,6 @@ FText SDialogueGraphNodeText::GetPreviewSpeakerText() const
 {
 	FString CurrentLanguage = TEXT("en-US");
 	CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
-	
 
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;
@@ -420,11 +438,9 @@ FText SDialogueGraphNodeText::GetPreviewSpeakerText() const
 
 FText SDialogueGraphNodeText::GetPreviewDialogueText() const
 {
-	// Language check is done in GetPreviewSpeakerText typically, but to be safe:
 	FString CurrentLanguage = TEXT("en-US");
 	CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 	
-
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;
 		const_cast<SDialogueGraphNodeText*>(this)->UpdateSpeakerPreview();

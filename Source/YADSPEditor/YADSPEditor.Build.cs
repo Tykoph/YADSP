@@ -1,4 +1,4 @@
-﻿// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -33,7 +33,8 @@ public class YADSPEditor : ModuleRules
 				"InputCore",
 				"GSheetLocSystemPlugin",
 				"EditorFramework",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"UMG"
 			}
 		);
 	}

@@ -4,12 +4,16 @@
 
 #include "DialogueGraphSettings.generated.h"
 
-UCLASS(Config=EditorPerProjectUserSettings)
+UCLASS(Config=EditorPerProjectUserSettings, meta=(DisplayName="Dialogue Graph Settings"))
 class UDialogueGraphSettings : public UDeveloperSettings 
 {
 	GENERATED_BODY()
 
 public:
+	virtual FName GetContainerName() const override { return FName("Project"); }
+	virtual FName GetCategoryName() const override { return FName("Plugins"); }
+	virtual FName GetSectionName() const override { return FName("Dialogue Graph Settings"); }
+
 	UDialogueGraphSettings();
 	
 public:
@@ -36,7 +40,17 @@ public:
 		return GetMutableDefault<UDialogueGraphSettings>();
 	}
 	
+	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(RequiredAssetDataTags="RowStructure=/Script/UMG.RichTextStyleRow"))
+	TSoftObjectPtr<UDataTable> PreviewRichTextStyleSet;
+
+	UPROPERTY(EditAnywhere, config, Category="Preview")
+	TArray<TSubclassOf<class URichTextBlockDecorator>> PreviewDecorators;
+
+	TSharedPtr<ISlateStyle> GetRichTextStyleSet();
+
 private:
+	TSharedPtr<FSlateStyleSet> CachedStyleInstance;
+	
 	void InitLanguageOptions();
 	
 	// Currently selected language for preview
@@ -44,4 +58,5 @@ private:
 
 	// Available language options for the dropdown
 	TArray<TSharedPtr<FString>> LanguageOptions;
+	
 };
