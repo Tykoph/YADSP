@@ -25,7 +25,7 @@ public:
 	class UButton* ResponseButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UTextBlock* ResponseButtonText = nullptr;
+	class URichTextBlock* ResponseButtonText = nullptr;
 
 private:
 	int ButtonIndex;

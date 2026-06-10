@@ -6,7 +6,7 @@
 #include "DialogueOption.h"
 #include "DialogueSubsystem.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/TextBlock.h"
+#include "Components/RichTextBlock.h"
 #include "DialogueUIController.generated.h"
 
 /**
@@ -34,20 +34,20 @@ public:
 	* Checks if the dialogue text needs to be wrapped and adjusts its justification accordingly.
 	* If text width exceeds container width, justification will be set to "Left".
 	* Otherwise, justification will be set to "Center".
-	* @param InDialogueText - Target text block widget to check
+	* @param DialogueTextBlock - Target text block widget to check
 	* @param Text - String content to measure for wrapping
 	*/
 	UFUNCTION(BlueprintCallable)
-	static void IsTextWrapping(UTextBlock* InDialogueText, const FString& Text);
+	static void IsTextWrapping(URichTextBlock* DialogueTextBlock, const FString& Text);
 	
 	UFUNCTION()
 	void OnDialogueEnded();
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UTextBlock* SpeakerName = nullptr;
+	URichTextBlock* SpeakerName = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UTextBlock* DialogueText = nullptr;
+	URichTextBlock* DialogueText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UHorizontalBox* ResponseBox = nullptr;

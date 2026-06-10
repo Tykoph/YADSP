@@ -63,7 +63,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	}
 	
 	// Navigate to the selected node
-	UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
+	const UDialogueRuntimeGraphPin* SelectedPin = CurrentNodePtr->OutputPins[Index];
 	if (SelectedPin->ConnectedPin != nullptr) {
 		CurrentNodePtr = SelectedPin->ConnectedPin->ParentNode;
 	}
@@ -157,12 +157,10 @@ float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
 	return Length;
 }
 
-void UDialoguePlayer::AutoSkipDialogue(float Time)
+void UDialoguePlayer::AutoSkipDialogue(const float Time)
 {
-	// Set up a timer with the given time to automatically skip the dialogue
 	GetWorld()->GetTimerManager().SetTimer(AutoSkipTimerHandle, [this]()
 	{
-		// When the timer completes, choose the first option in the current node
 		ChooseOptionAtIndex(0);
 	}, Time, false);
 }
@@ -199,7 +197,6 @@ void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* Node
 		}
 	}
 }
-
 
 TArray<FText> UDialoguePlayer::StringArrayConverter(TArray<FString> StringArray)
 {

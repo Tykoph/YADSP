@@ -3,9 +3,9 @@
 #include "UI/DialogueUIController.h"
 
 #include "DialogueSubsystem.h"
-#include "Fonts/FontMeasure.h"
-#include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
+#include "Components/RichTextBlock.h"
+#include "Fonts/FontMeasure.h"
 
 
 void UDialogueUIController::NativeConstruct()
@@ -45,21 +45,20 @@ void UDialogueUIController::DisplayDialogueOptions()
 	}
 }
 
-void UDialogueUIController::IsTextWrapping(UTextBlock* InDialogueText, const FString& Text)
+void UDialogueUIController::IsTextWrapping(URichTextBlock* DialogueTextBlock, const FString& Text)
 {
-	const FSlateFontInfo FontInfo = InDialogueText->GetFont();
+	const FSlateFontInfo FontInfo = DialogueTextBlock->GetCurrentDefaultTextStyle().Font;
 	const TSharedPtr<FSlateFontMeasure> FontMeasure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
-
+	
 	// Calculate Text Width
-	if (FontMeasure.IsValid())
-	{
+	if (FontMeasure.IsValid()) {
 		const FVector2D TextSize = FontMeasure->Measure(Text, FontInfo);
-		const FVector2D ContainerText = InDialogueText->GetCachedGeometry().GetLocalSize();
+		const FVector2D ContainerText = DialogueTextBlock->GetCachedGeometry().GetLocalSize();
 		if (TextSize.X > ContainerText.X) {
-			InDialogueText->SetJustification(ETextJustify::Left);
+			DialogueTextBlock->SetJustification(ETextJustify::Left);
 		}
 		else {
-			InDialogueText->SetJustification(ETextJustify::Center);
+			DialogueTextBlock->SetJustification(ETextJustify::Center);
 		}
 	}
 }

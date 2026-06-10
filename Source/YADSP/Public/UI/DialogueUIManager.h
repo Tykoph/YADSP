@@ -15,6 +15,7 @@ public:
 	
 	UFUNCTION()
 	void OnDialogueStarted(UDialogueSystem* DialogueAsset, APlayerController* PC);
+	
 	UFUNCTION()
 	void OnDialogueEnded();
 	
