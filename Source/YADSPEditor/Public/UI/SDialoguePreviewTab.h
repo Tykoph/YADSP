@@ -21,6 +21,7 @@ public:
 
 private:
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
+	void OnRichTextStyleChanged();
 	void RefreshPreview();
 
 	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
@@ -29,5 +30,6 @@ private:
 	TArray<URichTextBlockDecorator*> InstantiatedDecorators;
 	FGraphPanelSelectionSet CachedSelection;
 	FDelegateHandle SelectionChangedHandle;
+	FDelegateHandle StyleChangedHandle;
 	
 };

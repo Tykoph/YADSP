@@ -4,7 +4,7 @@
 
 #include "DialogueGraphSettings.generated.h"
 
-UCLASS(Config=EditorPerProjectUserSettings, meta=(DisplayName="Dialogue Graph Settings"))
+UCLASS(Config=EditorPerProjectUserSettings, meta=(DisplayName="YADSP"))
 class UDialogueGraphSettings : public UDeveloperSettings 
 {
 	GENERATED_BODY()
@@ -12,13 +12,20 @@ class UDialogueGraphSettings : public UDeveloperSettings
 public:
 	virtual FName GetContainerName() const override { return FName("Project"); }
 	virtual FName GetCategoryName() const override { return FName("Plugins"); }
-	virtual FName GetSectionName() const override { return FName("Dialogue Graph Settings"); }
+	virtual FName GetSectionName() const override { return FName("YADSP"); }
 
 	UDialogueGraphSettings();
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 	
 public:
 	DECLARE_MULTICAST_DELEGATE(FOnPreviewLanguageChanged);
 	FOnPreviewLanguageChanged OnPreviewLanguageChanged;
+
+	DECLARE_MULTICAST_DELEGATE(FOnRichTextStyleChanged);
+	FOnRichTextStyleChanged OnRichTextStyleChanged;
 	
 	/**
 	 * Gets the currently selected language code for previewing localized text.
@@ -51,7 +58,12 @@ public:
 private:
 	TSharedPtr<FSlateStyleSet> CachedStyleInstance;
 	
+	TWeakObjectPtr<UDataTable> BoundDataTable;
+	void BindToDataTable(UDataTable* Table);
+	
 	void InitLanguageOptions();
+	
+	 void ResetCachedStyle();
 	
 	// Currently selected language for preview
 	FString PreviewLanguage = TEXT("en-US");

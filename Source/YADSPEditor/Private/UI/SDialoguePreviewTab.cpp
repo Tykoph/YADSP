@@ -64,6 +64,8 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<Dialogu
 	if (InApp.IsValid()) {
 		SelectionChangedHandle = InApp->OnGraphSelectionChangedDelegate.AddRaw(this, &SDialoguePreviewTab::OnGraphSelectionChanged);
 	}
+	
+	StyleChangedHandle = Settings->OnRichTextStyleChanged.AddRaw(this, &SDialoguePreviewTab::OnRichTextStyleChanged);
 }
 
 SDialoguePreviewTab::~SDialoguePreviewTab()
@@ -78,6 +80,10 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 
 	if (const TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin()) {
 		App->OnGraphSelectionChangedDelegate.Remove(SelectionChangedHandle);
+	}
+	
+	if (UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get()) {
+		Settings->OnRichTextStyleChanged.Remove(StyleChangedHandle);
 	}
 }
 
@@ -135,4 +141,16 @@ void SDialoguePreviewTab::RefreshPreview()
 {
 	if (CachedSelection.IsEmpty()) return;
 	OnGraphSelectionChanged(CachedSelection);
+}
+
+void SDialoguePreviewTab::OnRichTextStyleChanged()
+{
+	if (UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get()) {
+		if (SpeakerRichTextBlock.IsValid()) {
+			SpeakerRichTextBlock->SetDecoratorStyleSet(Settings->GetRichTextStyleSet().Get());
+		}
+		if (DialogueRichTextBlock.IsValid()) {
+			DialogueRichTextBlock->SetDecoratorStyleSet(Settings->GetRichTextStyleSet().Get());
+		}
+	}
 }
