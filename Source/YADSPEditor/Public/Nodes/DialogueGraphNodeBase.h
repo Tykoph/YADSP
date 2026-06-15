@@ -24,6 +24,8 @@ public:
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const { return nullptr; }
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }
 
+	virtual bool ShouldReturnInfo() const { return true; }
+	
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }
 
 	TWeakPtr<UDialogueSystem*> DialogueSystem = nullptr;

@@ -35,6 +35,8 @@ public: // UEdGraphNode interface
 	}
 
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
+	
+	virtual bool ShouldReturnInfo() const override { return false; }
 
 protected:
 	UPROPERTY()
