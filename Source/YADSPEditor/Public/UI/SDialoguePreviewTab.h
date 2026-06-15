@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueGraphEditorApp.h"
-#include "Components/RichTextBlockDecorator.h"
+#include "Nodes/DialogueNodeInfoText.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Text/SRichTextBlock.h"
@@ -21,15 +21,17 @@ public:
 
 private:
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
-	void OnRichTextStyleChanged();
+	void OnRichTextStyleChanged() const;
 	void RefreshPreview();
 
+	UDialogueNodeInfoText* CurrentNode = nullptr;
+	
 	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
 	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
 	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;
-	TArray<URichTextBlockDecorator*> InstantiatedDecorators;
+	TArray<UObject*> InstantiatedObjects;
 	FGraphPanelSelectionSet CachedSelection;
 	FDelegateHandle SelectionChangedHandle;
 	FDelegateHandle StyleChangedHandle;
-	
+	FDelegateHandle PropertyChangedHandle;
 };

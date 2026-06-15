@@ -9,7 +9,7 @@
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
-DEFINE_LOG_CATEGORY_STATIC(DialogueGraphCompiler, Log, All)
+DEFINE_LOG_CATEGORY_STATIC(DialogueGraphCompilerLog, Log, All)
 
 // Update the opened Dialogue Graph Asset with the current graph editor
 // Called when opening a Dialogue Graph Asset
@@ -72,7 +72,7 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 		OutputPin->ConnectedPin = InputPin;
 	}
 
-	UE_LOG(DialogueGraphCompiler, Log, TEXT("Working Graph Updated."));
+	UE_LOG(DialogueGraphCompilerLog, Log, TEXT("Working Graph Updated."));
 }
 
 // Update the graph editor with the current opened Dialogue Graph Asset
@@ -111,7 +111,7 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 			break;
 		default:
 			// Log an error for unknown node types
-			UE_LOG(DialogueGraphCompiler, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
+			UE_LOG(DialogueGraphCompilerLog, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
 			break;
 		}
 
@@ -126,9 +126,11 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 		}
 		else {
 			NewNode->InitNodeInfo(NewNode);
-			UE_LOG(DialogueGraphCompiler, Error,
-			       TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."),
-			       *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
+			if (NewNode->ShouldReturnInfo()) {
+				UE_LOG(DialogueGraphCompilerLog, Error,
+				       TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."),
+				       *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
+			}
 		}
 
 		// Process input pin

@@ -5,6 +5,12 @@
 #include "DialogueSystem.h"
 #include "GSheetLocSystemLibrary.h"
 
+void UDialogueNodeInfoText::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	OnPropertiesChanged.Broadcast();
+}
+
 TArray<FString> UDialogueNodeInfoText::GetSpeakerFromTable() const
 {
 	TArray<FString> Options;

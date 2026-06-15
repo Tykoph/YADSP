@@ -1,16 +1,16 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
-#include "UI/SDialoguePreviewTab.h"
+#include "GSheetLocSystemLibrary.h"
+#include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueGraphSettings.h"
+#include "UI/SDialoguePreviewTab.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "Widgets/Text/SRichTextBlock.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Styling/SlateStyle.h"
 #include "Styling/CoreStyle.h"
-#include "GSheetLocSystemLibrary.h"
-#include "DialogueSystem.h"
 #include "Components/RichTextBlock.h"
 #include "Components/RichTextBlockDecorator.h"
 
@@ -21,12 +21,16 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<Dialogu
 	
 	TArray<TSharedRef<ITextDecorator>> Decorators;
 
-	URichTextBlock* DummyOwner = GetMutableDefault<URichTextBlock>();
+	URichTextBlock* DummyOwner = NewObject<URichTextBlock>(GetTransientPackage());
+	DummyOwner->AddToRoot();
+	InstantiatedObjects.Add(DummyOwner);
+	DummyOwner->TakeWidget(); // Forces initialization of the internal StyleInstance
+
 	for (TSubclassOf<URichTextBlockDecorator> DecoratorClass : Settings->PreviewDecorators) {
 		if (DecoratorClass) {
 			if (URichTextBlockDecorator* Decorator = NewObject<URichTextBlockDecorator>(GetTransientPackage(), DecoratorClass)) {
 				Decorator->AddToRoot();
-				InstantiatedDecorators.Add(Decorator);
+				InstantiatedObjects.Add(Decorator);
 				
 				TSharedPtr<ITextDecorator> CreatedDecorator = Decorator->CreateDecorator(DummyOwner);
 				if (CreatedDecorator.IsValid()) {
@@ -47,6 +51,7 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<Dialogu
 			SAssignNew(SpeakerRichTextBlock, SRichTextBlock)
 			.Text(FText::GetEmpty())
 			.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
+			.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle))
 			.Decorators(Decorators)
 			.AutoWrapText(this)
 		]
@@ -56,6 +61,7 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<Dialogu
 			SAssignNew(DialogueRichTextBlock, SRichTextBlock)
 			.Text(FText::GetEmpty())
 			.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
+			.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->DialoguePreviewStyle))
 			.Decorators(Decorators)
 			.WrapTextAt(500.0f)
 		]
@@ -70,13 +76,12 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<Dialogu
 
 SDialoguePreviewTab::~SDialoguePreviewTab()
 {
-	for (URichTextBlockDecorator* Decorator : InstantiatedDecorators)
-	{
-		if (Decorator) {
-			Decorator->RemoveFromRoot();
+	for (UObject* Object : InstantiatedObjects) {
+		if (Object) {
+			Object->RemoveFromRoot();
 		}
 	}
-	InstantiatedDecorators.Empty();
+	InstantiatedObjects.Empty();
 
 	if (const TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin()) {
 		App->OnGraphSelectionChangedDelegate.Remove(SelectionChangedHandle);
@@ -94,10 +99,17 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 	FText NewPreviewText = FText::GetEmpty();
 	FText NewSpeakerPreviewText = FText::GetEmpty();
 
+	if (CurrentNode) {
+		CurrentNode->OnPropertiesChanged.Remove(PropertyChangedHandle);
+	}
+	
 	for (UObject* Obj : SelectionSet) {
 		if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Obj)) {
-			if (const UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
+			if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
 				const FString Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+				
+				CurrentNode = NodeInfo;
+				
 				if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueID.IsNone()) {
 					FDataTableRowHandle Handle;
 					Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
@@ -107,7 +119,7 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 					FString CombinedSpeakers;
 					for (const FName& ID : NodeInfo->SpeakerIDs) {
 						if (ID.IsNone()) continue;
-						if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT("<Speaker>, </>");
+						if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT(", ");
 				
 						if (NodeInfo->DialogueSystem->SpeakerDataTable) {
 							FDataTableRowHandle SpeakerHandle;
@@ -124,6 +136,8 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 				else if (!NodeInfo->DialogueID.IsNone()) {
 					NewPreviewText = FText::FromString(NodeInfo->DialogueID.ToString());
 				}
+				
+				PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
 				break; // Use only the first selected node
 			}
 		}
@@ -143,14 +157,16 @@ void SDialoguePreviewTab::RefreshPreview()
 	OnGraphSelectionChanged(CachedSelection);
 }
 
-void SDialoguePreviewTab::OnRichTextStyleChanged()
+void SDialoguePreviewTab::OnRichTextStyleChanged() const
 {
 	if (UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get()) {
 		if (SpeakerRichTextBlock.IsValid()) {
 			SpeakerRichTextBlock->SetDecoratorStyleSet(Settings->GetRichTextStyleSet().Get());
+			SpeakerRichTextBlock->SetTextStyle(Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle));
 		}
 		if (DialogueRichTextBlock.IsValid()) {
 			DialogueRichTextBlock->SetDecoratorStyleSet(Settings->GetRichTextStyleSet().Get());
+			DialogueRichTextBlock->SetTextStyle(Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->DialoguePreviewStyle));
 		}
 	}
 }

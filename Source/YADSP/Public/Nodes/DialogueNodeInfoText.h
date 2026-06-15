@@ -7,7 +7,7 @@
 #include "DialogueSkipEnum.h"
 #include "DialogueNodeInfoText.generated.h"
 
-class USoundCue;
+DECLARE_MULTICAST_DELEGATE(FOnPropertiesChanged);
 
 UCLASS(BlueprintType)
 class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
@@ -15,6 +15,11 @@ class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
 	GENERATED_BODY()
 
 public:
+	
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+	
 	UPROPERTY(EditAnywhere)
 	FString Title;
 	
@@ -36,6 +41,8 @@ public:
 	UPROPERTY(EditAnywhere, meta=(EditCondition="SkipDialogue == ESkipDialogue::AutoSkipAfterTime", ClampMin = 0))
 	float SkipAfterSeconds;
 
+	FOnPropertiesChanged OnPropertiesChanged;
+	
 public:
 	UFUNCTION()
 	TArray<FString> GetSpeakerFromTable() const;

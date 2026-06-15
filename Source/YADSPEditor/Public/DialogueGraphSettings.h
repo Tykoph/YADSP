@@ -1,8 +1,11 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
 #pragma once
-
+#include "Components/RichTextBlockDecorator.h"
 #include "DialogueGraphSettings.generated.h"
+
+DECLARE_MULTICAST_DELEGATE(FOnPreviewLanguageChanged);
+DECLARE_MULTICAST_DELEGATE(FOnRichTextStyleChanged);
 
 UCLASS(Config=EditorPerProjectUserSettings, meta=(DisplayName="YADSP"))
 class UDialogueGraphSettings : public UDeveloperSettings 
@@ -21,11 +24,14 @@ public:
 #endif
 	
 public:
-	DECLARE_MULTICAST_DELEGATE(FOnPreviewLanguageChanged);
 	FOnPreviewLanguageChanged OnPreviewLanguageChanged;
 
-	DECLARE_MULTICAST_DELEGATE(FOnRichTextStyleChanged);
 	FOnRichTextStyleChanged OnRichTextStyleChanged;
+	
+	static UDialogueGraphSettings* Get()
+	{
+		return GetMutableDefault<UDialogueGraphSettings>();
+	}
 	
 	/**
 	 * Gets the currently selected language code for previewing localized text.
@@ -42,19 +48,23 @@ public:
 
 	const TArray<TSharedPtr<FString>>* GetLanguageOptions() const;
 	
-	static UDialogueGraphSettings* Get()
-	{
-		return GetMutableDefault<UDialogueGraphSettings>();
-	}
+	UFUNCTION()
+	TArray<FString> GetStyleOption() const;
 	
 	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(RequiredAssetDataTags="RowStructure=/Script/UMG.RichTextStyleRow"))
 	TSoftObjectPtr<UDataTable> PreviewRichTextStyleSet;
 
 	UPROPERTY(EditAnywhere, config, Category="Preview")
-	TArray<TSubclassOf<class URichTextBlockDecorator>> PreviewDecorators;
+	TArray<TSubclassOf<URichTextBlockDecorator>> PreviewDecorators;
 
 	TSharedPtr<ISlateStyle> GetRichTextStyleSet();
 
+	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(GetOptions="GetStyleOption"))
+	FName SpeakerPreviewStyle;
+	
+	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(GetOptions="GetStyleOption"))
+	FName DialoguePreviewStyle;
+	
 private:
 	TSharedPtr<FSlateStyleSet> CachedStyleInstance;
 	
@@ -63,7 +73,7 @@ private:
 	
 	void InitLanguageOptions();
 	
-	 void ResetCachedStyle();
+	void ResetCachedStyle();
 	
 	// Currently selected language for preview
 	FString PreviewLanguage = TEXT("en-US");

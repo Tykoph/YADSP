@@ -5,6 +5,7 @@
 #include "Styling/SlateStyle.h"
 #include "Components/RichTextBlock.h"
 #include "Brushes/SlateImageBrush.h"
+
 UDialogueGraphSettings::UDialogueGraphSettings()
 {
 	InitLanguageOptions();
@@ -26,6 +27,25 @@ void UDialogueGraphSettings::SetPreviewLanguage(const FString& NewLanguage)
 const TArray<TSharedPtr<FString>>* UDialogueGraphSettings::GetLanguageOptions() const
 {
 	return &LanguageOptions;
+}
+
+TArray<FString> UDialogueGraphSettings::GetStyleOption() const
+{
+	TArray<FString> Options;
+
+	if (PreviewRichTextStyleSet) {
+		TArray<FName> RowNames = PreviewRichTextStyleSet->GetRowNames();
+
+		for (const FName& Name : RowNames) {
+			Options.Add(Name.ToString());
+		}
+	}
+
+	if (Options.Num() == 0) {
+		Options.Add(TEXT("No Table Found"));
+	}
+
+	return Options;
 }
 
 void UDialogueGraphSettings::InitLanguageOptions()
