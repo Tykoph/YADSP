@@ -1,10 +1,10 @@
 // Copyright 2026 Tom Duby. All Rights Reserved.
 
+#include "UI/SDialoguePreviewTab.h"
 #include "GSheetLocSystemLibrary.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueGraphSettings.h"
-#include "UI/SDialoguePreviewTab.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "Widgets/Text/SRichTextBlock.h"

@@ -4,21 +4,41 @@
 
 FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	// if (NodeInfoPtr != nullptr && NodeInfoPtr->Action != EDialogueAction::None)
-	// {
-	// 	FString Result = UEnum::GetDisplayValueAsText(NodeInfoPtr->Action).ToString();
-	// 	if (!NodeInfoPtr->ActionData.IsEmpty())
-	// 	{
-	// 		FString ActionData = NodeInfoPtr->ActionData;
-	// 		if (ActionData.Len() > 15)
-	// 		{
-	// 			ActionData = ActionData.Left(15) + TEXT("...");
-	// 		}
-	// 		Result += TEXT(": ") + ActionData;
-	// 	}
-	//
-	// 	return FText::FromString(Result);
-	// }
+	if (NodeInfoPtr != nullptr && NodeInfoPtr->GameAction.Num() >= 1 && !NodeInfoPtr->GameAction.IsEmpty())
+	{
+		FString Result;
+		if (NodeInfoPtr->GameAction.Num() == 1) {
+			if (!NodeInfoPtr->GameAction[0])
+				return FText::FromString(TEXT("GameAction"));
+			FString ActionDataName = NodeInfoPtr->GameAction[0]->GetActionDisplayName().ToString();
+			if (ActionDataName.Len() > 15) {
+				ActionDataName = ActionDataName.Left(15) + TEXT("...");
+			}
+			Result = ActionDataName;
+		}
+		else {
+			for (const auto GameAction : NodeInfoPtr->GameAction) {
+				if (!GameAction)
+					continue;
+				FString ActionDataName = GameAction->GetActionDisplayName().ToString();
+				Result += ActionDataName + TEXT(", ");
+			}
+			Result.RemoveAt(Result.Len() - 2, 1);
+			Result.TrimEndInline();
+			if (Result.Len() > 15) {
+				Result = Result.Left(15) + TEXT("...");
+			}
+			switch (NodeInfoPtr->GameActionExecutionMode) {
+				case EGameActionExecutionMode::Sequence:
+					Result = TEXT("Sequence: ") + Result;
+					break;
+				case EGameActionExecutionMode::Parallel:
+					Result = TEXT("Parallel: ") + Result;
+					break;
+			}
+		}
+		return FText::FromString(Result);
+	}
 
 	return FText::FromString(TEXT("GameAction"));
 }

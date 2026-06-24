@@ -27,10 +27,13 @@ private:
 	UDialogueNodeInfoText* CurrentNode = nullptr;
 	
 	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
+	
 	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
 	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;
+	
 	TArray<UObject*> InstantiatedObjects;
 	FGraphPanelSelectionSet CachedSelection;
+	
 	FDelegateHandle SelectionChangedHandle;
 	FDelegateHandle StyleChangedHandle;
 	FDelegateHandle PropertyChangedHandle;
