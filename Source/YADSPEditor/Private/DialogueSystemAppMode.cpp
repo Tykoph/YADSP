@@ -5,6 +5,7 @@
 #include "Factory/DialogueSystemPrimaryTabFactory.h"
 #include "Factory/DialogueSystemPropertiesTabFactory.h"
 #include "Factory/DialogueSystemPreviewTabFactory.h"
+#include "Factory/DialogueSystemGraphDetailsTabFactory.h"
 
 DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
@@ -12,9 +13,10 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
 	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPreviewTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new DialogueSystemGraphDetailsTabFactory(App)));
 
 	// Slate UI
-	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v1")
+	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v2")
 		->AddArea
 		(
 			FTabManager::NewPrimaryArea()
@@ -26,25 +28,31 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 				->Split
 				(
 					FTabManager::NewStack()
-					->SetSizeCoefficient(0.75)
+					->SetSizeCoefficient(0.2)
+					->AddTab("GraphDetailsTab", ETabState::OpenedTab)
+				)
+				->Split
+				(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.6)
 					->AddTab("GraphPrimaryTab", ETabState::OpenedTab)
 				)
 				->Split
 				(
 					FTabManager::NewSplitter()
 					->SetOrientation(Orient_Vertical)
-					->SetSizeCoefficient(0.25)
-					->Split
-					(
-						FTabManager::NewStack()
-						->SetSizeCoefficient(0.5)
-						->AddTab("GraphPropertyTab", ETabState::OpenedTab)
-					)
+					->SetSizeCoefficient(0.2)
 					->Split
 					(
 						FTabManager::NewStack()
 						->SetSizeCoefficient(0.5)
 						->AddTab("GraphPreviewTab", ETabState::OpenedTab)
+					)
+					->Split
+					(
+						FTabManager::NewStack()
+						->SetSizeCoefficient(0.5)
+						->AddTab("GraphPropertyTab", ETabState::OpenedTab)
 					)
 				)
 			));

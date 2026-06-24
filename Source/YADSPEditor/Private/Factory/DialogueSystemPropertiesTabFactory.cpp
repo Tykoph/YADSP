@@ -1,58 +1,23 @@
-﻿// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright 2026 Tom Duby. All Rights Reserved.
 
 #include "Factory/DialogueSystemPropertiesTabFactory.h"
 #include "DialogueGraphEditorApp.h"
-#include "DialogueSystem.h"
-#include "IDetailsView.h"
-#include "PropertyEditorModule.h"
+#include "UI/SDialoguePropertiesTab.h"
 
 DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
 	FWorkflowTabFactory(FName("GraphPropertyTab"), App)
 {
 	DialogueGraphApp = App;
-	TabLabel = FText::FromString(TEXT("Properties"));
-	ViewMenuDescription = FText::FromString(TEXT("Display a Properties view for the dialogue graph editor"));
-	ViewMenuTooltip = FText::FromString(TEXT("Show the Properties view"));
+	TabLabel = FText::FromString(TEXT("Node Properties"));
+	ViewMenuDescription = FText::FromString(TEXT("Display a Node Properties view for the dialogue graph editor"));
+	ViewMenuTooltip = FText::FromString(TEXT("Show the Node Properties view"));
 }
 
 TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
 	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(
-		TEXT("PropertyEditor"));
 
-	// Detail view args
-	FDetailsViewArgs DetailsViewArgs;
-	DetailsViewArgs.bAllowSearch = true;
-	DetailsViewArgs.bHideSelectionTip = true;
-	DetailsViewArgs.bLockable = false;
-	DetailsViewArgs.bSearchInitialKeyFocus = true;
-	DetailsViewArgs.bUpdatesFromSelection = false;
-	DetailsViewArgs.NotifyHook = nullptr;
-	DetailsViewArgs.bShowOptions = true;
-	DetailsViewArgs.bShowModifiedPropertiesOption = false;
-	DetailsViewArgs.bShowScrollBar = false;
-
-	const TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->SetObject(App->GetDialogueGraph());
-
-	const TSharedPtr<IDetailsView> SelectedNodeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	SelectedNodeDetailsView->SetObject(nullptr);
-	App->SetSelectedNodeDetailView(SelectedNodeDetailsView);
-
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			DetailsView.ToSharedRef()
-		]
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			SelectedNodeDetailsView.ToSharedRef()
-		];
+	return SNew(SDialoguePropertiesTab, App);
 }
 
 FText DialogueSystemPropertiesTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
