@@ -27,6 +27,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class URichTextBlock* ResponseButtonText = nullptr;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsValid = true;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FText OptionTooltip;
+	
 private:
 	int ButtonIndex;
 	

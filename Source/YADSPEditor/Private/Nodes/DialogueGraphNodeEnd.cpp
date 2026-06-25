@@ -4,19 +4,6 @@
 
 FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	// if (NodeInfoPtr != nullptr && NodeInfoPtr->Action != EDialogueAction::None) {
-	// 	FString Result = UEnum::GetDisplayValueAsText(NodeInfoPtr->Action).ToString();
-	// 	if (!NodeInfoPtr->ActionData.IsEmpty()) {
-	// 		FString ActionData = NodeInfoPtr->ActionData;
-	// 		if (ActionData.Len() > 15) {
-	// 			ActionData = ActionData.Left(15) + TEXT("...");
-	// 		}
-	// 		Result += TEXT(": ") + ActionData;
-	// 	}
-	//
-	// 	return FText::FromString(Result);
-	// }
-
 	return FText::FromString(TEXT("End"));
 }
 

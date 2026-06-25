@@ -66,13 +66,13 @@ private:
 	void OnGameActionFinished();
 	
 	UPROPERTY()
-	UDialogueSystem* DialogueAssetPtr = nullptr;
+	UDialogueSystem* DialogueSystem = nullptr;
 
 	UPROPERTY()
-	UDialogueRuntimeGraphNode* CurrentNodePtr = nullptr;
+	UDialogueRuntimeGraphNode* CurrentNode = nullptr;
 
 	UPROPERTY()
-	APlayerController* PlayerControllerPtr = nullptr;
+	APlayerController* PlayerController = nullptr;
 
 	UPROPERTY()
 	UDialogueSubsystem* DialogueSubsystem;
@@ -89,4 +89,12 @@ private:
 	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
 	static TArray<FText> StringArrayConverter(TArray<FString> StringArray);
 
+	UFUNCTION()
+	FString GetSpeakerName(const FName& SpeakerName) const;
+	
+	UFUNCTION()
+	FString GetDialogueText(const FName& DialogueText) const;
+
+	UFUNCTION()
+	TArray<FString> GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const;
 };

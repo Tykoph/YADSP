@@ -23,7 +23,7 @@ FSlateColor SDialogueGraphActionPin::GetPinColor() const
 	return FColor::Green;
 }
 
-FSlateColor SDialogueGraphAnimationPin::GetPinColor() const	
+FSlateColor SDialogueGraphBranchPin::GetPinColor() const	
 {
-	return FColor::Yellow;
+	return FColor::Orange;
 }

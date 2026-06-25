@@ -25,10 +25,10 @@ protected:
 	
 public:	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void UpdateDisplay(const FText& Text, const FText& Speaker, const TArray<FText>& Options);
+	void UpdateDisplay(const FText& Text, const FText& Speaker);
 	
 	UFUNCTION(BlueprintCallable)
-	void DisplayDialogueOptions();
+	void OnBranchOptionsRequested(const TArray<FBranchOption>& BranchOptions);
 	
 	/**
 	* Checks if the dialogue text needs to be wrapped and adjusts its justification accordingly.
@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 	void OnDialogueEnded();
 
+	UFUNCTION()
+	void ClearDialogueOption(int Index);
+	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	URichTextBlock* SpeakerName = nullptr;
 

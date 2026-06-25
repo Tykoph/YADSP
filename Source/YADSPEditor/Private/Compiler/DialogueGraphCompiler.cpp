@@ -5,6 +5,7 @@
 #include "DialogueSystemRuntimeGraph.h"
 #include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeBase.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeText.h"
@@ -109,6 +110,8 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 		case EDialogueNodeType::GameActionNode:
 			NewNode = NewObject<UDialogueGraphNodeGameAction>(WorkingGraphEditor);
 			break;
+		case EDialogueNodeType::BranchNode:
+			NewNode = NewObject<UDialogueGraphNodeBranch>(WorkingGraphEditor);
 		default:
 			// Log an error for unknown node types
 			UE_LOG(DialogueGraphCompilerLog, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));

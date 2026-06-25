@@ -8,9 +8,10 @@ UENUM()
 enum class EDialogueNodeType
 {
 	Unknown,
-	StartNode,
 	DialogueNode,
+	StartNode,
 	EndNode,
-	GameActionNode,
 	TextNode,
+	BranchNode,
+	GameActionNode,
 };

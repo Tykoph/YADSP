@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include "BranchOption.h"
 #include "DialogueSystem.h"
 #include "DialogueSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, UDialogueSystem*, DialogueAsset, APlayerController*, PC);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDialogueLineRequested, const FText&, Text, const FText&, Speaker, const TArray<FText>&, Options);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueLineRequested, const FText&, Text, const FText&, Speaker);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBranchOptionsRequested, const TArray<FBranchOption>&, BranchOptions);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOptionSelected, int, Index);
 
@@ -27,5 +29,8 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnOptionSelected OnOptionSelected;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnBranchOptionsRequested OnBranchOptionsRequested;
 	
 };

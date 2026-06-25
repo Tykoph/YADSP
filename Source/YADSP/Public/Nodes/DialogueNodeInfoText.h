@@ -29,9 +29,6 @@ public:
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
 	FName DialogueID;
 	
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
-	TArray<FName> DialogueResponses;
-	
 	UPROPERTY(EditAnywhere)
 	USoundCue* DialogueSound;
 
@@ -48,14 +45,5 @@ public:
 	TArray<FString> GetSpeakerFromTable() const;
 
 	UFUNCTION()
-	FString GetSpeakerName(const FName& SpeakerName) const;
-
-	UFUNCTION()
 	TArray<FString> GetDialogueFromTable() const;
-	
-	UFUNCTION()
-	FString GetDialogueText(const FName& DialogueText) const;
-	
-	UFUNCTION()
-	TArray<FString> GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const;
 };

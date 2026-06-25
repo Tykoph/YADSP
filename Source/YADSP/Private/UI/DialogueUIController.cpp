@@ -14,6 +14,8 @@ void UDialogueUIController::NativeConstruct()
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>();
 	DialogueSubsystem->OnDialogueLineRequested.AddDynamic(this, &UDialogueUIController::UpdateDisplay);
 	DialogueSubsystem->OnDialogueEnded.AddDynamic(this, &UDialogueUIController::OnDialogueEnded);
+	DialogueSubsystem->OnBranchOptionsRequested.AddDynamic(this, &UDialogueUIController::OnBranchOptionsRequested);
+	DialogueSubsystem->OnOptionSelected.AddDynamic(this, &UDialogueUIController::ClearDialogueOption);
 }
 
 void UDialogueUIController::NativeDestruct()
@@ -21,27 +23,28 @@ void UDialogueUIController::NativeDestruct()
 	Super::NativeDestruct();
 	DialogueSubsystem->OnDialogueLineRequested.RemoveDynamic(this, &UDialogueUIController::UpdateDisplay);
 	DialogueSubsystem->OnDialogueEnded.RemoveDynamic(this, &UDialogueUIController::OnDialogueEnded);
+	DialogueSubsystem->OnBranchOptionsRequested.RemoveDynamic(this, &UDialogueUIController::OnBranchOptionsRequested);
+	
 }
 
-void UDialogueUIController::UpdateDisplay_Implementation(const FText& Text, const FText& Speaker, const TArray<FText>& Options)
+void UDialogueUIController::UpdateDisplay_Implementation(const FText& Text, const FText& Speaker)
 {
 	SpeakerName->SetText(Speaker);
 	DialogueText->SetText(Text);
 	IsTextWrapping(DialogueText, Text.ToString());
-	
+}
+
+void UDialogueUIController::OnBranchOptionsRequested(const TArray<FBranchOption>& BranchOptions)
+{	
 	ResponseBox->ClearChildren();
 	DialogueOptionsWidgets.Empty();
 	
-	DialogueOptions = Options;
-	DisplayDialogueOptions();
-}
-
-void UDialogueUIController::DisplayDialogueOptions()
-{
-	for (int i = 0; i < DialogueOptions.Num(); ++i) {
+	for (int i = 0; i < BranchOptions.Num(); ++i) {
 		DialogueOptionsWidgets.Add(CreateWidget(this, DialogueOptionClass));
 		ResponseBox->AddChild(DialogueOptionsWidgets[i]);
-		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->SetDialogueOption(DialogueOptions[i], i);
+		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->SetDialogueOption(BranchOptions[i].DialogueText, i);
+		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->bIsValid = BranchOptions[i].bExpressionIsValid;
+		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->OptionTooltip = BranchOptions[i].Tooltip;
 	}
 }
 
@@ -66,4 +69,10 @@ void UDialogueUIController::IsTextWrapping(URichTextBlock* DialogueTextBlock, co
 void UDialogueUIController::OnDialogueEnded()
 {
 	RemoveFromParent();
+}
+
+void UDialogueUIController::ClearDialogueOption(int Index)
+{
+	ResponseBox->ClearChildren();
+	DialogueOptionsWidgets.Empty();
 }

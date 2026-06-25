@@ -2,10 +2,12 @@
 
 #include "DialogueGraphSchema.h"
 
+#include "Nodes/DialogueGraphNodeBranch.h"
 #include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueGraphNodeStart.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -39,10 +41,20 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 	
-
+	TSharedPtr<FNewNodeAction> NewActionNodeBranch(
+		new FNewNodeAction(
+			UDialogueGraphNodeBranch::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("New Branch Node")),
+			FText::FromString(TEXT("Makes a new Branch node")),
+			0
+		)
+	);
+	
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewTextNodeAction);
 	ContextMenuBuilder.AddAction(NewActionNodeGameAction);
+	ContextMenuBuilder.AddAction(NewActionNodeBranch);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

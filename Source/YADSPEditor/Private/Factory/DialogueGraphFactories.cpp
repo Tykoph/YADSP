@@ -12,25 +12,20 @@ FDialoguePinFactory::~FDialoguePinFactory()
 
 TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* Pin) const
 {
-	if (Pin->PinType.PinSubCategory == FName(TEXT("TextPin")))
-	{
+	if (Pin->PinType.PinSubCategory == FName(TEXT("TextPin"))) {
 		return SNew(SDialogueGraphTextPin, Pin);
 	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("StartPin")))
-	{
+	if (Pin->PinType.PinSubCategory == FName(TEXT("StartPin"))) {
 		return SNew(SDialogueGraphStartPin, Pin);
 	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("EndPin")))
-	{
+	if (Pin->PinType.PinSubCategory == FName(TEXT("EndPin"))) {
 		return SNew(SDialogueGraphEndPin, Pin);
 	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("ActionPin")))
-	{
+	if (Pin->PinType.PinSubCategory == FName(TEXT("ActionPin"))) {
 		return SNew(SDialogueGraphActionPin, Pin);
 	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("AnimationPin")))
-	{
-		return SNew(SDialogueGraphAnimationPin, Pin);
+	if (Pin->PinType.PinSubCategory == FName(TEXT("BranchPin"))) {
+		return SNew(SDialogueGraphBranchPin, Pin);
 	}
 
 	return nullptr;
@@ -42,8 +37,7 @@ FDialogueGraphNodeFactory::~FDialogueGraphNodeFactory()
 
 TSharedPtr<SGraphNode> FDialogueGraphNodeFactory::CreateNode(UEdGraphNode* Node) const
 {
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Node))
-	{
+	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Node)) {
 		return SNew(SDialogueGraphNodeText, TextNode);
 	}
 	return nullptr;

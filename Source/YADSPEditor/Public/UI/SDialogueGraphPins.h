@@ -94,13 +94,13 @@ protected:
 };
 
 /**
- * Custom graph pin for dialogue animation node connections
+ * Custom graph pin for Branch node connections
  * Displays with yellow color
  */
-class SDialogueGraphAnimationPin : public SGraphPin
+class SDialogueGraphBranchPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphAnimationPin)
+	SLATE_BEGIN_ARGS(SDialogueGraphBranchPin)
 		{
 		}
 

@@ -25,11 +25,8 @@ public: // UEdGraphNode interface
 	virtual void CreateDefaultOutputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::TextNode; }
-	virtual void OnPropertiesChanged() override { SyncWithNodeResponse(); }
-
-	// YADSP Interface
-	void SyncWithNodeResponse();
-
+	virtual void OnPropertiesChanged() override { }
+	
 	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoText>(Output); }
 
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override

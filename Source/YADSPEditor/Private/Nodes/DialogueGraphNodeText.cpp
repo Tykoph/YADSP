@@ -5,16 +5,15 @@
 
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
-#include "Widgets/Input/SButton.h"
-#include "Widgets/Text/STextBlock.h"
-#include "Widgets/SBoxPanel.h"
-#include "Widgets/Input/SComboBox.h"
-#include "ScopedTransaction.h"
 
 FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(NodeInfoPtr);
 
+	if (!NodeInfo) {
+		return FText::FromString(TEXT("NodeInfo null ?????"));
+	}
+	
 	if (NodeInfo->Title.IsEmpty()) {
 		FString DialogueTextStr = NodeInfo->DialogueID.ToString();
 		if (DialogueTextStr.Len() > 15) {
@@ -69,31 +68,4 @@ void UDialogueGraphNodeText::CreateDefaultOutputPin()
 {
 	FString DefaultResponse = TEXT("Continue");
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
-	GetDialogueNodeInfo()->DialogueResponses.Add(FName(DefaultResponse));
-}
-
-void UDialogueGraphNodeText::SyncWithNodeResponse()
-{
-	UDialogueNodeInfoText* NodeInfo = GetDialogueNodeInfo();
-	int NumGraphNodePins = Pins.Num() - 1;
-	int NumInfoPins = NodeInfo->DialogueResponses.Num();
-
-	while (NumGraphNodePins > NumInfoPins) {
-		RemovePinAt(NumGraphNodePins - 1, EGPD_Output);
-		NumGraphNodePins--;
-	}
-
-	while (NumInfoPins > NumGraphNodePins) {
-		CreateDialoguePin(
-			EGPD_Output,
-			FName(NodeInfo->DialogueResponses[NumGraphNodePins].ToString())
-		);
-		NumGraphNodePins++;
-	}
-
-	int Index = 1;
-	for (const FName& Response : NodeInfo->DialogueResponses) {
-		GetPinAt(Index)->PinName = FName(Response.ToString());
-		Index++;
-	}
 }

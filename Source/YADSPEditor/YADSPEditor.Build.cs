@@ -34,7 +34,8 @@ public class YADSPEditor : ModuleRules
 				"GSheetLocSystemPlugin",
 				"EditorFramework",
 				"DeveloperSettings",
-				"UMG"
+				"UMG",
+				"GameActionPlugin"
 			}
 		);
 	}
