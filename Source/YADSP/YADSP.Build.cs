@@ -1,5 +1,5 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
-// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 using UnrealBuildTool;
 

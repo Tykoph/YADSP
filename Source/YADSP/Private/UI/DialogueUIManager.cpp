@@ -1,3 +1,5 @@
+// Copyright Tom Duby. All Rights Reserved.
+
 #include "UI/DialogueUIManager.h"
 
 void UDialogueUIManager::BeginPlay()

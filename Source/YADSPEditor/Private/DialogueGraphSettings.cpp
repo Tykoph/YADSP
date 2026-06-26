@@ -1,4 +1,4 @@
-// Copyright 2026 Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSettings.h"
 #include "Engine/DataTable.h"

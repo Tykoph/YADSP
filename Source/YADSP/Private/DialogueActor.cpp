@@ -1,4 +1,6 @@
-﻿#include "DialogueActor.h"
+﻿// Copyright Tom Duby. All Rights Reserved.
+
+#include "DialogueActor.h"
 #include "DialoguePlayer.h"
 
 // Constructor: Initializes the dialogue actor, sets up editor sprite component and registers blueprint compilation callback

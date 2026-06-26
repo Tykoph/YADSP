@@ -1,3 +1,5 @@
+// Copyright Tom Duby. All Rights Reserved.
+
 #pragma once
 #include "DialogueSystem.h"
 
