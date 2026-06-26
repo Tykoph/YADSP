@@ -5,7 +5,6 @@
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoEnd.h"
 #include "DialogueGraphNodeEnd.generated.h"
 
 UCLASS()
@@ -24,21 +23,6 @@ public: // UEdGraphNode interface
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::EndNode; }
-	virtual void OnPropertiesChanged() override { Modify(); }
-
-	// YADSP Interface
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoEnd>(Output); }
-
-	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override
-	{
-		NodeInfoPtr = Cast<UDialogueNodeInfoEnd>(NodeInfo);
-	}
-
-	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
 	
 	virtual bool ShouldReturnInfo() const override { return false; }
-
-protected:
-	UPROPERTY()
-	UDialogueNodeInfoEnd* NodeInfoPtr = nullptr;
 };

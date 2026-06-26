@@ -95,7 +95,7 @@ protected:
 
 /**
  * Custom graph pin for Branch node connections
- * Displays with yellow color
+ * Displays with Orange color
  */
 class SDialogueGraphBranchPin : public SGraphPin
 {
@@ -103,6 +103,28 @@ public:
 	SLATE_BEGIN_ARGS(SDialogueGraphBranchPin)
 		{
 		}
+
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
+	}
+
+protected:
+	virtual FSlateColor GetPinColor() const override;
+};
+
+/**
+ * Custom graph pin for Branch node connections
+ * Displays with Pink color
+ */
+class SDialogueGraphGoToPin : public SGraphPin
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphGoToPin)
+	{
+	}
 
 	SLATE_END_ARGS()
 

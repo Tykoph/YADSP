@@ -27,3 +27,8 @@ FSlateColor SDialogueGraphBranchPin::GetPinColor() const
 {
 	return FColor::Orange;
 }
+
+FSlateColor SDialogueGraphGoToPin::GetPinColor() const	
+{
+	return FColor::FromHex("FF1FDD");
+}

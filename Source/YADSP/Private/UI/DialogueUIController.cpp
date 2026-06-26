@@ -7,7 +7,6 @@
 #include "Components/RichTextBlock.h"
 #include "Fonts/FontMeasure.h"
 
-
 void UDialogueUIController::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -24,7 +23,6 @@ void UDialogueUIController::NativeDestruct()
 	DialogueSubsystem->OnDialogueLineRequested.RemoveDynamic(this, &UDialogueUIController::UpdateDisplay);
 	DialogueSubsystem->OnDialogueEnded.RemoveDynamic(this, &UDialogueUIController::OnDialogueEnded);
 	DialogueSubsystem->OnBranchOptionsRequested.RemoveDynamic(this, &UDialogueUIController::OnBranchOptionsRequested);
-	
 }
 
 void UDialogueUIController::UpdateDisplay_Implementation(const FText& Text, const FText& Speaker)

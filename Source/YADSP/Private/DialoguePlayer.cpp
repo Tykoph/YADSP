@@ -11,6 +11,8 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Nodes/DialogueNodeInfoBranch.h"
+#include "Nodes/DialogueNodeInfoGoTo.h"
+#include "Nodes/DialogueNodeInfoLabel.h"
 #include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
@@ -133,7 +135,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNode->NodeInfo);
 
 		if (GameActionNodeInfo->GameAction.Num() > 0) {
-			const FGameActionContext NewContext;
+			FGameActionContext NewContext;
 			
 			TArray<UGameActionBase*> InstancedActions;
 			for (const UGameActionBase* ActionTemplate : GameActionNodeInfo->GameAction) {
@@ -171,10 +173,34 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		}
 	}
 
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::GoToNode) {
+		const UDialogueNodeInfoGoTo* GameActionNodeInfo = Cast<UDialogueNodeInfoGoTo>(CurrentNode->NodeInfo);
+		GoToNode(GameActionNodeInfo->LabelNode);
+	}
+	
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::LabelNode) {
+		ChooseOptionAtIndex(0);
+	}
+	
 	// If the current node is an end node, end the dialogue
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode) {
 		DialogueSubsystem->OnDialogueEnded.Broadcast();
 	}
+}
+
+void UDialoguePlayer::GoToNode(const FName& NodeName)
+{
+	// Find the start node
+	for (UDialogueRuntimeGraphNode* Node : DialogueSystem->Graph->Nodes) {
+		if (Node->NodeType == EDialogueNodeType::LabelNode && Cast<UDialogueNodeInfoLabel>(Node->NodeInfo)->LabelName == NodeName) {
+			CurrentNode = Node;
+			ChooseOptionAtIndex(0);
+			return;
+		}
+	}
+
+	UE_LOG(DialoguePlayerSub, Error, TEXT("No Label found with name %s, Ending Dialogue"), *NodeName.ToString());
+	DialogueSubsystem->OnDialogueEnded.Broadcast();
 }
 
 float UDialoguePlayer::CalculateSkipTimer(const FString& Text)

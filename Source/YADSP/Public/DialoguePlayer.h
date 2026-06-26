@@ -46,6 +46,9 @@ public:
 	UFUNCTION()
 	void ChooseOptionAtIndex(int Index);
 
+	UFUNCTION()
+	void GoToNode(const FName& NodeName);
+	
 	/**
 	 * Calculates a time in seconds based on the length of the given FText.
 	 *

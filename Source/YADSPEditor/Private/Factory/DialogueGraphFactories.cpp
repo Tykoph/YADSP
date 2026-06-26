@@ -27,6 +27,9 @@ TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* Pin) const
 	if (Pin->PinType.PinSubCategory == FName(TEXT("BranchPin"))) {
 		return SNew(SDialogueGraphBranchPin, Pin);
 	}
+	if (Pin->PinType.PinSubCategory == FName(TEXT("GoToPin"))) {
+		return SNew(SDialogueGraphGoToPin, Pin);
+	}
 
 	return nullptr;
 }

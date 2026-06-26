@@ -14,4 +14,6 @@ enum class EDialogueNodeType
 	TextNode,
 	BranchNode,
 	GameActionNode,
+	GoToNode,
+	LabelNode
 };

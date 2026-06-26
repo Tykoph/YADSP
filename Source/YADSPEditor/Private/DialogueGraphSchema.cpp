@@ -7,7 +7,9 @@
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueGraphNodeStart.h"
-#include "Nodes/DialogueGraphNodeBranch.h"
+#include "Nodes/DialogueGraphNodeGoTo.h"
+#include "Nodes/DialogueGraphNodeLabel.h"
+
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -31,7 +33,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	TSharedPtr<FNewNodeAction> NewActionNodeGameAction(
+	TSharedPtr<FNewNodeAction> NewGameActionNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeGameAction::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -41,7 +43,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 	
-	TSharedPtr<FNewNodeAction> NewActionNodeBranch(
+	TSharedPtr<FNewNodeAction> NewBranchNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeBranch::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -51,10 +53,32 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 	
-	ContextMenuBuilder.AddAction(NewEndNodeAction);
+	TSharedPtr<FNewNodeAction> NewGoToNodeAction(
+		new FNewNodeAction(
+			UDialogueGraphNodeGoTo::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("New GoTo Node")),
+			FText::FromString(TEXT("Makes a new GoTo node")),
+			0
+		)
+	);
+	
+	TSharedPtr<FNewNodeAction> NewLabelNodeAction(
+		new FNewNodeAction(
+			UDialogueGraphNodeLabel::StaticClass(),
+			FText::FromString(TEXT("Node")),
+			FText::FromString(TEXT("New Label Node")),
+			FText::FromString(TEXT("Makes a new Label node")),
+			0
+		)
+	);
+	
 	ContextMenuBuilder.AddAction(NewTextNodeAction);
-	ContextMenuBuilder.AddAction(NewActionNodeGameAction);
-	ContextMenuBuilder.AddAction(NewActionNodeBranch);
+	ContextMenuBuilder.AddAction(NewGameActionNodeAction);
+	ContextMenuBuilder.AddAction(NewBranchNodeAction);
+	ContextMenuBuilder.AddAction(NewGoToNodeAction);
+	ContextMenuBuilder.AddAction(NewLabelNodeAction);
+	ContextMenuBuilder.AddAction(NewEndNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

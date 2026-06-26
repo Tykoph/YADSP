@@ -7,6 +7,8 @@
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "Nodes/DialogueGraphNodeBranch.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
+#include "Nodes/DialogueGraphNodeGoTo.h"
+#include "Nodes/DialogueGraphNodeLabel.h"
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
@@ -112,6 +114,13 @@ void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* W
 			break;
 		case EDialogueNodeType::BranchNode:
 			NewNode = NewObject<UDialogueGraphNodeBranch>(WorkingGraphEditor);
+			break;
+		case EDialogueNodeType::GoToNode:
+			NewNode = NewObject<UDialogueGraphNodeGoTo>(WorkingGraphEditor);
+			break;
+		case EDialogueNodeType::LabelNode:
+			NewNode = NewObject<UDialogueGraphNodeLabel>(WorkingGraphEditor);
+			break;
 		default:
 			// Log an error for unknown node types
 			UE_LOG(DialogueGraphCompilerLog, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
