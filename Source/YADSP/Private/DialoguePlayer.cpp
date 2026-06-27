@@ -149,7 +149,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 				FOnGameActionCompleted OnCompleted;
 				OnCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
 				
-				GameActionSubsystem->ExecuteGameAction(InstancedActions[0], NewContext, OnCompleted);
+				GameActionSubsystem->ExecuteGameAction(InstancedActions[0], OnCompleted);
 			}
 			else {
 				FOnGameActionSequenceCompleted OnSequenceCompleted;
@@ -160,10 +160,10 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 				
 				switch (GameActionNodeInfo->GameActionExecutionMode) {
 					case EGameActionExecutionMode::Sequence:
-						GameActionSubsystem->ExecuteGameActionSequence(InstancedActions, NewContext, OnSequenceCompleted);
+						GameActionSubsystem->ExecuteGameActionSequence(InstancedActions, OnSequenceCompleted);
 						break;
 					case EGameActionExecutionMode::Parallel:
-						GameActionSubsystem->ExecuteParallelGameAction(InstancedActions, NewContext, OnParallelCompleted);
+						GameActionSubsystem->ExecuteParallelGameAction(InstancedActions, OnParallelCompleted);
 						break;
 				}
 			}
