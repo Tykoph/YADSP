@@ -10,7 +10,7 @@ class YADSP_API UGameExpression : public UGameActionBase
 	GENERATED_BODY()
 	
 public:
-	virtual void Execute_Implementation(const FGameActionContext& Context) override;
+	virtual void Execute_Implementation() override;
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "GameAction")
 	bool ExecuteWithReturn();

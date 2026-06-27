@@ -2,10 +2,10 @@
 
 #include "GameAction/GameExpression.h"
 
-void UGameExpression::Execute_Implementation(const FGameActionContext& Context)
+void UGameExpression::Execute_Implementation()
 {
 	ExecuteWithReturn();
-	Super::Execute_Implementation(Context);
+	Super::Execute_Implementation();
 }
 
 bool UGameExpression::ExecuteWithReturn_Implementation()
