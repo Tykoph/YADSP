@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "DialogueSubsystem.h"
-#include "DialogueSystemRuntimeGraph.h"
 #include "GameActionSubsystem.h"
 #include "Nodes/DialogueNodeInfoText.h"
+#include "RuntimeGraph/DialogueSystemRuntimeGraph.h"
 #include "DialoguePlayer.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE(FDialogueEndCallback);
-DECLARE_DYNAMIC_DELEGATE(FDialogueActionCallback);
 
 /**
  * @brief A component that manages dialogue playback within the game.
@@ -68,36 +67,25 @@ private:
 	UFUNCTION()
 	void OnGameActionFinished();
 	
-	UPROPERTY()
-	UDialogueSystem* DialogueSystem = nullptr;
-
-	UPROPERTY()
-	UDialogueRuntimeGraphNode* CurrentNode = nullptr;
-
-	UPROPERTY()
-	APlayerController* PlayerController = nullptr;
-
-	UPROPERTY()
-	UDialogueSubsystem* DialogueSubsystem;
+	void ProcessDialogueAutoSkip(const UDialogueNodeInfoText* NodeInfo);
+	static TArray<FText> ConvertStringArrayToTextArray(const TArray<FString>& StringArray);
 	
 	UPROPERTY()
-	UGameActionSubsystem* GameActionSubsystem;
+	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
+	UPROPERTY()
+	TWeakObjectPtr<UDialogueRuntimeGraphNode> CurrentNode = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<APlayerController> PlayerController = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UDialogueSubsystem> DialogueSubsystem;
+	UPROPERTY()
+	TObjectPtr<UGameActionSubsystem> GameActionSubsystem;
 	
-	float CurrentSkipTime = 0.0f;
-
-	FTimerHandle AutoSkipTimerHandle;
-
+	UPROPERTY()
 	FDialogueEndCallback OnDialogueEndedCallback;
 	
-	void AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo);
-	static TArray<FText> StringArrayConverter(TArray<FString> StringArray);
-
-	UFUNCTION()
-	FString GetSpeakerName(const FName& SpeakerName) const;
-	
-	UFUNCTION()
-	FString GetDialogueText(const FName& DialogueText) const;
-
-	UFUNCTION()
-	TArray<FString> GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const;
+	float CurrentSkipTime = 0.0f;
+	FTimerHandle AutoSkipTimerHandle;
 };

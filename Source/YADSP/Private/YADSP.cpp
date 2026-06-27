@@ -4,6 +4,8 @@
 
 #define LOCTEXT_NAMESPACE "FYADSPModule"
 
+DEFINE_LOG_CATEGORY(LogYADSP)
+
 void FYADSPModule::StartupModule()
 {
 }

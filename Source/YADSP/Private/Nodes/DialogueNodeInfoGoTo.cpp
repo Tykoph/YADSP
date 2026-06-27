@@ -1,7 +1,10 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "Nodes/DialogueNodeInfoGoTo.h"
+
+#include "DialogueNodeType.h"
 #include "Nodes/DialogueNodeInfoLabel.h"
+#include "RuntimeGraph/DialogueRuntimeGraphNode.h"
 
 TArray<FString> UDialogueNodeInfoGoTo::GetAllLabelNodes() const
 {

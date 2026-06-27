@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "DialogueSubsystem.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
+#include "Components/RichTextBlock.h"
 #include "DialogueOption.generated.h"
 
 UCLASS()
@@ -22,10 +24,10 @@ public:
 	void OnButtonClicked();
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UButton* ResponseButton = nullptr;
+	TObjectPtr<UButton> ResponseButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class URichTextBlock* ResponseButtonText = nullptr;
+	TObjectPtr<URichTextBlock> ResponseButtonText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsValid = true;
@@ -37,5 +39,5 @@ private:
 	int ButtonIndex;
 	
 	UPROPERTY()
-	UDialogueSubsystem* DialogueSubsystem;
+	TObjectPtr<UDialogueSubsystem> DialogueSubsystem;
 };

@@ -61,7 +61,7 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
 	}
 	
 	TSharedPtr<FString> CurrentDialogue = nullptr;
-	const FString CurrentDialogueID = NodeInfo->DialogueID.ToString();
+	const FString CurrentDialogueID = NodeInfo->DialogueKey.ToString();
 	for (const auto& Ptr : DialogueOptions) {
 		if (*Ptr == CurrentDialogueID) {
 			CurrentDialogue = Ptr;
@@ -191,8 +191,8 @@ void SDialogueGraphNodeText::RefreshSpeakerList()
 	
 	if (!NodeInfo) return;
 	
-	for (int32 i = 0; i < NodeInfo->SpeakerIDs.Num(); ++i) {
-		FString CurrentSpeakerID = NodeInfo->SpeakerIDs[i].ToString();
+	for (int32 i = 0; i < NodeInfo->SpeakerKeys.Num(); ++i) {
+		FString CurrentSpeakerID = NodeInfo->SpeakerKeys[i].ToString();
 		TSharedPtr<FString> CurrentSpeakerItem = nullptr;
 
 		for (const auto& Ptr : SpeakerOptions) {
@@ -260,7 +260,7 @@ void SDialogueGraphNodeText::OnAddSpeaker()
 			DefaultSpeaker = FName(*SpeakerOptions[0]);
 		}
 		
-		NodeInfo->SpeakerIDs.Add(DefaultSpeaker);
+		NodeInfo->SpeakerKeys.Add(DefaultSpeaker);
 		TextNode->OnPropertiesChanged();
 		RefreshSpeakerList();
 		UpdateSpeakerPreview();
@@ -273,10 +273,10 @@ void SDialogueGraphNodeText::OnRemoveSpeaker(int32 Index)
 	UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
 	UDialogueNodeInfoText* NodeInfo = TextNode ? TextNode->GetDialogueNodeInfo() : nullptr;
 
-	if (NodeInfo && NodeInfo->SpeakerIDs.IsValidIndex(Index)) {
+	if (NodeInfo && NodeInfo->SpeakerKeys.IsValidIndex(Index)) {
 		const FScopedTransaction Transaction(FText::FromString("Remove Speaker"));
 		NodeInfo->Modify();
-		NodeInfo->SpeakerIDs.RemoveAt(Index);
+		NodeInfo->SpeakerKeys.RemoveAt(Index);
 		TextNode->OnPropertiesChanged();
 		RefreshSpeakerList();
 		UpdateSpeakerPreview();
@@ -290,11 +290,11 @@ void SDialogueGraphNodeText::OnSpeakerComboChanged(TSharedPtr<FString> NewSelect
 		UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
 		UDialogueNodeInfoText* NodeInfo = TextNode ? TextNode->GetDialogueNodeInfo() : nullptr;
 		
-		if (NodeInfo && NodeInfo->SpeakerIDs.IsValidIndex(Index)) {
-			if (NodeInfo->SpeakerIDs[Index].ToString() != *NewSelection) {
+		if (NodeInfo && NodeInfo->SpeakerKeys.IsValidIndex(Index)) {
+			if (NodeInfo->SpeakerKeys[Index].ToString() != *NewSelection) {
 				const FScopedTransaction Transaction(FText::FromString("Change Speaker"));
 				NodeInfo->Modify();
-				NodeInfo->SpeakerIDs[Index] = FName(**NewSelection);
+				NodeInfo->SpeakerKeys[Index] = FName(**NewSelection);
 				TextNode->OnPropertiesChanged();
 				UpdateSpeakerPreview();
 			}
@@ -307,10 +307,10 @@ void SDialogueGraphNodeText::OnDialogueSelected(TSharedPtr<FString> NewSelection
 	if (NewSelection.IsValid()) {
 		if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 			if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
-				if (NodeInfo->DialogueID.ToString() != *NewSelection) {
+				if (NodeInfo->DialogueKey.ToString() != *NewSelection) {
 					const FScopedTransaction Transaction(FText::FromString("Change Dialogue ID"));
 					NodeInfo->Modify();
-					NodeInfo->DialogueID = FName(**NewSelection);
+					NodeInfo->DialogueKey = FName(**NewSelection);
 					TextNode->OnPropertiesChanged();
 					UpdateDialoguePreview();
 				}
@@ -323,8 +323,8 @@ FText SDialogueGraphNodeText::GetSpeakerComboText(int32 Index) const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
-			if (NodeInfo->SpeakerIDs.IsValidIndex(Index)) {
-				return FText::FromName(NodeInfo->SpeakerIDs[Index]);
+			if (NodeInfo->SpeakerKeys.IsValidIndex(Index)) {
+				return FText::FromName(NodeInfo->SpeakerKeys[Index]);
 			}
 		}
 	}
@@ -335,7 +335,7 @@ FText SDialogueGraphNodeText::GetDialogueComboText() const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (const UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
-			return FText::FromName(NodeInfo->DialogueID);
+			return FText::FromName(NodeInfo->DialogueKey);
 		}
 	}
 
@@ -357,7 +357,7 @@ static FString StripRichTextTags(const FString& Input)
 	return Result;
 }
 
-void SDialogueGraphNodeText::UpdateSpeakerPreview()
+void SDialogueGraphNodeText::UpdateSpeakerPreview() const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
@@ -369,7 +369,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview()
 			
 			FString CombinedSpeakers;
 
-			for (const FName& ID : NodeInfo->SpeakerIDs) {
+			for (const FName& ID : NodeInfo->SpeakerKeys) {
 				if (ID.IsNone()) continue;
 				if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT(", ");
 				
@@ -391,7 +391,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview()
 	}
 }
 
-void SDialogueGraphNodeText::UpdateDialoguePreview()
+void SDialogueGraphNodeText::UpdateDialoguePreview() const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (const UDialogueNodeInfoText* NodeInfo = TextNode->GetDialogueNodeInfo()) {
@@ -402,15 +402,15 @@ void SDialogueGraphNodeText::UpdateDialoguePreview()
 				Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
 			}
 
-			if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueID.IsNone()) {
+			if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueKey.IsNone()) {
 				FDataTableRowHandle Handle;
 				Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
-				Handle.RowName = NodeInfo->DialogueID;
+				Handle.RowName = NodeInfo->DialogueKey;
 				const FString LocalizedStr = UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language);
 				CachedDialoguePreview = FText::FromString(StripRichTextTags(LocalizedStr));
 			}
-			else if (!NodeInfo->DialogueID.IsNone()) {
-				CachedDialoguePreview = FText::FromString(NodeInfo->DialogueID.ToString());
+			else if (!NodeInfo->DialogueKey.IsNone()) {
+				CachedDialoguePreview = FText::FromString(NodeInfo->DialogueKey.ToString());
 			}
 			else {
 				CachedDialoguePreview = FText::GetEmpty();
@@ -429,8 +429,8 @@ FText SDialogueGraphNodeText::GetPreviewSpeakerText() const
 
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;
-		const_cast<SDialogueGraphNodeText*>(this)->UpdateSpeakerPreview();
-		const_cast<SDialogueGraphNodeText*>(this)->UpdateDialoguePreview();
+		UpdateSpeakerPreview();
+		UpdateDialoguePreview();
 	}
 
 	return CachedSpeakerPreview;
@@ -443,8 +443,8 @@ FText SDialogueGraphNodeText::GetPreviewDialogueText() const
 	
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;
-		const_cast<SDialogueGraphNodeText*>(this)->UpdateSpeakerPreview();
-		const_cast<SDialogueGraphNodeText*>(this)->UpdateDialoguePreview();
+		UpdateSpeakerPreview();
+		UpdateDialoguePreview();
 	}
 
 	return CachedDialoguePreview;

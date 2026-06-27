@@ -18,7 +18,5 @@ public:
 	TArray<FBranchCondition> BranchOptions;
 	
 	UFUNCTION()
-	TArray<FString> GetDialogue() const;
-	UFUNCTION()
-	TArray<FString> GetTooltip() const;
+	TArray<FString> GetTextList() const;
 };

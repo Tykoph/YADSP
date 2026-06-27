@@ -6,6 +6,7 @@
 #include "DialogueOption.h"
 #include "DialogueSubsystem.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/HorizontalBox.h"
 #include "Components/RichTextBlock.h"
 #include "DialogueUIController.generated.h"
 
@@ -43,17 +44,17 @@ public:
 	UFUNCTION()
 	void OnDialogueEnded();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
 	void ClearDialogueOption(int Index);
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	URichTextBlock* SpeakerName = nullptr;
+	TObjectPtr<URichTextBlock> SpeakerName = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	URichTextBlock* DialogueText = nullptr;
+	TObjectPtr<URichTextBlock> DialogueText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	class UHorizontalBox* ResponseBox = nullptr;
+	TObjectPtr<UHorizontalBox> ResponseBox = nullptr;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UDialogueOption> DialogueOptionClass;
@@ -67,5 +68,5 @@ protected:
 	
 private:
 	UPROPERTY()
-	UDialogueSubsystem* DialogueSubsystem;
+	TObjectPtr<UDialogueSubsystem> DialogueSubsystem;
 };

@@ -11,6 +11,8 @@ void UDialogueUIController::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>();
+	if (DialogueSubsystem == nullptr) 
+		return;
 	DialogueSubsystem->OnDialogueLineRequested.AddDynamic(this, &UDialogueUIController::UpdateDisplay);
 	DialogueSubsystem->OnDialogueEnded.AddDynamic(this, &UDialogueUIController::OnDialogueEnded);
 	DialogueSubsystem->OnBranchOptionsRequested.AddDynamic(this, &UDialogueUIController::OnBranchOptionsRequested);
@@ -20,9 +22,12 @@ void UDialogueUIController::NativeConstruct()
 void UDialogueUIController::NativeDestruct()
 {
 	Super::NativeDestruct();
+	if (DialogueSubsystem == nullptr) 
+		return;
 	DialogueSubsystem->OnDialogueLineRequested.RemoveDynamic(this, &UDialogueUIController::UpdateDisplay);
 	DialogueSubsystem->OnDialogueEnded.RemoveDynamic(this, &UDialogueUIController::OnDialogueEnded);
 	DialogueSubsystem->OnBranchOptionsRequested.RemoveDynamic(this, &UDialogueUIController::OnBranchOptionsRequested);
+	DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialogueUIController::ClearDialogueOption);
 }
 
 void UDialogueUIController::UpdateDisplay_Implementation(const FText& Text, const FText& Speaker)
@@ -40,9 +45,11 @@ void UDialogueUIController::OnBranchOptionsRequested(const TArray<FBranchOption>
 	for (int i = 0; i < BranchOptions.Num(); ++i) {
 		DialogueOptionsWidgets.Add(CreateWidget(this, DialogueOptionClass));
 		ResponseBox->AddChild(DialogueOptionsWidgets[i]);
-		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->SetDialogueOption(BranchOptions[i].DialogueText, i);
-		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->bIsValid = BranchOptions[i].bExpressionIsValid;
-		Cast<UDialogueOption>(DialogueOptionsWidgets[i])->OptionTooltip = BranchOptions[i].Tooltip;
+		
+		const auto DialogueOption = Cast<UDialogueOption>(DialogueOptionsWidgets[i]);
+		DialogueOption->SetDialogueOption(BranchOptions[i].DialogueText, i);
+		DialogueOption->bIsValid = BranchOptions[i].bExpressionIsValid;
+		DialogueOption->OptionTooltip = BranchOptions[i].Tooltip;
 	}
 }
 
@@ -69,7 +76,7 @@ void UDialogueUIController::OnDialogueEnded()
 	RemoveFromParent();
 }
 
-void UDialogueUIController::ClearDialogueOption(int Index)
+void UDialogueUIController::ClearDialogueOption_Implementation(int Index)
 {
 	ResponseBox->ClearChildren();
 	DialogueOptionsWidgets.Empty();

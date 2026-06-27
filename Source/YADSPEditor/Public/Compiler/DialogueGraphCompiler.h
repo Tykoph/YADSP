@@ -3,7 +3,7 @@
 #pragma once
 #include "DialogueSystem.h"
 
-class DialogueGraphCompiler
+class FDialogueGraphCompiler
 {
 public:
 	/**

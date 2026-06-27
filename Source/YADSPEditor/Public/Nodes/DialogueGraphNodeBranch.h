@@ -38,6 +38,6 @@ public: // UEdGraphNode interface
 
 protected:
 	UPROPERTY()
-	UDialogueNodeInfoBranch* NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoBranch> NodeInfoPtr = nullptr;
 
 };

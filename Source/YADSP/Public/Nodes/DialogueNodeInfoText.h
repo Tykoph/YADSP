@@ -24,13 +24,13 @@ public:
 	FString Title;
 	
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetSpeakerFromTable"))
-	TArray<FName> SpeakerIDs;
+	TArray<FName> SpeakerKeys;
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
-	FName DialogueID;
+	FName DialogueKey;
 	
 	UPROPERTY(EditAnywhere)
-	USoundCue* DialogueSound;
+	TObjectPtr<USoundCue> DialogueSound;
 
 	UPROPERTY(EditAnywhere)
 	ESkipDialogue SkipDialogue = ESkipDialogue::NoSkip;

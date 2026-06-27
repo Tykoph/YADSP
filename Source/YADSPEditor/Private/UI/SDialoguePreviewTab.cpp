@@ -110,14 +110,14 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 				
 				CurrentNode = NodeInfo;
 				
-				if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueID.IsNone()) {
+				if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueKey.IsNone()) {
 					FDataTableRowHandle Handle;
 					Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
-					Handle.RowName = NodeInfo->DialogueID;
+					Handle.RowName = NodeInfo->DialogueKey;
 					NewPreviewText = FText::FromString(UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language));
 
 					FString CombinedSpeakers;
-					for (const FName& ID : NodeInfo->SpeakerIDs) {
+					for (const FName& ID : NodeInfo->SpeakerKeys) {
 						if (ID.IsNone()) continue;
 						if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT(", ");
 				
@@ -133,8 +133,8 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 					}
 					NewSpeakerPreviewText = FText::FromString(CombinedSpeakers);
 				}
-				else if (!NodeInfo->DialogueID.IsNone()) {
-					NewPreviewText = FText::FromString(NodeInfo->DialogueID.ToString());
+				else if (!NodeInfo->DialogueKey.IsNone()) {
+					NewPreviewText = FText::FromString(NodeInfo->DialogueKey.ToString());
 				}
 				
 				PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);

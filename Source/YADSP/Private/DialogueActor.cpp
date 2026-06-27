@@ -1,4 +1,4 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueActor.h"
 #include "DialoguePlayer.h"
@@ -44,7 +44,7 @@ ADialogueActor::~ADialogueActor()
 	}
 }
 
-void ADialogueActor::PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const
+void ADialogueActor::PlayDialogue(APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded) const
 {
 	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, OnDialogueEnded);
 }

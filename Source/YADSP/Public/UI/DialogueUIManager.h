@@ -12,6 +12,7 @@ class YADSP_API UDialogueUIManager : public UActorComponent
 
 public:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	UFUNCTION()
 	void OnDialogueStarted(UDialogueSystem* DialogueAsset, APlayerController* PC);
@@ -23,9 +24,9 @@ public:
 	TSubclassOf<UDialogueUIController> DialogueUIClass;
 	
 	UPROPERTY(BlueprintReadOnly)
-	UUserWidget* DialogueUI;
+	TObjectPtr<UUserWidget> DialogueUI;
 	
 private:
 	UPROPERTY()
-	UDialogueSubsystem* DialogueSubsystem;	
+	TObjectPtr<UDialogueSubsystem> DialogueSubsystem;	
 };

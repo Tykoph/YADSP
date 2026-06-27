@@ -2,32 +2,44 @@
 
 #include "DialoguePlayer.h"
 
+#include "DialogueNodeType.h"
 #include "DialogueSubsystem.h"
 #include "DialogueSystem.h"
-#include "GSheetLocSystemLibrary.h"
+#include "DialogueSystemLibrary.h"
 
 #include "Nodes/DialogueNodeInfoGameAction.h"
 #include "Nodes/DialogueNodeInfoText.h"
-
-#include "Kismet/GameplayStatics.h"
 #include "Nodes/DialogueNodeInfoBranch.h"
 #include "Nodes/DialogueNodeInfoGoTo.h"
 #include "Nodes/DialogueNodeInfoLabel.h"
-#include "Sound/SoundCue.h"
 
-DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
+#include "RuntimeGraph/DialogueRuntimeGraphNode.h"
+#include "RuntimeGraph/DialogueRuntimeGraphPin.h"
+
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogDialoguePlayer, Log, All);
 
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded)
 {
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>(); 
 	GameActionSubsystem = GetWorld()->GetSubsystem<UGameActionSubsystem>(); 
-
+	
+	if (DialogueSubsystem == nullptr) {
+		UE_LOG(LogDialoguePlayer, Error, TEXT("DialogueSubsystem not found"));
+		return;
+	}
+	if (GameActionSubsystem == nullptr) {
+		UE_LOG(LogDialoguePlayer, Error, TEXT("GameActionSubsystem not found"));
+		return;
+	}
 	if (DialogueAsset == nullptr) {
-		UE_LOG(DialoguePlayerSub, Error, TEXT("No dialogue asset provided"));
+		UE_LOG(LogDialoguePlayer, Error, TEXT("No dialogue asset provided"));
 		return;
 	}
 	if (PlayerController == nullptr) {
-		UE_LOG(DialoguePlayerSub, Error, TEXT("No player controller provided"));
+		UE_LOG(LogDialoguePlayer, Error, TEXT("No player controller provided"));
 		return;
 	}
 	
@@ -47,7 +59,7 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 	}
 
 	if (CurrentNode == nullptr) {
-		UE_LOG(DialoguePlayerSub, Error, TEXT("No start node found in the dialogue graph"));
+		UE_LOG(LogDialoguePlayer, Error, TEXT("No start node found in the dialogue graph"));
 		return;
 	}
 
@@ -60,9 +72,13 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 
 void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 {
-	// Check if the index is valid
+	if (!CurrentNode.IsValid()) {
+		UE_LOG(LogDialoguePlayer, Error, TEXT("Current Node Invlide"));
+		return;
+	}
+	
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0) {
-		UE_LOG(DialoguePlayerSub, Error, TEXT("Invalid option index %d"), Index);
+		UE_LOG(LogDialoguePlayer, Error, TEXT("Invalid option index %d"), Index);
 		return;
 	}
 	
@@ -82,19 +98,19 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		
 		// Set the speaker name
 		FString CombinedSpeakerNames;
-		for (const FName& ID : NodeInfo->SpeakerIDs) {
+		for (const FName& SpeakerKey : NodeInfo->SpeakerKeys) {
 			if (!CombinedSpeakerNames.IsEmpty()) {
 				CombinedSpeakerNames += TEXT(", ");
 			}
-			CombinedSpeakerNames += GetSpeakerName(ID);
+			CombinedSpeakerNames += UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, SpeakerKey);
 		}
 
 		DialogueSubsystem->OnDialogueLineRequested.Broadcast(
-			FText::FromString(GetDialogueText(NodeInfo->DialogueID)),
+			FText::FromString(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, NodeInfo->DialogueKey)),
 			FText::FromString(CombinedSpeakerNames)
 			);
 		
-		AutoSkipDialogueSelector(NodeInfo);
+		ProcessDialogueAutoSkip(NodeInfo);
 	}
 	
 	// If the current node is a Branch Node, Display dialogue options if applicable
@@ -105,7 +121,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		
 		TArray<FBranchOption> BranchToDisplay;
 		for (int i = 0; i < BranchCache.Num(); ++i) {
-			bool bIsValid = false; 
+			bool bIsValid;
 			
 			if (BranchCache[i].Expression)
 				bIsValid = BranchCache[i].Expression->ExecuteWithReturn();
@@ -121,8 +137,10 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 			}
 			
 			FBranchOption CurrentBranch;
-			CurrentBranch.DialogueText = FText::FromString(GetDialogueText(BranchCache[i].DialogueResponse));
-			CurrentBranch.Tooltip = FText::FromString(GetDialogueText(BranchCache[i].ConditionTooltip));
+			CurrentBranch.DialogueText = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
+					DialogueSystem, DialogueSystem->DialogueDataTable, BranchCache[i].DialogueResponseKey));
+			CurrentBranch.Tooltip = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
+					DialogueSystem, DialogueSystem->DialogueDataTable, BranchCache[i].ConditionTooltipKey));
 			CurrentBranch.bExpressionIsValid = bIsValid;
 			BranchToDisplay.Add(CurrentBranch);
 		}
@@ -135,8 +153,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNode->NodeInfo);
 
 		if (GameActionNodeInfo->GameAction.Num() > 0) {
-			FGameActionContext NewContext;
-			
+				
 			TArray<UGameActionBase*> InstancedActions;
 			for (const UGameActionBase* ActionTemplate : GameActionNodeInfo->GameAction) {
 				if (ActionTemplate) {
@@ -184,6 +201,7 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 	
 	// If the current node is an end node, end the dialogue
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode) {
+		DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
 		DialogueSubsystem->OnDialogueEnded.Broadcast();
 	}
 }
@@ -199,10 +217,12 @@ void UDialoguePlayer::GoToNode(const FName& NodeName)
 		}
 	}
 
-	UE_LOG(DialoguePlayerSub, Error, TEXT("No Label found with name %s, Ending Dialogue"), *NodeName.ToString());
+	UE_LOG(LogDialoguePlayer, Error, TEXT("No Label found with name %s, Ending Dialogue"), *NodeName.ToString());
+	DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
 	DialogueSubsystem->OnDialogueEnded.Broadcast();
 }
 
+// TODO: Find a better way to calculate the timer based on text lenght (especially for non-alphabetic languages)
 float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
 {
 	// Convert the FText to an FString to get its length
@@ -231,13 +251,13 @@ void UDialoguePlayer::OnGameActionFinished()
 	ChooseOptionAtIndex(0);
 }
 
-void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* NodeInfo)
+void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* NodeInfo)
 {
 	switch (NodeInfo->SkipDialogue) {
 		case ESkipDialogue::NoSkip:
 			break;
 		case ESkipDialogue::AutoSkipBasedOnText:
-			CurrentSkipTime = CalculateSkipTimer(GetDialogueText(NodeInfo->DialogueID));
+			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, NodeInfo->DialogueKey));
 			AutoSkipDialogue(CurrentSkipTime);
 			break;
 		
@@ -245,7 +265,7 @@ void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* Node
 			if (NodeInfo->DialogueSound == nullptr) break;
 			CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
 			
-			// TODO: see how to properly play sound
+			// TODO: Make a custom sound player to replace this simple implementation (optional for)
 			UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
 			AutoSkipDialogue(CurrentSkipTime);
 			break;
@@ -257,7 +277,7 @@ void UDialoguePlayer::AutoSkipDialogueSelector(const UDialogueNodeInfoText* Node
 	}
 }
 
-TArray<FText> UDialoguePlayer::StringArrayConverter(TArray<FString> StringArray)
+TArray<FText> UDialoguePlayer::ConvertStringArrayToTextArray(const TArray<FString>& StringArray)
 {
 	TArray<FText> Result;
 
@@ -266,76 +286,4 @@ TArray<FText> UDialoguePlayer::StringArrayConverter(TArray<FString> StringArray)
 	}
 	
 	return Result;
-}
-
-FString UDialoguePlayer::GetSpeakerName(const FName& SpeakerName) const
-{
-	FString NullText;
-
-	if (DialogueSystem == nullptr) {
-		return NullText;
-	}
-	if (SpeakerName.IsNone()) {
-		return NullText;
-	}
-	if (DialogueSystem->SpeakerDataTable == nullptr) {
-		return NullText;
-	}
-
-	FDataTableRowHandle DataTableRowHandle;
-	DataTableRowHandle.DataTable = DialogueSystem->SpeakerDataTable;
-	DataTableRowHandle.RowName = SpeakerName;
-	
-	FString LocalizedName = UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle);
-	
-	return LocalizedName;
-}
-
-FString UDialoguePlayer::GetDialogueText(const FName& DialogueText) const
-{
-	FString NullText;
-
-	if (DialogueSystem == nullptr) {
-		return NullText;
-	}
-	if (DialogueText.IsNone()) {
-		return NullText;
-	}
-	if (DialogueSystem->DialogueDataTable == nullptr) {
-		return NullText;
-	}
-
-	FDataTableRowHandle DataTableRowHandle;
-	DataTableRowHandle.DataTable = DialogueSystem->DialogueDataTable;
-	DataTableRowHandle.RowName = DialogueText;
-	
-	FString LocalizedText = UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle);
-	
-	return LocalizedText;
-}
-
-TArray<FString> UDialoguePlayer::GetDialogueOptionText(const TArray<FName>& DialogueOptionText) const
-{
-	TArray<FString> NullText;
-
-	if (DialogueSystem == nullptr) {
-		return NullText;
-	}
-	if (DialogueOptionText.Num() <= 0) {
-		return NullText;
-	}
-	if (DialogueSystem->DialogueDataTable == nullptr) {
-		return NullText;
-	}
-
-	FDataTableRowHandle DataTableRowHandle;
-	DataTableRowHandle.DataTable = DialogueSystem->DialogueDataTable;
-	TArray<FString> LocalizedText;
-	
-	for (const FName Text : DialogueOptionText) {
-		DataTableRowHandle.RowName = Text;
-		LocalizedText.Add(UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle));
-	} 
-		
-	return LocalizedText;
 }

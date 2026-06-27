@@ -44,15 +44,15 @@ protected:
 	void OnSpeakerComboChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo, int32 Index);
 	FText GetSpeakerComboText(int32 Index) const;
 
-	void UpdateSpeakerPreview();
-	void UpdateDialoguePreview();
+	void UpdateSpeakerPreview() const;
+	void UpdateDialoguePreview() const;
 
 private:
 	TArray<TSharedPtr<FString>> SpeakerOptions;
 	TArray<TSharedPtr<FString>> DialogueOptions;
 
 	// Cache for preview text to avoid redundant lookups
-	FText CachedSpeakerPreview;
-	FText CachedDialoguePreview;
+	mutable FText CachedSpeakerPreview;
+	mutable FText CachedDialoguePreview;
 	mutable FString LastPreviewLanguage;
 };

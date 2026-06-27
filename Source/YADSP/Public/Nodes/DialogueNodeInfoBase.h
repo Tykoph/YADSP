@@ -13,5 +13,5 @@ class YADSP_API UDialogueNodeInfoBase : public UObject
 
 public:
 	UPROPERTY()
-	UDialogueSystem* DialogueSystem = nullptr;
+	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 };

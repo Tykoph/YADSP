@@ -2,13 +2,11 @@
 
 #include "DialogueGraphEditorApp.h"
 #include "DialogueGraphSchema.h"
+#include "DialogueGraphSettings.h"
+#include "Compiler/DialogueGraphCompiler.h"
+#include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
-#include "Compiler/DialogueGraphCompiler.h"
-
-#include "DialogueGraphSettings.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
 
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
@@ -21,7 +19,7 @@ void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& 
 
 void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
 {
-	// initialize the working asset and graph editor
+	// Initialize the working asset and graph editor
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
 
@@ -35,7 +33,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 		UDialogueGraphSchema::StaticClass()
 	);
 
-	// initialize the asset editor
+	// Initialize the asset editor
 	InitAssetEditor(
 		Mode,
 		InitToolkitHost,
@@ -84,12 +82,12 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	);
 	AddToolbarExtender(ToolbarExtender);
 	
-	// set the current mode to the DialogueGraphAppMode
+	// Set the current mode to the DialogueGraphAppMode
 	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
 
-	// update the graph editor from the working asset
-	DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(WorkingAsset, WorkingGraphEditor);
+	// Update the graph editor from the working asset
+	FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(WorkingAsset, WorkingGraphEditor);
 
 	UDialogueGraphSettings::Get()->OnPreviewLanguageChanged.AddLambda([this]()
 	{
@@ -102,7 +100,7 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 
 void DialogueGraphEditorApp::OnClose()
 {
-	DialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
+	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
 	WorkingAsset->SetPreSaveListener(nullptr);
 	FAssetEditorToolkit::OnClose();
 }
@@ -111,7 +109,7 @@ void DialogueGraphEditorApp::OnClose()
 void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const
 {
 	if (WorkingGraphUiPtr != nullptr) {
-		//get the node getting modified
+		// Get the node getting modified
 		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
 		if (SelectedNode != nullptr) {
 			// Call OnPropertiesChanged() on the selected node
@@ -125,7 +123,7 @@ void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyCh
 
 void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave() const
 {
-	DialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
+	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
 }
 
 UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet)

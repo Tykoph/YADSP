@@ -11,16 +11,16 @@ struct FBranchCondition
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere)
-	UGameExpression* Expression;
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UGameExpression> Expression;
 	
 	UPROPERTY(EditAnywhere)
 	bool bHideIfExpressionFail = false;
 	
 	bool bExpressionIsValid = false;
 	
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogue"))
-	FName DialogueResponse = TEXT("Continue");
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTooltip"))
-	FName ConditionTooltip = TEXT("Continue");
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))
+	FName DialogueResponseKey = TEXT("Continue");
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))
+	FName ConditionTooltipKey = TEXT("Continue");
 };

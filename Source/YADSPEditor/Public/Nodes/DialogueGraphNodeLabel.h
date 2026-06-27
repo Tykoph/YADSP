@@ -34,5 +34,5 @@ public:
 
 protected:
 	UPROPERTY()
-	UDialogueNodeInfoLabel* NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoLabel> NodeInfoPtr = nullptr;
 };

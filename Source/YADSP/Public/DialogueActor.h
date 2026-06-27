@@ -1,4 +1,4 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
 
@@ -32,7 +32,7 @@ class YADSP_API ADialogueActor : public AActor
 
 public:
 	UPROPERTY(EditAnywhere)
-	UDialogueSystem* DialogueSystem = nullptr;
+	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 
 	/**
 	 * @brief Initiates playback of the dialogue sequence.
@@ -47,18 +47,19 @@ public:
 	 * @param OnDialogueEnded Callback function that will be executed when the dialogue sequence completes
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PlayDialogue(APlayerController* PlayerController, FDialogueEndCallback OnDialogueEnded) const;
+	void PlayDialogue(APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded) const;
 
 protected:
+	
+	// Get the editor only billboard component of the actor.
+	UFUNCTION(BlueprintPure, Category = "Components", meta = (DevelopmentOnly))
+	UBillboardComponent* GetEditorSpriteComponent() const;
+	
 #if WITH_EDITORONLY_DATA
 	// Billboard component displayed in the editor.
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UBillboardComponent> SpriteComponent;
 #endif
-
-	// Get the editor only billboard component of the actor.
-	UFUNCTION(BlueprintPure, Category = "Components", meta = (DevelopmentOnly))
-	UBillboardComponent* GetEditorSpriteComponent() const;
 
 private:
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))

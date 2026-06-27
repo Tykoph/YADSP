@@ -66,18 +66,18 @@ public:
 	FName DialoguePreviewStyle;
 	
 private:
-	TSharedPtr<FSlateStyleSet> CachedStyleInstance;
-	
-	TWeakObjectPtr<UDataTable> BoundDataTable;
 	void BindToDataTable(UDataTable* Table);
 	
 	void InitLanguageOptions();
 	
 	void ResetCachedStyle();
 	
+	TSharedPtr<FSlateStyleSet> CachedStyleInstance;
+	
+	TWeakObjectPtr<UDataTable> BoundDataTable;
+	
 	// Currently selected language for preview
 	FString PreviewLanguage = TEXT("en-US");
-
 	// Available language options for the dropdown
 	TArray<TSharedPtr<FString>> LanguageOptions;
 	

@@ -5,7 +5,7 @@
 #include "DialogueNodeType.generated.h"
 
 UENUM()
-enum class EDialogueNodeType
+enum class EDialogueNodeType : uint8
 {
 	Unknown,
 	DialogueNode,

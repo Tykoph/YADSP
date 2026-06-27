@@ -39,5 +39,5 @@ public: // UEdGraphNode interface
 
 protected:
 	UPROPERTY()
-	UDialogueNodeInfoGameAction* NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoGameAction> NodeInfoPtr = nullptr;
 };

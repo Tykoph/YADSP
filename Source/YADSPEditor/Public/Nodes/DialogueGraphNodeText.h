@@ -39,5 +39,5 @@ public: // UEdGraphNode interface
 
 protected:
 	UPROPERTY()
-	UDialogueNodeInfoText* NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoText> NodeInfoPtr = nullptr;
 };

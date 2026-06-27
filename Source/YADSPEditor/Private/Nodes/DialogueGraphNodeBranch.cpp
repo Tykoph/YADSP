@@ -23,7 +23,8 @@ void UDialogueGraphNodeBranch::GetNodeContextMenuActions(UToolMenu* Menu, UGraph
 				Node->GetGraph()->RemoveNode(Node);
 			}
 		))
-	);}
+	);
+}
 
 UEdGraphPin* UDialogueGraphNodeBranch::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
 {
@@ -50,7 +51,8 @@ void UDialogueGraphNodeBranch::CreateDefaultOutputPin()
 	FString DefaultResponse = TEXT("Continue");
 	FBranchCondition DefaultBranchCondition;
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
-	GetDialogueNodeInfo()->BranchOptions.Add(DefaultBranchCondition);}
+	GetDialogueNodeInfo()->BranchOptions.Add(DefaultBranchCondition);
+}
 
 void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 {
@@ -66,14 +68,14 @@ void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 	while (NumInfoPins > NumGraphNodePins) {
 		CreateDialoguePin(
 			EGPD_Output,
-			FName(NodeInfo->BranchOptions[NumGraphNodePins].DialogueResponse.ToString())
+			FName(NodeInfo->BranchOptions[NumGraphNodePins].DialogueResponseKey.ToString())
 		);
 		NumGraphNodePins++;
 	}
 
 	int Index = 1;
 	for (const FBranchCondition& BranchCondition : NodeInfo->BranchOptions) {
-		GetPinAt(Index)->PinName = FName(BranchCondition.DialogueResponse.ToString());
+		GetPinAt(Index)->PinName = FName(BranchCondition.DialogueResponseKey.ToString());
 		Index++;
 	}
 }

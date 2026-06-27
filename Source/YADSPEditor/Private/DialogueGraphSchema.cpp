@@ -17,8 +17,8 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		new FNewNodeAction(
 			UDialogueGraphNodeEnd::StaticClass(),
 			FText::FromString(TEXT("Node")),
-			FText::FromString(TEXT("new End Node")),
-			FText::FromString(TEXT("Makes a new End node")),
+			FText::FromString(TEXT("New End Node")),
+			FText::FromString(TEXT("Makes a new End Node")),
 			0
 		)
 	);
@@ -28,7 +28,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			UDialogueGraphNodeText::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New Dialogue Node")),
-			FText::FromString(TEXT("Makes a new Dialogue node")),
+			FText::FromString(TEXT("Makes a new Dialogue Node")),
 			0
 		)
 	);
@@ -38,7 +38,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			UDialogueGraphNodeGameAction::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New GameAction Node")),
-			FText::FromString(TEXT("Makes a new GameAction node")),
+			FText::FromString(TEXT("Makes a new GameAction Node")),
 			0
 		)
 	);
@@ -48,7 +48,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			UDialogueGraphNodeBranch::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New Branch Node")),
-			FText::FromString(TEXT("Makes a new Branch node")),
+			FText::FromString(TEXT("Makes a new Branch Node")),
 			0
 		)
 	);
@@ -58,7 +58,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			UDialogueGraphNodeGoTo::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New GoTo Node")),
-			FText::FromString(TEXT("Makes a new GoTo node")),
+			FText::FromString(TEXT("Makes a new GoTo Node")),
 			0
 		)
 	);
@@ -68,7 +68,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			UDialogueGraphNodeLabel::StaticClass(),
 			FText::FromString(TEXT("Node")),
 			FText::FromString(TEXT("New Label Node")),
-			FText::FromString(TEXT("Makes a new Label node")),
+			FText::FromString(TEXT("Makes a new Label Node")),
 			0
 		)
 	);

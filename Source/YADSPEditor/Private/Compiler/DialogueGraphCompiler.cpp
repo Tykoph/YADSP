@@ -2,7 +2,10 @@
 
 #include "YADSPEditor/Public/Compiler/DialogueGraphCompiler.h"
 
-#include "DialogueSystemRuntimeGraph.h"
+#include "RuntimeGraph//DialogueSystemRuntimeGraph.h"
+#include "RuntimeGraph/DialogueRuntimeGraphNode.h"
+#include "RuntimeGraph/DialogueRuntimeGraphPin.h"
+
 #include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "Nodes/DialogueGraphNodeBranch.h"
@@ -16,7 +19,7 @@ DEFINE_LOG_CATEGORY_STATIC(DialogueGraphCompilerLog, Log, All)
 
 // Update the opened Dialogue Graph Asset with the current graph editor
 // Called when opening a Dialogue Graph Asset
-void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
+void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
 {
 	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) { return; }
 
@@ -79,13 +82,11 @@ void DialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Working
 }
 
 // Update the graph editor with the current opened Dialogue Graph Asset
-void DialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
+void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
 {
-	// Check if the graph exists in the working asset
+	// Check if the graph exists in the working asset and create a new runtime graph if not present
 	if (WorkingAsset->Graph == nullptr) {
-		// Create a new runtime graph if not present
-		UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
-		// Create default nodes for the graph editor
+		WorkingAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
 		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
 		return;
 	}
