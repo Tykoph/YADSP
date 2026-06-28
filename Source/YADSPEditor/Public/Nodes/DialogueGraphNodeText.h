@@ -20,24 +20,24 @@ public: // UEdGraphNode interface
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	// UDialogueGraphNodeBase interface
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::TextNode; }
 	virtual void OnPropertiesChanged() override { }
 	
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoText>(Output); }
+	virtual void InitNodeInfo(UObject* Output) override { NodeInfo = NewObject<UDialogueNodeInfoText>(Output); }
 
-	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* InNodeInfo) override
 	{
-		NodeInfoPtr = Cast<UDialogueNodeInfoText>(NodeInfo);
+		NodeInfo = Cast<UDialogueNodeInfoText>(InNodeInfo);
 	}
 
-	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
-	UDialogueNodeInfoText* GetDialogueNodeInfo() const { return NodeInfoPtr; }
+	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfo; }
+	UDialogueNodeInfoText* GetDialogueNodeInfo() const { return NodeInfo; }
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UDialogueNodeInfoText> NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoText> NodeInfo = nullptr;
 };

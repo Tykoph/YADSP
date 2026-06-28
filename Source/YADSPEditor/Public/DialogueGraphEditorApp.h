@@ -11,7 +11,7 @@
  * Implements workflow-centric application features with undo/redo support and notification hooks.
  * Manages the visual representation and editing of dialogue systems through a graph interface.
  */
-class DialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
+class YADSPEDITOR_API FDialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
 	/**
@@ -35,15 +35,15 @@ public:
 	class UDialogueSystem* GetDialogueGraph() const { return WorkingAsset; }
 	UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
-	void SetWorkingGraphUi(const TSharedPtr<SGraphEditor>& WorkingGraphUi) { WorkingGraphUiPtr = WorkingGraphUi; }
+	void SetWorkingGraphUi(const TSharedPtr<SGraphEditor>& InWorkingGraphUI) { WorkingGraphUI = InWorkingGraphUI; }
 
 	/**
 	 * Sets the detail view for displaying selected node properties.
 	 * Updates the reference to the detail view widget used for showing and editing node properties.
 	 *
-	 * @param SelectedNodeDetailView Shared pointer to the details view widget to be used
+	 * @param InSelectedNodeDetailView Shared pointer to the details view widget to be used
 	 */
-	void SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& SelectedNodeDetailView);
+	void SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView);
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnGraphSelectionChangedDelegate, const FGraphPanelSelectionSet&);
 	FOnGraphSelectionChangedDelegate OnGraphSelectionChangedDelegate;
@@ -52,9 +52,9 @@ public:
 	 * Called when the selection in the graph editor changes.
 	 * Updates the node detail view with properties of the newly selected node.
 	 * 
-	 * @param SelectionSet Set of currently selected graph elements
+	 * @param InSelectionSet Set of currently selected graph elements
 	 */
-	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet) const;
+	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet) const;
 
 	// FAssetEditorToolkit interface
 	virtual FName GetToolkitFName() const override { return FName(TEXT("DialogueGraphEditorApp")); }
@@ -78,12 +78,14 @@ public:
 protected:
 	/**
 	 * Retrieves the currently selected node from the graph editor.
-	 * @param SelectionSet The set of currently selected graph elements
+	 * @param InSelectionSet The set of currently selected graph elements
 	 * @return Pointer to the selected dialogue graph node, or nullptr if no valid node is selected
 	 */
-	static class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet);
+	static class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet);
 
 private:
+	void OnLanguageChanged() const;
+	
 	// This property holds the reference to the currently edited asset.
 	UDialogueSystem* WorkingAsset = nullptr;
 
@@ -91,8 +93,8 @@ private:
 	UEdGraph* WorkingGraphEditor = nullptr;
 
 	// The slate widget for the graph editor
-	TSharedPtr<SGraphEditor> WorkingGraphUiPtr = nullptr;
+	TSharedPtr<SGraphEditor> WorkingGraphUI = nullptr;
 
 	// The slate widget with details of the selected node
-	TSharedPtr<IDetailsView> SelectedNodeDetailViewPtr = nullptr;
+	TSharedPtr<IDetailsView> SelectedNodeDetailView = nullptr;
 };

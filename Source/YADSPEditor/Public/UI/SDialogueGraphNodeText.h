@@ -21,18 +21,19 @@ public:
 	virtual void UpdateGraphNode() override;
 	
 protected:
-	virtual void CreateBelowPinControls(TSharedPtr<SVerticalBox> MainBox) override;
+	virtual void CreateBelowPinControls(TSharedPtr<SVerticalBox> InMainBox) override;
 
 	FText GetPreviewSpeakerText() const;
 	FText GetPreviewDialogueText() const;
-
+	void EnsurePreviewCacheUpToDate() const; 
+	
 	// Helper to get the hosting editor app to access settings like Language
-	TSharedPtr<DialogueGraphEditorApp> GetGraphEditorApp() const;
+	TSharedPtr<FDialogueGraphEditorApp> GetGraphEditorApp() const;
 
 	TSharedPtr<FString> CurrentSpeakerSelection;
 	TSharedPtr<FString> CurrentDialogueSelection;
 
-	void OnDialogueSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
+	void OnDialogueSelected(TSharedPtr<FString> InNewSelection, ESelectInfo::Type SelectInfo);
 
 	FText GetDialogueComboText() const;
 
@@ -40,9 +41,9 @@ protected:
 	TSharedPtr<SVerticalBox> SpeakerListContainer;
 	void RefreshSpeakerList();
 	void OnAddSpeaker();
-	void OnRemoveSpeaker(int32 Index);
-	void OnSpeakerComboChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo, int32 Index);
-	FText GetSpeakerComboText(int32 Index) const;
+	void OnRemoveSpeaker(int32 InIndex);
+	void OnSpeakerComboChanged(const TSharedPtr<FString>& InNewSelection, ESelectInfo::Type SelectInfo, int32 InIndex) const;
+	FText GetSpeakerComboText(int32 InIndex) const;
 
 	void UpdateSpeakerPreview() const;
 	void UpdateDialoguePreview() const;

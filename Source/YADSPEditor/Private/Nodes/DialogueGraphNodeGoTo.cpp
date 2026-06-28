@@ -9,32 +9,34 @@ FText UDialogueGraphNodeGoTo::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 void UDialogueGraphNodeGoTo::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("End Node Actions")));
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("GoTo Node Actions")));
 
-	UDialogueGraphNodeGoTo* Node = const_cast<UDialogueGraphNodeGoTo*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeGoTo*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+		   "DeleteEntry",
+		   FText::FromString(TEXT("Delete Node")),
+		   FText::FromString(TEXT("Delete this node")),
+		   FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+		   FUIAction(FExecuteAction::CreateLambda(
+			   [Node]()
+			   {
+				   Node->GetGraph()->RemoveNode(Node);
+			   }
+		   ))
+	   );
+	}
 }
 
-UEdGraphPin* UDialogueGraphNodeGoTo::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeGoTo::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
 {
 	FName Category = TEXT("Input");
 	FName SubCategory = TEXT("GoToPin");
 
 	UEdGraphPin* Pin = CreatePin(
-		Dir,
+		InPinDirection,
 		Category,
-		Name
+		InPinName
 	);
 	Pin->PinType.PinSubCategory = SubCategory;
 

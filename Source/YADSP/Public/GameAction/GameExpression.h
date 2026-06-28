@@ -1,6 +1,8 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
+
+#include "CoreMinimal.h"
 #include "GameActionBase.h"
 #include "GameExpression.generated.h"
 

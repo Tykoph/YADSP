@@ -20,10 +20,10 @@ public:
 	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
 
 	// Validates if two pins can be connected and returns the appropriate response.
-	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
+	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* PinA, const UEdGraphPin* PinB) const override;
 
 	// Creates default nodes when a new graph is created
-	virtual void CreateDefaultNodesForGraph(UEdGraph& Graph) const override;
+	virtual void CreateDefaultNodesForGraph(UEdGraph& InGraph) const override;
 };
 
 /**
@@ -35,7 +35,7 @@ struct FNewNodeAction : public FEdGraphSchemaAction
 {
 	GENERATED_BODY()
 
-public :
+public:
 	FNewNodeAction() : FEdGraphSchemaAction(), ClassTemplatePtr(nullptr) {}
 	
 	/**
@@ -53,11 +53,11 @@ public :
 	 * Creates and adds a new node to the graph based on the class template.
 	 * @param ParentGraph The graph where the new node will be created
 	 * @param FromPin The source pin if creating a connection, or nullptr
-	 * @param Location The position in the graph where the node should be placed
+	 * @param InLocation The position in the graph where the node should be placed
 	 * @param bSelectNewNode Whether the newly created node should be selected
 	 * @return The newly created graph node instance
 	 */
-	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
+	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, bool bSelectNewNode = true) override;
 
 protected:
 	UClass* ClassTemplatePtr = nullptr;

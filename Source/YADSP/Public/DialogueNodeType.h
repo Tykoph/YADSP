@@ -8,7 +8,6 @@ UENUM()
 enum class EDialogueNodeType : uint8
 {
 	Unknown,
-	DialogueNode,
 	StartNode,
 	EndNode,
 	TextNode,

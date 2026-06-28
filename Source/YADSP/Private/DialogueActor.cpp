@@ -39,14 +39,16 @@ ADialogueActor::ADialogueActor()
 // Destructor: Unregisters from blueprint compilation events to prevent callbacks after destruction
 ADialogueActor::~ADialogueActor()
 {
+#if WITH_EDITOR
 	if (GEditor) {
 		GEditor->OnBlueprintCompiled().RemoveAll(this);
 	}
+#endif
 }
 
-void ADialogueActor::PlayDialogue(APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded) const
+void ADialogueActor::PlayDialogue(APlayerController* InPlayerController, const FDialogueEndCallback OnDialogueEnded) const
 {
-	DialoguePlayer->PlayDialogue(DialogueSystem, PlayerController, OnDialogueEnded);
+	DialoguePlayer->PlayDialogue(DialogueSystem, InPlayerController, OnDialogueEnded);
 }
 
 // Returns the editor-only billboard component used for visualization in the editor

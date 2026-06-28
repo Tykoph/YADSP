@@ -26,12 +26,12 @@ public:
 	 * Will start playing the dialogue asset with the given player controller.
 	 * When the dialogue ends, the given callback will be called with the action and data of the action.
 	 *
-	 * @param DialogueAsset The dialogue asset to play.
-	 * @param PlayerController The player controller to use for the dialogue.
+	 * @param InDialogueAsset The dialogue asset to play.
+	 * @param InPlayerController The player controller to use for the dialogue.
 	 * @param OnDialogueEnded The callback to call when the dialogue ends.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue", Category = "YADSP", AutoCreateRefTerm = "OnDialogueEnded"))
-	void PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded);
+	void PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerController* InPlayerController, FDialogueEndCallback OnDialogueEnded);
 
 	/**
 	 * @brief Chooses the option at the given index in the current dialogue node.
@@ -40,40 +40,45 @@ public:
 	 * If the option is a connection to another node, the player will be moved to that node.
 	 * If the option is an action, the action will be called with the given data.
 	 *
-	 * @param Index The index of the option to choose.
+	 * @param InIndex The index of the option to choose.
 	 */
 	UFUNCTION()
-	void ChooseOptionAtIndex(int Index);
-
-	UFUNCTION()
-	void GoToNode(const FName& NodeName);
+	void ChooseOptionAtIndex(const int InIndex);
 	
 	/**
 	 * Calculates a time in seconds based on the length of the given FText.
 	 *
-	 * @param Text The FText to calculate the skip timer for
+	 * @param InText The FText to calculate the skip timer for
 	 * @return A float representing the time in seconds until the dialogue should automatically be skipped.
 	 */
-	static float CalculateSkipTimer(const FString& Text);
+	static float CalculateSkipTimer(const FString& InText);
 
 	/**
 	 * Sets up a timer to automatically skip the current dialogue after a given amount of time.
 	 *
-	 * @param Time The amount of time to wait before automatically skipping the dialogue.
+	 * @param InTime The amount of time to wait before automatically skipping the dialogue.
 	 */
-	void AutoSkipDialogue(float Time);
+	void AutoSkipDialogue(float InTime);
 
 private:
+	void ExecuteAutoSkip();
+	
+	void ProcessTextNode();
+	void ProcessBranchNode();
+	void ProcessGameActionNode();
+	void ProcessGoToNode();
+	void FinishDialogue();
+	
 	UFUNCTION()
 	void OnGameActionFinished();
 	
-	void ProcessDialogueAutoSkip(const UDialogueNodeInfoText* NodeInfo);
-	static TArray<FText> ConvertStringArrayToTextArray(const TArray<FString>& StringArray);
+	void ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNodeInfo);
+	static TArray<FText> ConvertStringArrayToTextArray(const TArray<FString>& InStringArray);
 	
 	UPROPERTY()
 	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 	UPROPERTY()
-	TWeakObjectPtr<UDialogueRuntimeGraphNode> CurrentNode = nullptr;
+	TObjectPtr<UDialogueRuntimeGraphNode> CurrentNode = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<APlayerController> PlayerController = nullptr;
@@ -82,6 +87,9 @@ private:
 	TObjectPtr<UDialogueSubsystem> DialogueSubsystem;
 	UPROPERTY()
 	TObjectPtr<UGameActionSubsystem> GameActionSubsystem;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<UGameActionBase>> InstancedActions;
 	
 	UPROPERTY()
 	FDialogueEndCallback OnDialogueEndedCallback;

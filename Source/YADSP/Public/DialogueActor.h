@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "DialogueSystem.h"
 #include "CoreMinimal.h"
+#include "DialogueSystem.h"
 #include "DialoguePlayer.h"
 #include "Components/BillboardComponent.h"
 #include "DialogueActor.generated.h"
@@ -43,11 +43,11 @@ public:
 	 * - Managing the player controller during dialogue
 	 * - Executing callback when dialogue completes
 	 *
-	 * @param PlayerController The player controller that will be used during dialogue playback
+	 * @param InPlayerController The player controller that will be used during dialogue playback
 	 * @param OnDialogueEnded Callback function that will be executed when the dialogue sequence completes
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PlayDialogue(APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded) const;
+	void PlayDialogue(APlayerController* InPlayerController, FDialogueEndCallback OnDialogueEnded) const;
 
 protected:
 	
@@ -62,6 +62,6 @@ protected:
 #endif
 
 private:
-	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="Dialogue", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UDialoguePlayer> DialoguePlayer;
 };

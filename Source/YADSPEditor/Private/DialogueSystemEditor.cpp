@@ -26,12 +26,12 @@ void FDialogueSystemEditorModule::StartupModule()
 	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(
 		FName(TEXT("DialogueGraph")),
 		LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
-	TSharedPtr<DialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<DialogueSystemAction>(AssetType);
+	const TSharedPtr<FDialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<FDialogueSystemAction>(AssetType);
 	AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
 	DGStyleSet = MakeShareable(new FSlateStyleSet(TEXT("YADSPStyle")));
-	TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("YADSP"));
-	FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
+	const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("YADSP"));
+	const FString ContentDir = Plugin->GetBaseDir() / TEXT("Resources");
 	DGStyleSet->SetContentRoot(ContentDir);
 
 	FSlateImageBrush* ThumbnailGraphBrush = new FSlateImageBrush(

@@ -15,5 +15,5 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FText Tooltip;
 	UPROPERTY(BlueprintReadOnly)
-	bool bExpressionIsValid;
+	bool bExpressionIsValid = false;
 };

@@ -37,14 +37,14 @@ public:
 	 * Gets the currently selected language code for previewing localized text.
 	 * @return The language code (e.g., "en-US", "fr").
 	 */
-	FString GetPreviewLanguage() const;
+	const FString& GetPreviewLanguage() const;
 
 	/**
 	 * Sets the language code for previewing localized text.
 	 * Triggers a refresh of the graph editor to update text displays.
-	 * @param NewLanguage The new language code to use.
+	 * @param InNewLanguage The new language code to use.
 	 */
-	static void SetPreviewLanguage(const FString& NewLanguage);
+	static void SetPreviewLanguage(const FString& InNewLanguage);
 
 	const TArray<TSharedPtr<FString>>* GetLanguageOptions() const;
 	

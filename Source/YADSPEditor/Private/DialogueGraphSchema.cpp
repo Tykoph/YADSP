@@ -2,6 +2,7 @@
 
 #include "DialogueGraphSchema.h"
 
+#include "YADSP.h"
 #include "Nodes/DialogueGraphNodeBranch.h"
 #include "Nodes/DialogueGraphNodeGameAction.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
@@ -9,7 +10,6 @@
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeGoTo.h"
 #include "Nodes/DialogueGraphNodeLabel.h"
-
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -81,28 +81,28 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 }
 
-const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
+const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* PinA, const UEdGraphPin* PinB) const
 {
-	if (A == nullptr || B == nullptr) {
+	if (PinA == nullptr || PinB == nullptr) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Pins are null"));
 	}
 
-	if (A->Direction == B->Direction) {
+	if (PinA->Direction == PinB->Direction) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of the same direction"));
 	}
 
-	if (A->GetOwningNode() == B->GetOwningNode()) {
+	if (PinA->GetOwningNode() == PinB->GetOwningNode()) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of the same node"));
 	}
 
-	if (B->Direction == EGPD_Output) {
-		if (B->LinkedTo.Num() > 0) {
+	if (PinB->Direction == EGPD_Output) {
+		if (PinB->LinkedTo.Num() > 0) {
 			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_B, TEXT("Break B"));
 		}
 	}
 
-	if (A->Direction == EGPD_Output) {
-		if (A->LinkedTo.Num() > 0) {
+	if (PinA->Direction == EGPD_Output) {
+		if (PinA->LinkedTo.Num() > 0) {
 			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT("Break A"));
 		}
 	}
@@ -110,30 +110,34 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 	return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
 }
 
-void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
+void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 {
-	UDialogueGraphNodeStart* StartNode = NewObject<UDialogueGraphNodeStart>(&Graph);
+	UDialogueGraphNodeStart* StartNode = NewObject<UDialogueGraphNodeStart>(&InGraph);
 	StartNode->CreateNewGuid();
 	StartNode->NodePosX = 0;
 	StartNode->NodePosY = 0;
 
 	StartNode->CreateDialoguePin(EGPD_Output, FName(TEXT("Start")));
 
-	Graph.AddNode(StartNode, true, true);
-	Graph.Modify();
+	InGraph.AddNode(StartNode, true, true);
+	InGraph.Modify();
 }
 
-UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
+UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, bool bSelectNewNode)
 {
 	// Create a new node instance of the specified class
 	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr);
 	ResultNode->CreateNewGuid();
-	ResultNode->NodePosX = Location.X;
-	ResultNode->NodePosY = Location.Y;
+	ResultNode->NodePosX = InLocation.X;
+	ResultNode->NodePosY = InLocation.Y;
 	ResultNode->InitNodeInfo(ResultNode);
 
 	// Setup node info and dialogue system reference
 	UDialogueNodeInfoBase* NodeInfo = ResultNode->GetNodeInfo();
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("FNewNodeAction::PerformAction -> NodeInfo is nullptr"));
+		return nullptr;
+	}
 	NodeInfo->DialogueSystem = Cast<UDialogueSystem>(ParentGraph->GetOuter());
 
 	// Create input and output pins

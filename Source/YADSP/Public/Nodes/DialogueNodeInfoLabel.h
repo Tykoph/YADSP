@@ -13,5 +13,5 @@ class YADSP_API UDialogueNodeInfoLabel : public UDialogueNodeInfoBase
 
 public:
 	UPROPERTY(EditAnywhere)
-	FString LabelName = FString(TEXT("DefaultLabelName"));
+	FName LabelName = TEXT("DefaultLabelName");
 };

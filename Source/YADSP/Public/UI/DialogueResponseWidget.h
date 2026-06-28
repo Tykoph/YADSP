@@ -7,10 +7,10 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/RichTextBlock.h"
-#include "DialogueOption.generated.h"
+#include "DialogueResponseWidget.generated.h"
 
 UCLASS()
-class YADSP_API UDialogueOption : public UUserWidget
+class YADSP_API UDialogueResponseWidget : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
@@ -18,7 +18,7 @@ protected:
 	
 public:
 	UFUNCTION()
-	void SetDialogueOption(const FText& Text, const int Index);
+	void SetDialogueOption(const FText& InText, const int InIndex);
 
 	UFUNCTION()
 	void OnButtonClicked();

@@ -11,9 +11,9 @@ class YADSP_API UDialogueSystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable)
-	static FString GetTranslatedText(const UDialogueSystem* DialogueSystem, const UDataTable* DataTable, const FName& TextKey);
+	UFUNCTION(BlueprintPure)
+	static FString GetTranslatedText(const UDialogueSystem* InDialogueSystem, const UDataTable* InDataTable, const FName InTextKey);
 	
-	UFUNCTION(BlueprintCallable)
-	static TArray<FString> GetTranslatedTextArray(const UDialogueSystem* DialogueSystem, const UDataTable* DataTable, const TArray<FName>& TextKeys);
+	UFUNCTION(BlueprintPure)
+	static TArray<FString> GetTranslatedTextArray(const UDialogueSystem* InDialogueSystem, const UDataTable* InDataTable, const TArray<FName>& InTextKeys);
 };

@@ -15,18 +15,18 @@ public:
 	SLATE_BEGIN_ARGS(SDialoguePreviewTab) {}
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, TSharedPtr<DialogueGraphEditorApp> InApp);
+	void Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp);
 
 	virtual ~SDialoguePreviewTab() override;
 
 private:
-	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet);
+	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet);
 	void OnRichTextStyleChanged() const;
 	void RefreshPreview();
 
 	UDialogueNodeInfoText* CurrentNode = nullptr;
 	
-	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
+	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 	
 	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
 	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;

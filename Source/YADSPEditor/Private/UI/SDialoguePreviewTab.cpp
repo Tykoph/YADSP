@@ -14,7 +14,7 @@
 #include "Components/RichTextBlock.h"
 #include "Components/RichTextBlockDecorator.h"
 
-void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<DialogueGraphEditorApp> InApp)
+void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp)
 {
 	DialogueGraphApp = InApp;
 	UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get();
@@ -83,7 +83,7 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 	}
 	InstantiatedObjects.Empty();
 
-	if (const TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin()) {
+	if (const TSharedPtr<FDialogueGraphEditorApp> App = DialogueGraphApp.Pin()) {
 		App->OnGraphSelectionChangedDelegate.Remove(SelectionChangedHandle);
 	}
 	
@@ -92,9 +92,9 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 	}
 }
 
-void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet)
+void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet)
 {
-	CachedSelection = SelectionSet;
+	CachedSelection = InSelectionSet;
 	
 	FText NewPreviewText = FText::GetEmpty();
 	FText NewSpeakerPreviewText = FText::GetEmpty();
@@ -103,7 +103,7 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 		CurrentNode->OnPropertiesChanged.Remove(PropertyChangedHandle);
 	}
 	
-	for (UObject* Obj : SelectionSet) {
+	for (UObject* Obj : InSelectionSet) {
 		if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Obj)) {
 			if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
 				const FString Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();

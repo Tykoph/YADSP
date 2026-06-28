@@ -25,6 +25,6 @@ public:
 	EGameActionExecutionMode GameActionExecutionMode = EGameActionExecutionMode::Sequence;
 	
 	UPROPERTY(EditAnywhere, Instanced)
-	TArray<UGameActionBase*> GameAction;
+	TArray<TObjectPtr<UGameActionBase>> GameActions;
 };
 

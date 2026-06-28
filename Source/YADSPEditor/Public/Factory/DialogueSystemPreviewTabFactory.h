@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowTabFactory.h"
 
-class YADSPEDITOR_API DialogueSystemPreviewTabFactory : public FWorkflowTabFactory
+class YADSPEDITOR_API FDialogueSystemPreviewTabFactory : public FWorkflowTabFactory
 {
 public:
-	DialogueSystemPreviewTabFactory(TSharedPtr<class DialogueGraphEditorApp> App);
+	FDialogueSystemPreviewTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
-	TWeakPtr<class DialogueGraphEditorApp> DialogueGraphApp;
+	TWeakPtr<class FDialogueGraphEditorApp> DialogueGraphApp;
 };

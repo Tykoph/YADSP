@@ -12,7 +12,9 @@ public class YADSPEditor : ModuleRules
 			new[]
 			{
 				"Core",
-				"YADSP"
+				"YADSP",
+				"GameActionPlugin",
+				"GSheetLocSystemPlugin",
 			}
 		);
 
@@ -23,7 +25,6 @@ public class YADSPEditor : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"YADSP",
 				"UnrealEd",
 				"AssetTools",
 				"PropertyEditor",
@@ -31,11 +32,9 @@ public class YADSPEditor : ModuleRules
 				"ToolMenus",
 				"GraphEditor",
 				"InputCore",
-				"GSheetLocSystemPlugin",
 				"EditorFramework",
 				"DeveloperSettings",
 				"UMG",
-				"GameActionPlugin"
 			}
 		);
 	}

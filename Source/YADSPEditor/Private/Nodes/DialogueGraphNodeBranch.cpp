@@ -2,6 +2,8 @@
 
 #include "Nodes/DialogueGraphNodeBranch.h"
 
+#include "YADSP.h"
+
 FText UDialogueGraphNodeBranch::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromString(TEXT("Branch"));
@@ -11,30 +13,32 @@ void UDialogueGraphNodeBranch::GetNodeContextMenuActions(UToolMenu* Menu, UGraph
 {
 	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Branch Node Actions")));
 
-	UDialogueGraphNodeBranch* Node = const_cast<UDialogueGraphNodeBranch*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeBranch*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+			"DeleteEntry",
+			FText::FromString(TEXT("Delete Node")),
+			FText::FromString(TEXT("Delete this node")),
+			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+			FUIAction(FExecuteAction::CreateLambda(
+				[Node]()
+				{
+					Node->GetGraph()->RemoveNode(Node);
+				}
+			))
+		);
+	}
 }
 
-UEdGraphPin* UDialogueGraphNodeBranch::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeBranch::CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName)
 {
 	const FName Category = TEXT("Input");
 	const FName SubCategory = TEXT("BranchPin");
 
 	UEdGraphPin* Pin = CreatePin(
-		Dir,
+		InPinDirection,
 		Category,
-		Name
+		InPinName
 	);
 	Pin->PinType.PinSubCategory = SubCategory;
 
@@ -48,8 +52,8 @@ UEdGraphPin* UDialogueGraphNodeBranch::CreateDefaultInputPin()
 
 void UDialogueGraphNodeBranch::CreateDefaultOutputPin()
 {
-	FString DefaultResponse = TEXT("Continue");
-	FBranchCondition DefaultBranchCondition;
+	const FString DefaultResponse = TEXT("Continue");
+	const FBranchCondition DefaultBranchCondition;
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
 	GetDialogueNodeInfo()->BranchOptions.Add(DefaultBranchCondition);
 }
@@ -57,8 +61,13 @@ void UDialogueGraphNodeBranch::CreateDefaultOutputPin()
 void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 {
 	UDialogueNodeInfoBranch* NodeInfo = GetDialogueNodeInfo();
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeBranch::SyncWithNodeResponse -> NodeInfo is nullptr"))
+		return;
+	}
+	
 	int NumGraphNodePins = Pins.Num() - 1;
-	int NumInfoPins = NodeInfo->BranchOptions.Num();
+	const int NumInfoPins = NodeInfo->BranchOptions.Num();
 
 	while (NumGraphNodePins > NumInfoPins) {
 		RemovePinAt(NumGraphNodePins - 1, EGPD_Output);

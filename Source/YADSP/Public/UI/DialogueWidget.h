@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueOption.h"
+#include "DialogueResponseWidget.h"
 #include "DialogueSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/HorizontalBox.h"
 #include "Components/RichTextBlock.h"
-#include "DialogueUIController.generated.h"
+#include "DialogueWidget.generated.h"
 
 /**
  * Controller class for handling dialogue UI widgets in the game.
@@ -16,7 +16,7 @@
  * Provides functionality for text wrapping and justification based on content size.
  */
 UCLASS()
-class YADSP_API UDialogueUIController : public UUserWidget
+class YADSP_API UDialogueWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -26,20 +26,20 @@ protected:
 	
 public:	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void UpdateDisplay(const FText& Text, const FText& Speaker);
+	void UpdateDisplay(const FText& InText, const FText& InSpeaker);
 	
 	UFUNCTION(BlueprintCallable)
-	void OnBranchOptionsRequested(const TArray<FBranchOption>& BranchOptions);
+	void OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions);
 	
 	/**
 	* Checks if the dialogue text needs to be wrapped and adjusts its justification accordingly.
 	* If text width exceeds container width, justification will be set to "Left".
 	* Otherwise, justification will be set to "Center".
-	* @param DialogueTextBlock - Target text block widget to check
-	* @param Text - String content to measure for wrapping
+	* @param InDialogueTextBlock - Target text block widget to check
+	* @param InText - String content to measure for wrapping
 	*/
-	UFUNCTION(BlueprintCallable)
-	static void IsTextWrapping(URichTextBlock* DialogueTextBlock, const FString& Text);
+	UFUNCTION(BlueprintCallable, Category="Dialog")
+	static void UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, const FString& InText);
 	
 	UFUNCTION()
 	void OnDialogueEnded();
@@ -57,10 +57,10 @@ public:
 	TObjectPtr<UHorizontalBox> ResponseBox = nullptr;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<UDialogueOption> DialogueOptionClass;
+	TSubclassOf<UDialogueResponseWidget> DialogueOptionWidgetClass;
 	
 	UPROPERTY(BlueprintReadOnly)
-	TArray<UUserWidget*> DialogueOptionsWidgets;
+	TArray<TObjectPtr<UUserWidget>> DialogueOptionsWidgets;
 	
 protected:
 	UPROPERTY(BlueprintReadOnly)

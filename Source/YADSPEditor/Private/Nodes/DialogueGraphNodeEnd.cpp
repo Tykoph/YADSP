@@ -11,30 +11,32 @@ void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 {
 	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("End Node Actions")));
 
-	UDialogueGraphNodeEnd* Node = const_cast<UDialogueGraphNodeEnd*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeEnd*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+			"DeleteEntry",
+			FText::FromString(TEXT("Delete Node")),
+			FText::FromString(TEXT("Delete this node")),
+			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+			FUIAction(FExecuteAction::CreateLambda(
+				[Node]()
+				{
+					Node->GetGraph()->RemoveNode(Node);
+				}
+			))
+		);
+	}
 }
 
-UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
 {
-	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("EndPin");
+	const FName Category = TEXT("Input");
+	const FName SubCategory = TEXT("EndPin");
 
 	UEdGraphPin* Pin = CreatePin(
-		Dir,
+		InPinDirection,
 		Category,
-		Name
+		InPinName
 	);
 	Pin->PinType.PinSubCategory = SubCategory;
 

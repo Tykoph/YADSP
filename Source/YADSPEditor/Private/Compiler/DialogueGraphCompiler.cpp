@@ -1,8 +1,9 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Compiler/DialogueGraphCompiler.h"
+#include "Compiler/DialogueGraphCompiler.h"
+#include "YADSP.h"
 
-#include "RuntimeGraph//DialogueSystemRuntimeGraph.h"
+#include "RuntimeGraph/DialogueSystemRuntimeGraph.h"
 #include "RuntimeGraph/DialogueRuntimeGraphNode.h"
 #include "RuntimeGraph/DialogueRuntimeGraphPin.h"
 
@@ -15,23 +16,29 @@
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
-DEFINE_LOG_CATEGORY_STATIC(DialogueGraphCompilerLog, Log, All)
-
 // Update the opened Dialogue Graph Asset with the current graph editor
 // Called when opening a Dialogue Graph Asset
-void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
+void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* InWorkingAsset, UEdGraph* InWorkingGraphEditor)
 {
-	if (WorkingAsset == nullptr || WorkingGraphEditor == nullptr) { return; }
+	if (InWorkingAsset == nullptr || InWorkingGraphEditor == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphCompiler::UpdateWorkingAssetFromGraph -> Working Graph Update failed. %s%s"),
+			(InWorkingAsset ? TEXT("") : TEXT("WorkingAsset is Null. ")),
+			(InWorkingGraphEditor ? TEXT("") : TEXT("WorkingGraphEditor is Null. "))
+			);
+		return;
+	}
 
 	// Create a new runtime graph with the current Dialogue Graph Asset
-	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
-	WorkingAsset->Graph = RuntimeGraph;
+	UDialogueSystemRuntimeGraph* RuntimeGraph = NewObject<UDialogueSystemRuntimeGraph>(InWorkingAsset);
+	InWorkingAsset->Graph = RuntimeGraph;
 
 	TArray<TPair<FGuid, FGuid>> Connections;
+	Connections.Reserve(InWorkingGraphEditor->Nodes.Num());
 	TMap<FGuid, UDialogueRuntimeGraphPin*> IdToPinMap;
+	IdToPinMap.Reserve(InWorkingGraphEditor->Nodes.Num() * 2);
 
 	// Loop through all the nodes in the graph editor
-	for (UEdGraphNode* UiNode : WorkingGraphEditor->Nodes) {
+	for (UEdGraphNode* UiNode : InWorkingGraphEditor->Nodes) {
 		UDialogueRuntimeGraphNode* RuntimeNode = NewObject<UDialogueRuntimeGraphNode>(RuntimeGraph);
 		RuntimeNode->NodePosition = FVector2d(UiNode->NodePosX, UiNode->NodePosY);
 
@@ -44,8 +51,11 @@ void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Workin
 
 			// If the pin is an output pin and has any connections, add the connection to the list
 			if (UIPin->HasAnyConnections() && UIPin->Direction == EGPD_Output) {
-				TPair<FGuid, FGuid> Connection = TPair<FGuid, FGuid>(UIPin->PinId, UIPin->LinkedTo[0]->PinId);
-				Connections.Add(Connection);
+				for (UEdGraphPin* LinkedPin : UIPin->LinkedTo) {
+					if (LinkedPin) {
+						Connections.Add(TPair<FGuid, FGuid>(UIPin->PinId, LinkedPin->PinId));
+					}
+				}
 			}
 
 			// Add the pin to the map
@@ -71,23 +81,31 @@ void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* Workin
 	}
 
 	// Loop through all the connections and set the connected pin on the output pin
-	for (TPair<FGuid, FGuid> Connection : Connections) {
+	for (const auto& Connection : Connections) {
 		UDialogueRuntimeGraphPin* OutputPin = IdToPinMap[Connection.Key];
 		UDialogueRuntimeGraphPin* InputPin = IdToPinMap[Connection.Value];
 
 		OutputPin->ConnectedPin = InputPin;
 	}
 
-	UE_LOG(DialogueGraphCompilerLog, Log, TEXT("Working Graph Updated."));
+	UE_LOG(LogYADSP, Log, TEXT("FDialogueGraphCompiler::UpdateWorkingAssetFromGraph -> Working Graph Updated."));
 }
 
 // Update the graph editor with the current opened Dialogue Graph Asset
-void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* WorkingAsset, UEdGraph* WorkingGraphEditor)
+void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* InWorkingAsset, UEdGraph* InWorkingGraphEditor)
 {
+	if (InWorkingAsset == nullptr || InWorkingGraphEditor == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset -> Working Graph Update failed. %s%s"),
+			(InWorkingAsset ? TEXT("") : TEXT("WorkingAsset is Null. ")),
+			(InWorkingGraphEditor ? TEXT("") : TEXT("WorkingGraphEditor is Null. "))
+			);
+		return;
+	}
+	
 	// Check if the graph exists in the working asset and create a new runtime graph if not present
-	if (WorkingAsset->Graph == nullptr) {
-		WorkingAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(WorkingAsset);
-		WorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraphEditor);
+	if (InWorkingAsset->Graph == nullptr) {
+		InWorkingAsset->Graph = NewObject<UDialogueSystemRuntimeGraph>(InWorkingAsset);
+		InWorkingGraphEditor->GetSchema()->CreateDefaultNodesForGraph(*InWorkingGraphEditor);
 		return;
 	}
 
@@ -96,36 +114,36 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 	TMap<FGuid, UEdGraphPin*> IdToPinMap;
 
 	// Iterate over each node in the runtime graph
-	for (UDialogueRuntimeGraphNode* RuntimeNode : WorkingAsset->Graph->Nodes) {
-		UDialogueGraphNodeBase* NewNode = nullptr;
+	for (UDialogueRuntimeGraphNode* RuntimeNode : InWorkingAsset->Graph->Nodes) {
+		UDialogueGraphNodeBase* NewNode;
 
 		// Determine node type and create corresponding node object
 		switch (RuntimeNode->NodeType) {
-		case EDialogueNodeType::StartNode:
-			NewNode = NewObject<UDialogueGraphNodeStart>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::EndNode:
-			NewNode = NewObject<UDialogueGraphNodeEnd>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::TextNode:
-			NewNode = NewObject<UDialogueGraphNodeText>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::GameActionNode:
-			NewNode = NewObject<UDialogueGraphNodeGameAction>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::BranchNode:
-			NewNode = NewObject<UDialogueGraphNodeBranch>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::GoToNode:
-			NewNode = NewObject<UDialogueGraphNodeGoTo>(WorkingGraphEditor);
-			break;
-		case EDialogueNodeType::LabelNode:
-			NewNode = NewObject<UDialogueGraphNodeLabel>(WorkingGraphEditor);
-			break;
-		default:
-			// Log an error for unknown node types
-			UE_LOG(DialogueGraphCompilerLog, Error, TEXT("Unknown node type in UpdateGraphEditorFromWorkingAsset."));
-			break;
+			case EDialogueNodeType::StartNode:
+				NewNode = NewObject<UDialogueGraphNodeStart>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::EndNode:
+				NewNode = NewObject<UDialogueGraphNodeEnd>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::TextNode:
+				NewNode = NewObject<UDialogueGraphNodeText>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::GameActionNode:
+				NewNode = NewObject<UDialogueGraphNodeGameAction>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::BranchNode:
+				NewNode = NewObject<UDialogueGraphNodeBranch>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::GoToNode:
+				NewNode = NewObject<UDialogueGraphNodeGoTo>(InWorkingGraphEditor);
+				break;
+			case EDialogueNodeType::LabelNode:
+				NewNode = NewObject<UDialogueGraphNodeLabel>(InWorkingGraphEditor);
+				break;
+			default:
+				// Log an error for unknown node types
+				UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset -> Unknown node type."));
+				continue;
 		}
 
 		// Initialize node properties
@@ -140,8 +158,8 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 		else {
 			NewNode->InitNodeInfo(NewNode);
 			if (NewNode->ShouldReturnInfo()) {
-				UE_LOG(DialogueGraphCompilerLog, Error,
-				       TEXT("%ls->NodeInfo was null in UpdateGraphEditorFromWorkingAsset."),
+				UE_LOG(LogYADSP, Error,
+				       TEXT("FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset -> %ls->NodeInfo was null."),
 				       *NewNode->GetNodeTitle(ENodeTitleType::FullTitle).ToString());
 			}
 		}
@@ -174,11 +192,16 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 		}
 
 		// Add the new node to the graph editor
-		WorkingGraphEditor->AddNode(NewNode, true, true);
+		InWorkingGraphEditor->AddNode(NewNode, true, true);
 	}
 
 	// Establish connections between pins based on the collected data
-	for (TPair<FGuid, FGuid> Connection : Connections) {
+	for (const auto&  Connection : Connections) {
+		if (IdToPinMap.Find(Connection.Key) == nullptr) {
+			UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset -> Connection not found for key %s"), *Connection.Key.ToString());	
+			continue;
+		}
+		
 		UEdGraphPin* FromPin = IdToPinMap[Connection.Key];
 		UEdGraphPin* ToPin = IdToPinMap[Connection.Value];
 

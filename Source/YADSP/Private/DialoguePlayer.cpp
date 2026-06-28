@@ -6,6 +6,7 @@
 #include "DialogueSubsystem.h"
 #include "DialogueSystem.h"
 #include "DialogueSystemLibrary.h"
+#include "YADSP.h"
 
 #include "Nodes/DialogueNodeInfoGameAction.h"
 #include "Nodes/DialogueNodeInfoText.h"
@@ -19,36 +20,38 @@
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogDialoguePlayer, Log, All);
-
-void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerController* PlayerController, const FDialogueEndCallback& OnDialogueEnded)
+void UDialoguePlayer::PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerController* InPlayerController, const FDialogueEndCallback OnDialogueEnded)
 {
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>(); 
 	GameActionSubsystem = GetWorld()->GetSubsystem<UGameActionSubsystem>(); 
 	
 	if (DialogueSubsystem == nullptr) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("DialogueSubsystem not found"));
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> DialogueSubsystem not found"));
 		return;
 	}
 	if (GameActionSubsystem == nullptr) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("GameActionSubsystem not found"));
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> GameActionSubsystem not found"));
 		return;
 	}
-	if (DialogueAsset == nullptr) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("No dialogue asset provided"));
+	if (InDialogueAsset == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No dialogue asset provided"));
 		return;
 	}
-	if (PlayerController == nullptr) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("No player controller provided"));
+	if (InPlayerController == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No player controller provided"));
 		return;
 	}
 	
 	OnDialogueEndedCallback = OnDialogueEnded;
 	
-	UDialogueSystemRuntimeGraph* Graph = DialogueAsset->Graph;
-
-	DialogueSystem = DialogueAsset;
-	this->PlayerController = PlayerController;
+	UDialogueSystemRuntimeGraph* Graph = InDialogueAsset->Graph;
+	if (Graph == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> Graph is null"));
+		return;
+	}
+	
+	DialogueSystem = InDialogueAsset;
+	this->PlayerController = InPlayerController;
 
 	// Find the start node
 	for (UDialogueRuntimeGraphNode* Node : Graph->Nodes) {
@@ -59,177 +62,225 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* DialogueAsset, APlayerContro
 	}
 
 	if (CurrentNode == nullptr) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("No start node found in the dialogue graph"));
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No start node found in the dialogue graph"));
 		return;
 	}
 
-	DialogueSubsystem->OnDialogueStarted.Broadcast(DialogueAsset, PlayerController);
-    DialogueSubsystem->OnOptionSelected.AddDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
+	DialogueSubsystem->OnDialogueStarted.Broadcast(InDialogueAsset, InPlayerController);
+    DialogueSubsystem->OnOptionSelected.AddUniqueDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
 	
 	// Play the first node
 	ChooseOptionAtIndex(0);
 }
 
-void UDialoguePlayer::ChooseOptionAtIndex(int Index)
+void UDialoguePlayer::ChooseOptionAtIndex(const int InIndex)
 {
-	if (!CurrentNode.IsValid()) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("Current Node Invlide"));
+	if (CurrentNode == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ChooseOptionAtIndex -> Current Node is nullptr"));
 		return;
 	}
 	
-	if (Index >= CurrentNode->OutputPins.Num() || Index < 0) {
-		UE_LOG(LogDialoguePlayer, Error, TEXT("Invalid option index %d"), Index);
+	if (InIndex >= CurrentNode->OutputPins.Num() || InIndex < 0) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ChooseOptionAtIndex -> Invalid option index %d"), InIndex);
 		return;
 	}
 	
 	// Navigate to the selected node
-	const UDialogueRuntimeGraphPin* SelectedPin = CurrentNode->OutputPins[Index];
+	const UDialogueRuntimeGraphPin* SelectedPin = CurrentNode->OutputPins[InIndex];
 	if (SelectedPin->ConnectedPin != nullptr) {
 		CurrentNode = SelectedPin->ConnectedPin->ParentNode;
 	}
 	else {
-		// No Connection, this is an end node
-		CurrentNode = nullptr;
-	}
-
-	// If the current node is a text node, display the dialogue UI
-	if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::TextNode) {
-		UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(CurrentNode->NodeInfo);
-		
-		// Set the speaker name
-		FString CombinedSpeakerNames;
-		for (const FName& SpeakerKey : NodeInfo->SpeakerKeys) {
-			if (!CombinedSpeakerNames.IsEmpty()) {
-				CombinedSpeakerNames += TEXT(", ");
-			}
-			CombinedSpeakerNames += UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, SpeakerKey);
-		}
-
-		DialogueSubsystem->OnDialogueLineRequested.Broadcast(
-			FText::FromString(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, NodeInfo->DialogueKey)),
-			FText::FromString(CombinedSpeakerNames)
-			);
-		
-		ProcessDialogueAutoSkip(NodeInfo);
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ChooseOptionAtIndex -> Current Node is null, should be type EndNode type, go into the DialogueAsset to fix it. Ending dialogue"));
+		FinishDialogue();
+		return;
 	}
 	
-	// If the current node is a Branch Node, Display dialogue options if applicable
-	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::BranchNode) {
-		const UDialogueNodeInfoBranch* BranchNodeInfo = Cast<UDialogueNodeInfoBranch>(CurrentNode->NodeInfo);
+	switch (CurrentNode->NodeType) {
+		case EDialogueNodeType::StartNode:
+			ChooseOptionAtIndex(0);
+			break;
+		case EDialogueNodeType::EndNode:
+			FinishDialogue();
+			break;
+		case EDialogueNodeType::TextNode:
+			ProcessTextNode();
+			break;
+		case EDialogueNodeType::BranchNode:
+			ProcessBranchNode();
+			break;
+		case EDialogueNodeType::GameActionNode:
+			ProcessGameActionNode();
+			break;
+		case EDialogueNodeType::GoToNode:
+			ProcessGoToNode();
+			break;
+		case EDialogueNodeType::LabelNode:
+			ChooseOptionAtIndex(0);
+			break;
+		default:
+			UE_LOG(LogYADSP, Warning, TEXT("UDialoguePlayer::ChooseOptionAtIndex -> Current NodeType is null, should be a valid type, Ending dialogue"));
+			FinishDialogue();
+	}
+}
+
+void UDialoguePlayer::ProcessTextNode()
+{
+	const UDialogueNodeInfoText* TextNodeInfo = Cast<UDialogueNodeInfoText>(CurrentNode->NodeInfo);
+	if (TextNodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessTextNode -> TextNodeInfo is nullptr"));
+		return;
+	}
 		
-		TArray<FBranchCondition> BranchCache = BranchNodeInfo->BranchOptions;
+	// Set the speaker name
+	FString CombinedSpeakerNames;
+	for (const FName& SpeakerKey : TextNodeInfo->SpeakerKeys) {
+		if (!CombinedSpeakerNames.IsEmpty()) {
+			CombinedSpeakerNames += TEXT(", ");
+		}
+		CombinedSpeakerNames += UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->SpeakerDataTable, SpeakerKey);
+	}
+
+	DialogueSubsystem->OnDialogueLineRequested.Broadcast(
+		FText::FromString(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, TextNodeInfo->DialogueKey)),
+		FText::FromString(CombinedSpeakerNames)
+		);
 		
-		TArray<FBranchOption> BranchToDisplay;
-		for (int i = 0; i < BranchCache.Num(); ++i) {
-			bool bIsValid;
+	ProcessDialogueAutoSkip(TextNodeInfo);
+}
+
+void UDialoguePlayer::ProcessBranchNode()
+{
+	const UDialogueNodeInfoBranch* BranchNodeInfo = Cast<UDialogueNodeInfoBranch>(CurrentNode->NodeInfo);
+	if (BranchNodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessBranchNode -> BranchNodeInfo is nullptr"));
+		return;
+	}
 			
-			if (BranchCache[i].Expression)
-				bIsValid = BranchCache[i].Expression->ExecuteWithReturn();
-			else 
-				bIsValid = true;
+	TArray<FBranchOption> BranchToDisplay;
+	for (int i = 0; i < BranchNodeInfo->BranchOptions.Num(); ++i) {
+		bool bIsValid;
+				
+		if (BranchNodeInfo->BranchOptions[i].Expression)
+			bIsValid = BranchNodeInfo->BranchOptions[i].Expression->ExecuteWithReturn();
+		else 
+			bIsValid = true;
+				
+		if (!bIsValid && BranchNodeInfo->BranchOptions[i].bHideIfExpressionFail)
+			continue;
+				
+		if (BranchNodeInfo->bAutoChoice && bIsValid) {
+			ChooseOptionAtIndex(i);
+			break;
+		}
+				
+		FBranchOption CurrentBranch;
+		CurrentBranch.DialogueText = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
+				DialogueSystem, DialogueSystem->DialogueDataTable, BranchNodeInfo->BranchOptions[i].DialogueResponseKey));
+		CurrentBranch.Tooltip = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
+				DialogueSystem, DialogueSystem->DialogueDataTable, BranchNodeInfo->BranchOptions[i].ConditionTooltipKey));
+		CurrentBranch.bExpressionIsValid = bIsValid;
+		BranchToDisplay.Add(CurrentBranch);
+	}
 			
-			if (!bIsValid && BranchCache[i].bHideIfExpressionFail)
+	DialogueSubsystem->OnBranchOptionsRequested.Broadcast(BranchToDisplay);
+}
+
+void UDialoguePlayer::ProcessGameActionNode()
+{
+	const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNode->NodeInfo);
+	if (GameActionNodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGameActionNode -> GameActionNodeInfo is nullptr"));
+		return;
+	}
+		
+	if (GameActionNodeInfo->GameActions.Num() > 0) {
+		InstancedActions.Empty();
+		InstancedActions.Reserve(GameActionNodeInfo->GameActions.Num());
+			
+		for (const UGameActionBase* ActionTemplate : GameActionNodeInfo->GameActions) {
+			if (!ActionTemplate) {
+				UE_LOG(LogYADSP, Warning, TEXT("UDialoguePlayer::ProcessGameActionNode -> ActionTemplate is null"))
 				continue;
-			
-			if (BranchNodeInfo->bAutoChoice && bIsValid) {
-				ChooseOptionAtIndex(i);
-				break;
 			}
-			
-			FBranchOption CurrentBranch;
-			CurrentBranch.DialogueText = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
-					DialogueSystem, DialogueSystem->DialogueDataTable, BranchCache[i].DialogueResponseKey));
-			CurrentBranch.Tooltip = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
-					DialogueSystem, DialogueSystem->DialogueDataTable, BranchCache[i].ConditionTooltipKey));
-			CurrentBranch.bExpressionIsValid = bIsValid;
-			BranchToDisplay.Add(CurrentBranch);
+			UGameActionBase* InstancedAction = DuplicateObject<UGameActionBase>(ActionTemplate, this);
+			InstancedActions.Add(InstancedAction);
 		}
-		
-		DialogueSubsystem->OnBranchOptionsRequested.Broadcast(BranchToDisplay);
-	}
-	
-	// If the current node is an action node, execute the action
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::GameActionNode) {
-		const UDialogueNodeInfoGameAction* GameActionNodeInfo = Cast<UDialogueNodeInfoGameAction>(CurrentNode->NodeInfo);
-
-		if (GameActionNodeInfo->GameAction.Num() > 0) {
-				
-			TArray<UGameActionBase*> InstancedActions;
-			for (const UGameActionBase* ActionTemplate : GameActionNodeInfo->GameAction) {
-				if (ActionTemplate) {
-					UGameActionBase* InstancedAction = DuplicateObject<UGameActionBase>(ActionTemplate, this);
-					InstancedActions.Add(InstancedAction);
-				}
-			}
 			
-			if (GameActionNodeInfo->GameAction.Num() == 1) {
-				FOnGameActionCompleted OnCompleted;
-				OnCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
-				
+		if (InstancedActions.Num() == 1) {
+			FOnGameActionCompleted OnCompleted;
+			OnCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+			if (InstancedActions.Num() == 1) 
 				GameActionSubsystem->ExecuteGameAction(InstancedActions[0], OnCompleted);
-			}
-			else {
-				FOnGameActionSequenceCompleted OnSequenceCompleted;
-				OnSequenceCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
-			
-				FOnParallelGameActionCompleted OnParallelCompleted;
-				OnParallelCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
-				
-				switch (GameActionNodeInfo->GameActionExecutionMode) {
-					case EGameActionExecutionMode::Sequence:
-						GameActionSubsystem->ExecuteGameActionSequence(InstancedActions, OnSequenceCompleted);
-						break;
-					case EGameActionExecutionMode::Parallel:
-						GameActionSubsystem->ExecuteParallelGameAction(InstancedActions, OnParallelCompleted);
-						break;
-				}
-			}
+			else
+				UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGameActionNode ->InstancedActions[0] is nullptr"));
 		}
 		else {
-			ChooseOptionAtIndex(0);
+			FOnGameActionSequenceCompleted OnSequenceCompleted;
+			OnSequenceCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+			
+			FOnParallelGameActionCompleted OnParallelCompleted;
+			OnParallelCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
+				
+			switch (GameActionNodeInfo->GameActionExecutionMode) {
+			case EGameActionExecutionMode::Sequence:
+				GameActionSubsystem->ExecuteGameActionSequence(InstancedActions, OnSequenceCompleted);
+				break;
+			case EGameActionExecutionMode::Parallel:
+				GameActionSubsystem->ExecuteParallelGameAction(InstancedActions, OnParallelCompleted);
+				break;
+			default:
+				UE_LOG(LogYADSP, Warning, TEXT("UDialoguePlayer::ProcessGameActionNode -> Unknown Game Action ExecutionMode"));
+			}
 		}
 	}
-
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::GoToNode) {
-		const UDialogueNodeInfoGoTo* GameActionNodeInfo = Cast<UDialogueNodeInfoGoTo>(CurrentNode->NodeInfo);
-		GoToNode(GameActionNodeInfo->LabelNode);
-	}
-	
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::LabelNode) {
+	else {
 		ChooseOptionAtIndex(0);
 	}
-	
-	// If the current node is an end node, end the dialogue
-	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode) {
-		DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
-		DialogueSubsystem->OnDialogueEnded.Broadcast();
-	}
 }
 
-void UDialoguePlayer::GoToNode(const FName& NodeName)
+void UDialoguePlayer::ProcessGoToNode()
 {
-	// Find the start node
+	const UDialogueNodeInfoGoTo* GoToNodeInfo = Cast<UDialogueNodeInfoGoTo>(CurrentNode->NodeInfo);
+	if (GoToNodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGoToNode -> GoToNodeInfo is nullptr"));
+		return;
+	}
+	
+	if (DialogueSystem == nullptr || DialogueSystem->Graph == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::Proces -> %s%s"), 
+			(DialogueSystem ? TEXT("") : TEXT("DialogueSystem is Null. ")),
+			(DialogueSystem->Graph ? TEXT("") : TEXT("DialogueSystem->Graph is Null. "))
+			);
+		return;
+	}
+	
 	for (UDialogueRuntimeGraphNode* Node : DialogueSystem->Graph->Nodes) {
-		if (Node->NodeType == EDialogueNodeType::LabelNode && Cast<UDialogueNodeInfoLabel>(Node->NodeInfo)->LabelName == NodeName) {
-			CurrentNode = Node;
-			ChooseOptionAtIndex(0);
-			return;
+		if (const auto* LabelInfo = Cast<UDialogueNodeInfoLabel>(Node->NodeInfo)) {
+			if (LabelInfo->LabelName == GoToNodeInfo->LabelNode) {
+				CurrentNode = Node;
+				ChooseOptionAtIndex(0);
+				return;
+			}
 		}
 	}
 
-	UE_LOG(LogDialoguePlayer, Error, TEXT("No Label found with name %s, Ending Dialogue"), *NodeName.ToString());
-	DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
-	DialogueSubsystem->OnDialogueEnded.Broadcast();
+	UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGoToNode -> No Label found with name %s, Ending Dialogue"), *GoToNodeInfo->LabelNode.ToString());
+	FinishDialogue();
 }
 
-// TODO: Find a better way to calculate the timer based on text lenght (especially for non-alphabetic languages)
-float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
+void UDialoguePlayer::FinishDialogue()
 {
-	// Convert the FText to an FString to get its length
-	const FString Buffer = Text;
+	DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
+	DialogueSubsystem->OnDialogueEnded.Broadcast();
+	OnDialogueEndedCallback.ExecuteIfBound();
+}
 
+// TODO: Find a better way to calculate the timer based on text length (especially for non-alphabetic languages)
+float UDialoguePlayer::CalculateSkipTimer(const FString& InText)
+{
 	// Calculate the length of the text in seconds at a reading rate of 15 words per second
-	float Length = Buffer.Len();
+	float Length = InText.Len();
 	Length = Length / 15;
 
 	// Add some extra padding time before the text is automatically skipped
@@ -238,50 +289,69 @@ float UDialoguePlayer::CalculateSkipTimer(const FString& Text)
 	return Length;
 }
 
-void UDialoguePlayer::AutoSkipDialogue(const float Time)
+void UDialoguePlayer::AutoSkipDialogue(const float InTime)
 {
-	GetWorld()->GetTimerManager().SetTimer(AutoSkipTimerHandle, [this]()
-	{
-		ChooseOptionAtIndex(0);
-	}, Time, false);
+	GetWorld()->GetTimerManager().SetTimer(AutoSkipTimerHandle, this, &UDialoguePlayer::ExecuteAutoSkip, InTime, false);
 }
 
-void UDialoguePlayer::OnGameActionFinished()
+void UDialoguePlayer::ExecuteAutoSkip()
 {
 	ChooseOptionAtIndex(0);
 }
 
-void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* NodeInfo)
+void UDialoguePlayer::OnGameActionFinished()
 {
-	switch (NodeInfo->SkipDialogue) {
+	for (UGameActionBase* Action : InstancedActions) {
+		if (Action)
+			Action->MarkAsGarbage();
+	}
+
+	InstancedActions.Empty();
+	
+	ChooseOptionAtIndex(0);
+}
+
+void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNodeInfo)
+{
+	switch (InNodeInfo->SkipDialogue) {
 		case ESkipDialogue::NoSkip:
 			break;
+		
 		case ESkipDialogue::AutoSkipBasedOnText:
-			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, NodeInfo->DialogueKey));
+			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
 			AutoSkipDialogue(CurrentSkipTime);
 			break;
 		
 		case ESkipDialogue::AutoSkipAfterSound:
-			if (NodeInfo->DialogueSound == nullptr) break;
-			CurrentSkipTime = NodeInfo->DialogueSound->GetDuration();
+			if (InNodeInfo->DialogueSound == nullptr) {
+				UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessDialogueAutoSkip -> No DialogueSound provided"));
+				break;
+			}
+			CurrentSkipTime = InNodeInfo->DialogueSound->GetDuration();
 			
 			// TODO: Make a custom sound player to replace this simple implementation (optional for)
-			UGameplayStatics::PlaySound2D(GetWorld(), NodeInfo->DialogueSound);
+			UGameplayStatics::PlaySound2D(GetWorld(), InNodeInfo->DialogueSound);
 			AutoSkipDialogue(CurrentSkipTime);
 			break;
 		
 		case ESkipDialogue::AutoSkipAfterTime:
-			CurrentSkipTime = NodeInfo->SkipAfterSeconds;
+			CurrentSkipTime = InNodeInfo->SkipAfterSeconds;
 			AutoSkipDialogue(CurrentSkipTime);
+			break;
+
+		default:
+			UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessDialogueAutoSkip -> Unknown Skip Dialogue"));
 			break;
 	}
 }
 
-TArray<FText> UDialoguePlayer::ConvertStringArrayToTextArray(const TArray<FString>& StringArray)
+TArray<FText> UDialoguePlayer::ConvertStringArrayToTextArray(const TArray<FString>& InStringArray)
 {
 	TArray<FText> Result;
 
-	for (FString& String : StringArray) {
+	Result.Reserve(InStringArray.Num());
+	
+	for (const FString& String : InStringArray) {
 		Result.Add(FText::FromString(String));
 	}
 	

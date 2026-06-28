@@ -9,7 +9,7 @@ TArray<FString> UDialogueNodeInfoBranch::GetTextList() const
 	if (DialogueSystem && DialogueSystem->DialogueDataTable) {
 		TArray<FName> RowNames = DialogueSystem->DialogueDataTable->GetRowNames();
 
-		for (const FName& Name : RowNames) {
+		for (const FName Name : RowNames) {
 			Options.Add(Name.ToString());
 		}
 	}

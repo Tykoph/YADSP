@@ -12,7 +12,6 @@ public class YADSP : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[]
 			{
-				// ... add public include paths required here ...
 			}
 		);
 
@@ -20,7 +19,6 @@ public class YADSP : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[]
 			{
-				// ... add other private include paths required here ...
 			}
 		);
 		
@@ -28,16 +26,11 @@ public class YADSP : ModuleRules
 			new[]
 			{
 				"Core",
-				"CoreUObject",
-				"Engine",
 				"InputCore",
 				"EnhancedInput",
 				"UMG",
-				"Slate",
-				"SlateCore",
 				"GSheetLocSystemPlugin",
 				"GameActionPlugin"
-				// ... add other public dependencies that you statically link with here ...
 			}
 		);
 
@@ -47,18 +40,22 @@ public class YADSP : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"EnhancedInput",
-				"UnrealEd",
-				"GSheetLocSystemPlugin",
-				// ... add private dependencies that you statically link with here ...
+				"Slate",
+				"SlateCore",
 			}
 		);
 
-
+		if (Target.bBuildEditor)
+		{
+			PublicDependencyModuleNames.AddRange(new []
+			{
+				"UnrealEd",
+			});
+		}
+		
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
-				// ... add any modules that your module loads dynamically here ...
 			}
 		);
 	}

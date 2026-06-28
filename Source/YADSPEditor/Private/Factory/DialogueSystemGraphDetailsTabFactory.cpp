@@ -2,9 +2,10 @@
 
 #include "Factory/DialogueSystemGraphDetailsTabFactory.h"
 #include "DialogueGraphEditorApp.h"
+#include "YADSP.h"
 #include "UI/SDialogueGraphDetailsTab.h"
 
-DialogueSystemGraphDetailsTabFactory::DialogueSystemGraphDetailsTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
+FDialogueSystemGraphDetailsTabFactory::FDialogueSystemGraphDetailsTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App) :
 	FWorkflowTabFactory(FName("GraphDetailsTab"), App)
 {
 	DialogueGraphApp = App;
@@ -13,14 +14,17 @@ DialogueSystemGraphDetailsTabFactory::DialogueSystemGraphDetailsTabFactory(TShar
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Graph Details view"));
 }
 
-TSharedRef<SWidget> DialogueSystemGraphDetailsTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FDialogueSystemGraphDetailsTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
-
+	TSharedPtr<FDialogueGraphEditorApp> App = DialogueGraphApp.Pin();
+	if (!App.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemGraphDetailsTabFactory::CreateTabBody -> App is invalid"));
+		return SNew(SBox);
+	}
 	return SNew(SDialogueGraphDetailsTab, App);
 }
 
-FText DialogueSystemGraphDetailsTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FDialogueSystemGraphDetailsTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("A Details view for the dialogue graph"));
 }

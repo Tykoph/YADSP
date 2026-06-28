@@ -9,6 +9,7 @@
 #include "DialogueRuntimeGraphNode.generated.h"
 
 class UDialogueRuntimeGraphPin;
+
 /**
  * Represents a node in the dialogue runtime graph.
  * Contains properties for node type, input and output pins, position, and associated node information.
@@ -21,7 +22,7 @@ class YADSP_API UDialogueRuntimeGraphNode : public UObject
 public:
 	// Type of the dialogue node, indicating its purpose in the graph.
 	UPROPERTY()
-	EDialogueNodeType NodeType = EDialogueNodeType::DialogueNode;
+	EDialogueNodeType NodeType = EDialogueNodeType::Unknown;
 
 	// Pointer to the input pin of the node, if any.
 	UPROPERTY()
@@ -29,7 +30,7 @@ public:
 	
 	// Array of output pins connected to this node.
 	UPROPERTY()
-	TArray<UDialogueRuntimeGraphPin*> OutputPins;
+	TArray<TObjectPtr<UDialogueRuntimeGraphPin>> OutputPins;
 
 	// Position of the node in the graph, used for layout.
 	UPROPERTY()

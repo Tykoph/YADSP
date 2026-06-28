@@ -20,7 +20,7 @@ public: // UEdGraphNode interface
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	// UDialogueGraphNodeBase interface
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
@@ -28,16 +28,16 @@ public: // UEdGraphNode interface
 	virtual void OnPropertiesChanged() override { Modify(); }
 
 	// YADSP Interface
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfoPtr = NewObject<UDialogueNodeInfoGameAction>(Output); }
+	virtual void InitNodeInfo(UObject* Output) override { NodeInfo = NewObject<UDialogueNodeInfoGameAction>(Output); }
 
-	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) override
+	virtual void SetNodeInfo(UDialogueNodeInfoBase* InNodeInfo) override
 	{
-		NodeInfoPtr = Cast<UDialogueNodeInfoGameAction>(NodeInfo);
+		NodeInfo = Cast<UDialogueNodeInfoGameAction>(InNodeInfo);
 	}
 
-	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfoPtr; }
+	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfo; }
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UDialogueNodeInfoGameAction> NodeInfoPtr = nullptr;
+	TObjectPtr<UDialogueNodeInfoGameAction> NodeInfo = nullptr;
 };

@@ -16,5 +16,5 @@ class YADSP_API UDialogueSystemRuntimeGraph : public UObject
 public:
 	// Array of nodes in the graph.
 	UPROPERTY()
-	TArray<UDialogueRuntimeGraphNode*> Nodes;
+	TArray<TObjectPtr<UDialogueRuntimeGraphNode>> Nodes;
 };

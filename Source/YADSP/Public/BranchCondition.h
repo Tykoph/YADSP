@@ -17,6 +17,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bHideIfExpressionFail = false;
 	
+	UPROPERTY()
 	bool bExpressionIsValid = false;
 	
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))

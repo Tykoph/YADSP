@@ -14,7 +14,7 @@ class UDialogueGraphNodeBase : public UEdGraphNode
 
 public:
 	// Must be overridden
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) { return nullptr; }
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) { return nullptr; }
 
 	virtual UEdGraphPin* CreateDefaultInputPin() { return nullptr; }
 	virtual void CreateDefaultOutputPin() { /* Don't do anything by default */ }
@@ -28,5 +28,5 @@ public:
 	
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }
 
-	TWeakPtr<UDialogueSystem*> DialogueSystem = nullptr;
+	TWeakObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 };

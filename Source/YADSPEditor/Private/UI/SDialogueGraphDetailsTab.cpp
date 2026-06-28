@@ -6,7 +6,7 @@
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 
-void SDialogueGraphDetailsTab::Construct(const FArguments& InArgs, TSharedPtr<DialogueGraphEditorApp> InApp)
+void SDialogueGraphDetailsTab::Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp)
 {
 	DialogueGraphApp = InApp;
 

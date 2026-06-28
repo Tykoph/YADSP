@@ -12,7 +12,7 @@
 struct FDialoguePinFactory : public FGraphPanelPinFactory
 {
 	virtual ~FDialoguePinFactory() override;
-	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* Pin) const override;
+	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override;
 };
 
 /**

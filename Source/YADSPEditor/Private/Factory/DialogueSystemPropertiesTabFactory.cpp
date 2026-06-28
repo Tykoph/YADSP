@@ -2,9 +2,10 @@
 
 #include "Factory/DialogueSystemPropertiesTabFactory.h"
 #include "DialogueGraphEditorApp.h"
+#include "YADSP.h"
 #include "UI/SDialoguePropertiesTab.h"
 
-DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
+FDialogueSystemPropertiesTabFactory::FDialogueSystemPropertiesTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App) :
 	FWorkflowTabFactory(FName("GraphPropertyTab"), App)
 {
 	DialogueGraphApp = App;
@@ -13,14 +14,18 @@ DialogueSystemPropertiesTabFactory::DialogueSystemPropertiesTabFactory(TSharedPt
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Node Properties view"));
 }
 
-TSharedRef<SWidget> DialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FDialogueSystemPropertiesTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
-
+	TSharedPtr<FDialogueGraphEditorApp> App = DialogueGraphApp.Pin();
+	if (!App.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemPrimaryTabFactory::CreateTabBody -> App is invalid"));
+		return SNew(SBox);
+	}
+	
 	return SNew(SDialoguePropertiesTab, App);
 }
 
-FText DialogueSystemPropertiesTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FDialogueSystemPropertiesTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("A Properties view for the dialogue graph editor"));
 }

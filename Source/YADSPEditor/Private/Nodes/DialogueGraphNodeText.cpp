@@ -5,13 +5,13 @@
 
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenus.h"
+#include "YADSP.h"
 
 FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(NodeInfoPtr);
-
-	if (!NodeInfo) {
-		return FText::FromString(TEXT("NodeInfo null ?????"));
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeText::GetNodeTitle -> NodeInfo is nullptr"))
+		return FText::FromString(TEXT("null"));
 	}
 	
 	if (NodeInfo->Title.IsEmpty()) {
@@ -29,30 +29,32 @@ void UDialogueGraphNodeText::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNo
 {
 	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Text Node Actions")));
 
-	UDialogueGraphNodeText* Node = const_cast<UDialogueGraphNodeText*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeText*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+			"DeleteEntry",
+			FText::FromString(TEXT("Delete Node")),
+			FText::FromString(TEXT("Delete this node")),
+			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+			FUIAction(FExecuteAction::CreateLambda(
+				[Node]()
+				{
+					Node->GetGraph()->RemoveNode(Node);
+				}
+			))
+		);
+	}
 }
 
-UEdGraphPin* UDialogueGraphNodeText::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeText::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
 {
-	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("TextPin");
+	const FName Category = TEXT("Input");
+	const FName SubCategory = TEXT("TextPin");
 
 	UEdGraphPin* Pin = CreatePin(
-		Dir,
+		InPinDirection,
 		Category,
-		Name
+		InPinName
 	);
 	Pin->PinType.PinSubCategory = SubCategory;
 
@@ -66,6 +68,6 @@ UEdGraphPin* UDialogueGraphNodeText::CreateDefaultInputPin()
 
 void UDialogueGraphNodeText::CreateDefaultOutputPin()
 {
-	FString DefaultResponse = TEXT("Continue");
+	const FString DefaultResponse = TEXT("Continue");
 	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
 }

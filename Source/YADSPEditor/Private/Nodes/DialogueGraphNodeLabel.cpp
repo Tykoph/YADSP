@@ -2,34 +2,47 @@
 
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeLabel.h"
 
-void UDialogueGraphNodeLabel::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
-{
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("End Node Actions")));
+#include "YADSP.h"
 
-	UDialogueGraphNodeLabel* Node = const_cast<UDialogueGraphNodeLabel*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+FText UDialogueGraphNodeLabel::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeLabel::GetNodeTitle -> NodeInfo is nullptr"))
+		return FText::FromString(TEXT("Nullptr"));
+	}
+	return FText::FromString(NodeInfo->LabelName.ToString());
 }
 
-UEdGraphPin* UDialogueGraphNodeLabel::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+void UDialogueGraphNodeLabel::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FName PinCategory = TEXT("Output");
-	FName PinSubCategory = TEXT("GoToPin");
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Label Node Actions")));
+
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeLabel*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+		   "DeleteEntry",
+		   FText::FromString(TEXT("Delete Node")),
+		   FText::FromString(TEXT("Delete this node")),
+		   FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+		   FUIAction(FExecuteAction::CreateLambda(
+			   [Node]()
+			   {
+				   Node->GetGraph()->RemoveNode(Node);
+			   }
+		   ))
+	   );
+	}
+}
+
+UEdGraphPin* UDialogueGraphNodeLabel::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
+{
+	const FName PinCategory = TEXT("Output");
+	const FName PinSubCategory = TEXT("GoToPin");
 
 	UEdGraphPin* NewPin = CreatePin(
-		EGPD_Output,
+		InPinDirection,
 		PinCategory,
-		Name
+		InPinName
 	);
 	NewPin->PinType.PinSubCategory = PinSubCategory;
 

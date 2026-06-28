@@ -19,7 +19,7 @@ public: // UEdGraphNode interface
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	// UDialogueGraphNodeBase interface
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::EndNode; }

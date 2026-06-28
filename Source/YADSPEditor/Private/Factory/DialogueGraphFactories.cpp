@@ -1,6 +1,8 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "Factory/DialogueGraphFactories.h"
+
+#include "YADSP.h"
 #include "EdGraph/EdGraphPin.h"
 #include "UI/SDialogueGraphPins.h"
 #include "UI/SDialogueGraphNodeText.h"
@@ -10,27 +12,39 @@ FDialoguePinFactory::~FDialoguePinFactory()
 {
 }
 
-TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* Pin) const
+TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* InPin) const
 {
-	if (Pin->PinType.PinSubCategory == FName(TEXT("TextPin"))) {
-		return SNew(SDialogueGraphTextPin, Pin);
-	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("StartPin"))) {
-		return SNew(SDialogueGraphStartPin, Pin);
-	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("EndPin"))) {
-		return SNew(SDialogueGraphEndPin, Pin);
-	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("ActionPin"))) {
-		return SNew(SDialogueGraphActionPin, Pin);
-	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("BranchPin"))) {
-		return SNew(SDialogueGraphBranchPin, Pin);
-	}
-	if (Pin->PinType.PinSubCategory == FName(TEXT("GoToPin"))) {
-		return SNew(SDialogueGraphGoToPin, Pin);
+	if	(InPin == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialoguePinFactory::CreatePin -> InPin is nullptr"))
+		return nullptr;
 	}
 
+	// Code optimization
+	static const FName TextPinName(TEXT("TextPin"));
+	static const FName StartPinName(TEXT("StartPin"));
+	static const FName EndPinName(TEXT("EndPin"));
+	static const FName ActionPinName(TEXT("ActionPin"));
+	static const FName BranchPinName(TEXT("BranchPin"));
+	static const FName GoToPinName(TEXT("GoToPin"));
+
+	if (InPin->PinType.PinSubCategory == TextPinName) {
+		return SNew(SDialogueGraphTextPin, InPin);
+	}
+	if (InPin->PinType.PinSubCategory == StartPinName) {
+		return SNew(SDialogueGraphStartPin, InPin);
+	}
+	if (InPin->PinType.PinSubCategory == EndPinName) {
+		return SNew(SDialogueGraphEndPin, InPin);
+	}
+	if (InPin->PinType.PinSubCategory == ActionPinName) {
+		return SNew(SDialogueGraphActionPin, InPin);
+	}
+	if (InPin->PinType.PinSubCategory == BranchPinName) {
+		return SNew(SDialogueGraphBranchPin, InPin);
+	}
+	if (InPin->PinType.PinSubCategory == GoToPinName) {
+		return SNew(SDialogueGraphGoToPin, InPin);
+	}
 	return nullptr;
 }
 

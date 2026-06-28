@@ -4,42 +4,47 @@
 #include "CoreMinimal.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
+#include "YADSP.h"
 
-DialogueSystemAction::DialogueSystemAction(EAssetTypeCategories::Type AssetCategory)
+FDialogueSystemAction::FDialogueSystemAction(EAssetTypeCategories::Type InAssetCategory)
 {
-	AssetCategoryPtr = AssetCategory;
+	AssetCategory = InAssetCategory;
 }
 
 //  FAssetTypeActions_Base interface
-FText DialogueSystemAction::GetName() const
+FText FDialogueSystemAction::GetName() const
 {
 	return FText::FromString(TEXT("Dialogue Graph"));
 }
 
-FColor DialogueSystemAction::GetTypeColor() const
+FColor FDialogueSystemAction::GetTypeColor() const
 {
 	return FColor::FromHex("007fff");
 }
 
-UClass* DialogueSystemAction::GetSupportedClass() const
+UClass* FDialogueSystemAction::GetSupportedClass() const
 {
 	return UDialogueSystem::StaticClass();
 }
 
-uint32 DialogueSystemAction::GetCategories()
+uint32 FDialogueSystemAction::GetCategories()
 {
-	return AssetCategoryPtr;
+	return AssetCategory;
 }
 
-void DialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void FDialogueSystemAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
 	const EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 	for (UObject* Object : InObjects) {
 		// Cast the object to dialogue system and initialize the editor if valid
 		UDialogueSystem* DialogueGraph = Cast<UDialogueSystem>(Object);
-		if (DialogueGraph != nullptr) {
-			const TSharedRef<DialogueGraphEditorApp> GraphEditorApp(new DialogueGraphEditorApp());
-			GraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, DialogueGraph);
+		
+		if (DialogueGraph == nullptr) {
+			UE_LOG(LogYADSP, Error, TEXT("DialogueSystemAction::OpenAssetEditor -> Dialogue System is nullptr"))
+			return;
 		}
+		
+		const TSharedRef<FDialogueGraphEditorApp> GraphEditorApp(new FDialogueGraphEditorApp());
+		GraphEditorApp->InitEditor(Mode, EditWithinLevelEditor, DialogueGraph);
 	}
 }

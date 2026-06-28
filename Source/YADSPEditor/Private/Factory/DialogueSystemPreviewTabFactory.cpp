@@ -2,9 +2,10 @@
 
 #include "Factory/DialogueSystemPreviewTabFactory.h"
 #include "DialogueGraphEditorApp.h"
+#include "YADSP.h"
 #include "UI/SDialoguePreviewTab.h"
 
-DialogueSystemPreviewTabFactory::DialogueSystemPreviewTabFactory(TSharedPtr<class DialogueGraphEditorApp> App) :
+FDialogueSystemPreviewTabFactory::FDialogueSystemPreviewTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App) :
 	FWorkflowTabFactory(FName("GraphPreviewTab"), App)
 {
 	DialogueGraphApp = App;
@@ -13,14 +14,17 @@ DialogueSystemPreviewTabFactory::DialogueSystemPreviewTabFactory(TSharedPtr<clas
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Rich Text Preview view"));
 }
 
-TSharedRef<SWidget> DialogueSystemPreviewTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FDialogueSystemPreviewTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
-
+	TSharedPtr<FDialogueGraphEditorApp> App = DialogueGraphApp.Pin();
+	if (!App.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemPreviewTabFactory::CreateTabBody -> App is invalid"));
+		return SNew(SBox);
+	}
 	return SNew(SDialoguePreviewTab, App);
 }
 
-FText DialogueSystemPreviewTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FDialogueSystemPreviewTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("A Rich Text Preview for the selected dialogue node"));
 }

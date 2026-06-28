@@ -116,7 +116,7 @@ protected:
 };
 
 /**
- * Custom graph pin for Branch node connections
+ * Custom graph pin for GoTo and Label node connections
  * Displays with Pink color
  */
 class SDialogueGraphGoToPin : public SGraphPin

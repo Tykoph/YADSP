@@ -4,20 +4,20 @@
 
 FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (NodeInfoPtr != nullptr && NodeInfoPtr->GameAction.Num() >= 1 && !NodeInfoPtr->GameAction.IsEmpty())
+	if (NodeInfo != nullptr && !NodeInfo->GameActions.IsEmpty())
 	{
 		FString Result;
-		if (NodeInfoPtr->GameAction.Num() == 1) {
-			if (!NodeInfoPtr->GameAction[0])
+		if (NodeInfo->GameActions.Num() == 1) {
+			if (!NodeInfo->GameActions[0])
 				return FText::FromString(TEXT("GameAction"));
-			FString ActionDataName = NodeInfoPtr->GameAction[0]->GetActionDisplayName().ToString();
+			FString ActionDataName = NodeInfo->GameActions[0]->GetActionDisplayName().ToString();
 			if (ActionDataName.Len() > 15) {
 				ActionDataName = ActionDataName.Left(15) + TEXT("...");
 			}
 			Result = ActionDataName;
 		}
 		else {
-			for (const auto GameAction : NodeInfoPtr->GameAction) {
+			for (const auto& GameAction : NodeInfo->GameActions) {
 				if (!GameAction)
 					continue;
 				FString ActionDataName = GameAction->GetActionDisplayName().ToString();
@@ -28,7 +28,7 @@ FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType)
 			if (Result.Len() > 15) {
 				Result = Result.Left(15) + TEXT("...");
 			}
-			switch (NodeInfoPtr->GameActionExecutionMode) {
+			switch (NodeInfo->GameActionExecutionMode) {
 				case EGameActionExecutionMode::Sequence:
 					Result = TEXT("Sequence: ") + Result;
 					break;
@@ -45,32 +45,34 @@ FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType)
 
 void UDialogueGraphNodeGameAction::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("Node GameActions")));
+	FToolMenuSection& Section = Menu->AddSection(TEXT("DialogueSection"), FText::FromString(TEXT("GameAction Node Actions")));
 
-	UDialogueGraphNodeGameAction* Node = const_cast<UDialogueGraphNodeGameAction*>(this);
-	Section.AddMenuEntry(
-		"DeleteEntry",
-		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete this node")),
-		FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		FUIAction(FExecuteAction::CreateLambda(
-			[Node]()
-			{
-				Node->GetGraph()->RemoveNode(Node);
-			}
-		))
-	);
+	const TWeakObjectPtr WeakNode = const_cast<UDialogueGraphNodeGameAction*>(this);
+	if (auto* Node = WeakNode.Get()) {
+		Section.AddMenuEntry(
+		   "DeleteEntry",
+		   FText::FromString(TEXT("Delete Node")),
+		   FText::FromString(TEXT("Delete this node")),
+		   FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
+		   FUIAction(FExecuteAction::CreateLambda(
+			   [Node]()
+			   {
+				   Node->GetGraph()->RemoveNode(Node);
+			   }
+		   ))
+	   );
+	}
 }
 
-UEdGraphPin* UDialogueGraphNodeGameAction::CreateDialoguePin(EEdGraphPinDirection Dir, FName Name)
+UEdGraphPin* UDialogueGraphNodeGameAction::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
 {
-	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("ActionPin");
+	const FName Category = TEXT("Input");
+	const FName SubCategory = TEXT("ActionPin");
 
 	UEdGraphPin* Pin = CreatePin(
-		Dir,
+		InPinDirection,
 		Category,
-		Name
+		InPinName
 	);
 	Pin->PinType.PinSubCategory = SubCategory;
 

@@ -1,6 +1,8 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSettings.h"
+
+#include "YADSP.h"
 #include "Engine/DataTable.h"
 #include "Styling/SlateStyle.h"
 #include "Components/RichTextBlock.h"
@@ -11,15 +13,15 @@ UDialogueGraphSettings::UDialogueGraphSettings()
 	InitLanguageOptions();
 }
 
-FString UDialogueGraphSettings::GetPreviewLanguage() const
+const FString& UDialogueGraphSettings::GetPreviewLanguage() const
 {
 	return PreviewLanguage;
 }
 
-void UDialogueGraphSettings::SetPreviewLanguage(const FString& NewLanguage)
+void UDialogueGraphSettings::SetPreviewLanguage(const FString& InNewLanguage)
 {
 	UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get();
-	Settings->PreviewLanguage = NewLanguage;
+	Settings->PreviewLanguage = InNewLanguage;
 	Settings->SaveConfig();
 	Settings->OnPreviewLanguageChanged.Broadcast(); 
 }
@@ -71,6 +73,9 @@ TSharedPtr<ISlateStyle> UDialogueGraphSettings::GetRichTextStyleSet()
 		CachedStyleInstance = MakeShareable(new FSlateStyleSet(TEXT("DialogueRichTextStyle")));
 		
 		UDataTable* Table = PreviewRichTextStyleSet.LoadSynchronous();
+		if (Table == nullptr) {
+			UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphSettings::GetRichTextStyleSet -> Table is not correctly initialized"))
+		}
 		BindToDataTable(Table);
 
 		if (Table && Table->GetRowStruct()->IsChildOf(FRichTextStyleRow::StaticStruct())) {
@@ -107,11 +112,19 @@ void UDialogueGraphSettings::PostEditChangeProperty(FPropertyChangedEvent& Prope
 	
 	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UDialogueGraphSettings, PreviewRichTextStyleSet)) {
 		UDataTable* Table = PreviewRichTextStyleSet.LoadSynchronous();
-
-		if (Table && Table->GetRowStruct()->IsChildOf(FRichTextStyleRow::StaticStruct())) {
+		if (Table == nullptr) {
+			UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphSettings::PostEditChangeProperty -> Table is not correctly initialized"))
+			return;
+		}
+		
+		if (Table->GetRowStruct()->IsChildOf(FRichTextStyleRow::StaticStruct())) {
 			for (const auto& Entry : Table->GetRowMap()) {
 				const FName SubStyleName = Entry.Key;
 				const FRichTextStyleRow* RichTextStyle = reinterpret_cast<FRichTextStyleRow*>(Entry.Value);
+				if (!CachedStyleInstance.IsValid()) {
+					UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphSettings::PostEditChangeProperty -> CachedStyleInstance is not valid"))
+					return;
+				}
 				CachedStyleInstance->Set(SubStyleName, RichTextStyle->TextStyle);
 			}
 		}

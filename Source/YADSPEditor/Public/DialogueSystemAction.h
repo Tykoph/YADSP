@@ -10,10 +10,10 @@
  * Asset type actions for Dialogue System assets.
  * Handles the registration and customization of dialogue graph assets in the Unreal Editor.
  */
-class DialogueSystemAction : public FAssetTypeActions_Base
+class YADSPEDITOR_API FDialogueSystemAction : public FAssetTypeActions_Base
 {
 public:
-	DialogueSystemAction(EAssetTypeCategories::Type AssetCategory);
+	FDialogueSystemAction(EAssetTypeCategories::Type InAssetCategory);
 	
 	//  FAssetTypeActions_Base interface
 	virtual FText GetName() const override;
@@ -29,5 +29,5 @@ public:
 	virtual void OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor = TSharedPtr<IToolkitHost>()) override;
 
 private:
-	EAssetTypeCategories::Type AssetCategoryPtr;
+	EAssetTypeCategories::Type AssetCategory;
 };

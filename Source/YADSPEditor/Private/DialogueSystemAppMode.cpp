@@ -2,18 +2,19 @@
 
 #include "DialogueSystemAppMode.h"
 #include "DialogueGraphEditorApp.h"
+#include "YADSP.h"
 #include "Factory/DialogueSystemPrimaryTabFactory.h"
 #include "Factory/DialogueSystemPropertiesTabFactory.h"
 #include "Factory/DialogueSystemPreviewTabFactory.h"
 #include "Factory/DialogueSystemGraphDetailsTabFactory.h"
 
-DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
+FDialogueSystemAppMode::FDialogueSystemAppMode(TSharedPtr<class FDialogueGraphEditorApp> App): FApplicationMode(TEXT("DialogueGraphAppMode"))
 {
 	DGApp = App;
-	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPrimaryTabFactory(App)));
-	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPropertiesTabFactory(App)));
-	Tabs.RegisterFactory(MakeShareable(new DialogueSystemPreviewTabFactory(App)));
-	Tabs.RegisterFactory(MakeShareable(new DialogueSystemGraphDetailsTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new FDialogueSystemPrimaryTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new FDialogueSystemPropertiesTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new FDialogueSystemPreviewTabFactory(App)));
+	Tabs.RegisterFactory(MakeShareable(new FDialogueSystemGraphDetailsTabFactory(App)));
 
 	// Slate UI
 	TabLayout = FTabManager::NewLayout("DialogueGraphAppMode_Layout_v2")
@@ -58,19 +59,23 @@ DialogueSystemAppMode::DialogueSystemAppMode(TSharedPtr<class DialogueGraphEdito
 			));
 }
 
-void DialogueSystemAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
+void FDialogueSystemAppMode::RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager)
 {
-	TSharedPtr<DialogueGraphEditorApp> App = DGApp.Pin();
+	const TSharedPtr<FDialogueGraphEditorApp> App = DGApp.Pin();
+	if (!App.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemAppMode::RegisterTabFactories -> App is invalid"));
+		return;
+	}
 	App->PushTabFactories(Tabs);
 	FApplicationMode::RegisterTabFactories(InTabManager);
 }
 
-void DialogueSystemAppMode::PreDeactivateMode()
+void FDialogueSystemAppMode::PreDeactivateMode()
 {
 	FApplicationMode::PreDeactivateMode();
 }
 
-void DialogueSystemAppMode::PostActivateMode()
+void FDialogueSystemAppMode::PostActivateMode()
 {
 	FApplicationMode::PostActivateMode();
 }

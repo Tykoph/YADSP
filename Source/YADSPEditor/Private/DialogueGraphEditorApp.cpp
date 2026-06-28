@@ -7,23 +7,29 @@
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
+#include "YADSP.h"
 
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "Widgets/Input/SComboBox.h"
 
-void DialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef)
+void FDialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef)
 {
 	FWorkflowCentricApplication::RegisterTabSpawners(TabManagerRef);
 }
 
-void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
+void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* InObject)
 {
 	// Initialize the working asset and graph editor
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
 
 	WorkingAsset = Cast<UDialogueSystem>(InObject);
+	if (WorkingAsset == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueGraphEditorApp::InitEditor -> Working Asset is null ptr"))
+		return;
+	}
+	
 	WorkingAsset->SetPreSaveListener([this]() { OnWorkingGraphAssetPreSave(); });
 
 	WorkingGraphEditor = FBlueprintEditorUtils::CreateNewGraph(
@@ -83,22 +89,24 @@ void DialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSh
 	AddToolbarExtender(ToolbarExtender);
 	
 	// Set the current mode to the DialogueGraphAppMode
-	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new DialogueSystemAppMode(SharedThis(this))));
+	AddApplicationMode(TEXT("DialogueGraphAppMode"), MakeShareable(new FDialogueSystemAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("DialogueGraphAppMode"));
 
 	// Update the graph editor from the working asset
 	FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(WorkingAsset, WorkingGraphEditor);
 
-	UDialogueGraphSettings::Get()->OnPreviewLanguageChanged.AddLambda([this]()
-	{
-		if (WorkingGraphUiPtr.IsValid()) {
-			WorkingGraphUiPtr->NotifyGraphChanged();
-		}
-	});
+	UDialogueGraphSettings::Get()->OnPreviewLanguageChanged.AddSP(this, &FDialogueGraphEditorApp::OnLanguageChanged);
+}
+
+void FDialogueGraphEditorApp::OnLanguageChanged() const
+{
+	if (WorkingGraphUI.IsValid()) {
+		WorkingGraphUI->NotifyGraphChanged();
+	}
 }
 
 
-void DialogueGraphEditorApp::OnClose()
+void FDialogueGraphEditorApp::OnClose()
 {
 	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
 	WorkingAsset->SetPreSaveListener(nullptr);
@@ -106,54 +114,57 @@ void DialogueGraphEditorApp::OnClose()
 }
 
 // Called when the properties of the node detail view change
-void DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const
+void FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const
 {
-	if (WorkingGraphUiPtr != nullptr) {
+	if (WorkingGraphUI != nullptr) {
 		// Get the node getting modified
-		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUiPtr->GetSelectedNodes());
+		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUI->GetSelectedNodes());
 		if (SelectedNode != nullptr) {
 			// Call OnPropertiesChanged() on the selected node
 			SelectedNode->OnPropertiesChanged();
 		}
 
 		// Notify the graph UI that the graph has changed
-		WorkingGraphUiPtr->NotifyGraphChanged();
+		WorkingGraphUI->NotifyGraphChanged();
 	}
 }
 
-void DialogueGraphEditorApp::OnWorkingGraphAssetPreSave() const
+void FDialogueGraphEditorApp::OnWorkingGraphAssetPreSave() const
 {
 	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
 }
 
-UDialogueGraphNodeBase* DialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& SelectionSet)
+UDialogueGraphNodeBase* FDialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet)
 {
-	for (UObject* Obj : SelectionSet) {
+	for (UObject* Obj : InSelectionSet) {
 		UDialogueGraphNodeBase* SelectedNode = Cast<UDialogueGraphNodeBase>(Obj);
 		if (SelectedNode != nullptr) {
 			return SelectedNode;
 		}
 	}
-
+	
 	return nullptr;
 }
 
-void DialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& SelectedNodeDetailView)
+void FDialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView)
 {
-	SelectedNodeDetailViewPtr = SelectedNodeDetailView;
-	SelectedNodeDetailViewPtr->OnFinishedChangingProperties().AddRaw(
-		this, &DialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+	SelectedNodeDetailView = InSelectedNodeDetailView;
+	if (!SelectedNodeDetailView.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::SetSelectedNodeDetailView -> SelectedNodeDetailView is not valid"))
+	}
+	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(
+		this, &FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
 }
 
-void DialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectionSet) const
+void FDialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet) const
 {
-	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(SelectionSet);
+	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(InSelectionSet);
 	if (SelectedNode != nullptr) {
-		SelectedNodeDetailViewPtr->SetObject(SelectedNode->GetNodeInfo());
+		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
 	}
 	else {
-		SelectedNodeDetailViewPtr->SetObject(nullptr);
+		SelectedNodeDetailView->SetObject(nullptr);
 	}
 
-	OnGraphSelectionChangedDelegate.Broadcast(SelectionSet);
+	OnGraphSelectionChangedDelegate.Broadcast(InSelectionSet);
 }

@@ -6,16 +6,16 @@
 #include "WorkflowOrientedApp/ApplicationMode.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 
-class YADSPEDITOR_API DialogueSystemAppMode : public FApplicationMode
+class YADSPEDITOR_API FDialogueSystemAppMode : public FApplicationMode
 {
 public:
-	DialogueSystemAppMode(TSharedPtr<class DialogueGraphEditorApp> App);
+	FDialogueSystemAppMode(TSharedPtr<class FDialogueGraphEditorApp> App);
 
 	virtual void RegisterTabFactories(TSharedPtr<FTabManager> InTabManager) override;
 	virtual void PreDeactivateMode() override;
 	virtual void PostActivateMode() override;
 
 private:
-	TWeakPtr<DialogueGraphEditorApp> DGApp;
+	TWeakPtr<FDialogueGraphEditorApp> DGApp;
 	FWorkflowAllowedTabSet Tabs;
 };

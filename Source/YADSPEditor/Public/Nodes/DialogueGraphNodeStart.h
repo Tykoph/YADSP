@@ -16,7 +16,7 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Red; }
 	virtual bool CanUserDeleteNode() const override { return false; }
 
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Dir, FName Name) override;
+	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) override;
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::StartNode; }
 
 	virtual bool ShouldReturnInfo() const override { return false; }

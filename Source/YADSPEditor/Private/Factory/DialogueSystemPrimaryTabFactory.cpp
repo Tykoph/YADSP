@@ -5,8 +5,9 @@
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
 #include "GraphEditor.h"
+#include "YADSP.h"
 
-DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPtr<class DialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
+FDialogueSystemPrimaryTabFactory::FDialogueSystemPrimaryTabFactory(const TSharedPtr<class FDialogueGraphEditorApp>& App) : FWorkflowTabFactory(FName("GraphPrimaryTab"), App)
 {
 	DialogueGraphApp = App;
 	TabLabel = FText::FromString(TEXT("Primary"));
@@ -14,12 +15,16 @@ DialogueSystemPrimaryTabFactory::DialogueSystemPrimaryTabFactory(const TSharedPt
 	ViewMenuTooltip = FText::FromString(TEXT("Show the Primary view"));
 }
 
-TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FDialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	const TSharedPtr<DialogueGraphEditorApp> App = DialogueGraphApp.Pin();
-
+	const TSharedPtr<FDialogueGraphEditorApp> App = DialogueGraphApp.Pin();
+	if (!App.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemPrimaryTabFactory::CreateTabBody -> App is invalid"));
+		return SNew(SBox);
+	}
+	
 	SGraphEditor::FGraphEditorEvents GraphEvents;
-	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &DialogueGraphEditorApp::OnGraphSelectionChanged);
+	GraphEvents.OnSelectionChanged.BindRaw(App.Get(), &FDialogueGraphEditorApp::OnGraphSelectionChanged);
 
 	const TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
@@ -37,7 +42,7 @@ TSharedRef<SWidget> DialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkfl
 		];
 }
 
-FText DialogueSystemPrimaryTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FDialogueSystemPrimaryTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("A primary view for the dialogue graph editor"));
 }

@@ -13,8 +13,8 @@ public:
 	SLATE_BEGIN_ARGS(SDialogueGraphDetailsTab) {}
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, TSharedPtr<DialogueGraphEditorApp> InApp);
+	void Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp);
 
 private:
-	TWeakPtr<DialogueGraphEditorApp> DialogueGraphApp;
+	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 };
