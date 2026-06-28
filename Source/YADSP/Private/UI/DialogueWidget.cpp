@@ -26,7 +26,7 @@ void UDialogueWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
 	if (DialogueSubsystem == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("DialogueUIController::NativeDestruct -> DialogueSubsystem not found"))
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::NativeDestruct -> DialogueSubsystem not found"))
 		return;
 	}
 	DialogueSubsystem->OnDialogueLineRequested.RemoveDynamic(this, &UDialogueWidget::UpdateDisplay);
@@ -38,7 +38,7 @@ void UDialogueWidget::NativeDestruct()
 void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FText& InSpeaker)
 {
 	if (SpeakerName == nullptr || DialogueText == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("UDialogueUIController::UpdateDisplay_Implementation -> %s%s"),
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::UpdateDisplay_Implementation -> %s%s"),
 			(SpeakerName ? TEXT("") : TEXT("WorkingAsset is Null. ")),
 			(DialogueText ? TEXT("") : TEXT("WorkingGraphEditor is Null. "))
 			);
@@ -53,7 +53,7 @@ void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FT
 void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions)
 {	
 	if (ResponseBox == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("UDialogueUIController::UpdateDisplay_Implementation -> ResponseBox is null"));
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::UpdateDisplay_Implementation -> ResponseBox is null"));
 		return;
 	}
 	
@@ -61,7 +61,7 @@ void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBr
 	DialogueOptionsWidgets.Empty();
 	
 	if (DialogueOptionWidgetClass == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("DialogueUIController::OnBranchOptionsRequested -> DialogueOptionClass is nullptr"))
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::OnBranchOptionsRequested -> DialogueOptionClass is nullptr"))
 		return;
 	}
 	
@@ -71,7 +71,7 @@ void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBr
 		
 		const auto DialogueOption = Cast<UDialogueResponseWidget>(DialogueOptionsWidgets[i]);
 		if (DialogueOption == nullptr) {
-			UE_LOG(LogYADSP, Error, TEXT("DialogueUIController::OnBranchOptionsRequested -> DialogueOption is nullptr"))
+			UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::OnBranchOptionsRequested -> DialogueOption is nullptr"))
 			continue;
 		}
 		
@@ -84,7 +84,7 @@ void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBr
 void UDialogueWidget::UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, const FString& InText)
 {
 	if (InDialogueTextBlock == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("DialogueUIController::IsTextWrapping -> DialogueTextBlock is nullptr"))
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::IsTextWrapping -> DialogueTextBlock is nullptr"))
 		return;
 	}
 	
@@ -104,7 +104,7 @@ void UDialogueWidget::UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, co
 		}
 	}
 	else {
-		UE_LOG(LogYADSP, Warning, TEXT("UDialogueUIController::IsTextWrapping -> Font Measure is invalid"))
+		UE_LOG(LogYADSP, Warning, TEXT("UDialogueWidget::IsTextWrapping -> Font Measure is invalid"))
 	}
 }
 
@@ -115,6 +115,11 @@ void UDialogueWidget::OnDialogueEnded()
 
 void UDialogueWidget::ClearDialogueOption_Implementation(int Index)
 {
+	if (ResponseBox == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::ClearDialogueOption_Implementation -> ResponseBox is null"));
+		return;
+	}
+	
 	ResponseBox->ClearChildren();
 	DialogueOptionsWidgets.Empty();
 }

@@ -20,7 +20,12 @@ TArray<FString> UDialogueNodeInfoGoTo::GetAllLabelNodes() const
 	
 	for (const UDialogueRuntimeGraphNode* Node : DialogueSystem->Graph->Nodes) {
 		if (Node->NodeType == EDialogueNodeType::LabelNode){
-			Result.Add(Cast<UDialogueNodeInfoLabel>(Node->NodeInfo)->LabelName.ToString());
+			const auto NodeInfo = Cast<UDialogueNodeInfoLabel>(Node->NodeInfo);
+			if (NodeInfo == nullptr) {
+				UE_LOG(LogYADSP, Error, TEXT("UDialogueNodeInfoGoTo::GetAllLabelNodes -> NodeInfo Cast is nullptr"),)
+				continue;
+			}
+			Result.Add(NodeInfo->LabelName.ToString());
 		}
 	}
 	

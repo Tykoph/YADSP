@@ -13,7 +13,7 @@ class YADSP_API UDialogueNodeInfoGoTo : public UDialogueNodeInfoBase
 
 public:
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetAllLabelNodes"))
-	FName LabelNode;
+	FName LabelName;
 	
 	UFUNCTION()
 	TArray<FString> GetAllLabelNodes() const;

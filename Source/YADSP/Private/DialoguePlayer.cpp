@@ -257,7 +257,7 @@ void UDialoguePlayer::ProcessGoToNode()
 	
 	for (UDialogueRuntimeGraphNode* Node : DialogueSystem->Graph->Nodes) {
 		if (const auto* LabelInfo = Cast<UDialogueNodeInfoLabel>(Node->NodeInfo)) {
-			if (LabelInfo->LabelName == GoToNodeInfo->LabelNode) {
+			if (LabelInfo->LabelName == GoToNodeInfo->LabelName) {
 				CurrentNode = Node;
 				ChooseOptionAtIndex(0);
 				return;
@@ -265,7 +265,7 @@ void UDialoguePlayer::ProcessGoToNode()
 		}
 	}
 
-	UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGoToNode -> No Label found with name %s, Ending Dialogue"), *GoToNodeInfo->LabelNode.ToString());
+	UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGoToNode -> No Label found with name %s, Ending Dialogue"), *GoToNodeInfo->LabelName.ToString());
 	FinishDialogue();
 }
 

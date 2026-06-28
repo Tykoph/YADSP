@@ -42,7 +42,7 @@ TArray<FString> UDialogueSystemLibrary::GetTranslatedTextArray(const UDialogueSy
 	TArray<FString> LocalizedText;
 	LocalizedText.Reserve(InTextKeys.Num());
 	
-	for (const FName TextKey : InTextKeys) {
+	for (const FName& TextKey : InTextKeys) {
 		if (!TextKey.IsNone()) {
 			DataTableRowHandle.RowName = TextKey;
 			LocalizedText.Add(UGSheetLocSystemLibrary::GetLocalizedStringAuto(DataTableRowHandle));

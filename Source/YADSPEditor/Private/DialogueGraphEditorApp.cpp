@@ -26,7 +26,7 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 
 	WorkingAsset = Cast<UDialogueSystem>(InObject);
 	if (WorkingAsset == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("DialogueGraphEditorApp::InitEditor -> Working Asset is null ptr"))
+		UE_LOG(LogYADSP, Error, TEXT("DialogueGraphEditorApp::InitEditor -> Working Asset is null ptr"));
 		return;
 	}
 	
@@ -150,15 +150,19 @@ void FDialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetail
 {
 	SelectedNodeDetailView = InSelectedNodeDetailView;
 	if (!SelectedNodeDetailView.IsValid()) {
-		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::SetSelectedNodeDetailView -> SelectedNodeDetailView is not valid"))
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::SetSelectedNodeDetailView -> SelectedNodeDetailView is not valid"));
+		return;
 	}
-	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(
-		this, &FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(this, &FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
 }
 
 void FDialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet) const
 {
-	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(InSelectionSet);
+	if (!SelectedNodeDetailView.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnGraphSelectionChanged -> SelectedNodeDetailView is not valid"));
+	}
+	
+	const UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(InSelectionSet);
 	if (SelectedNode != nullptr) {
 		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
 	}

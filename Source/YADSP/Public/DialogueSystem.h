@@ -19,7 +19,7 @@ class YADSP_API UDialogueSystem : public UObject
 	GENERATED_BODY()
 
 public:
-	void SetPreSaveListener(TFunction<void()> InListener) { OnPreSaveListenerPtr = InListener; }
+	void SetPreSaveListener(TFunction<void()> InListener) { OnPreSaveListenerPtr = MoveTemp(InListener); }
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 	
 	UPROPERTY(EditAnywhere)

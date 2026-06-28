@@ -20,7 +20,7 @@ TArray<FString> UDialogueNodeInfoText::GetSpeakerFromTable() const
 	if (DialogueSystem && DialogueSystem->SpeakerDataTable) {
 		TArray<FName> RowNames = DialogueSystem->SpeakerDataTable->GetRowNames();
 
-		for (const FName Name : RowNames) {
+		for (const FName& Name : RowNames) {
 			Options.Add(Name.ToString());
 		}
 	}
@@ -39,7 +39,7 @@ TArray<FString> UDialogueNodeInfoText::GetDialogueFromTable() const
 	if (DialogueSystem && DialogueSystem->DialogueDataTable) {
 		TArray<FName> RowNames = DialogueSystem->DialogueDataTable->GetRowNames();
 
-		for (const FName Name : RowNames) {
+		for (const FName& Name : RowNames) {
 			Options.Add(Name.ToString());
 		}
 	}

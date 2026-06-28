@@ -31,7 +31,7 @@ private:
 	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
 	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;
 	
-	TArray<UObject*> InstantiatedObjects;
+	TArray<TObjectPtr<UObject>> InstantiatedObjects;
 	FGraphPanelSelectionSet CachedSelection;
 	
 	FDelegateHandle SelectionChangedHandle;

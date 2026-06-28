@@ -30,8 +30,8 @@ void UDialogueGraphNodeGoTo::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNo
 
 UEdGraphPin* UDialogueGraphNodeGoTo::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
 {
-	FName Category = TEXT("Input");
-	FName SubCategory = TEXT("GoToPin");
+	const FName Category = TEXT("Input");
+	const FName SubCategory = TEXT("GoToPin");
 
 	UEdGraphPin* Pin = CreatePin(
 		InPinDirection,
