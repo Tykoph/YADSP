@@ -12,14 +12,14 @@ class UDialogueGraphNodeEnd : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 
-public: // UEdGraphNode interface
+public: 
+	// UEdGraphNode interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Purple; }
-	virtual bool CanUserDeleteNode() const override { return true; }
+	virtual bool CanUserDeleteNode() const override;
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	// UDialogueGraphNodeBase interface
-	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName) override;
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::EndNode; }

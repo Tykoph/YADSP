@@ -20,47 +20,45 @@ void UDialogueGraphNodeBranch::GetNodeContextMenuActions(UToolMenu* Menu, UGraph
 			FText::FromString(TEXT("Delete Node")),
 			FText::FromString(TEXT("Delete this node")),
 			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-			FUIAction(FExecuteAction::CreateLambda(
-				[Node]()
-				{
-					Node->GetGraph()->RemoveNode(Node);
-				}
-			))
+			FUIAction(
+				FExecuteAction::CreateLambda([Node]() { Node->GetGraph()->RemoveNode(Node); }),
+				FCanExecuteAction::CreateLambda([Node]() { return Node->CanUserDeleteNode(); })
+			)
 		);
 	}
 }
 
-UEdGraphPin* UDialogueGraphNodeBranch::CreateDialoguePin(EEdGraphPinDirection InPinDirection, FName InPinName)
-{
-	const FName Category = TEXT("Input");
-	const FName SubCategory = TEXT("BranchPin");
-
-	UEdGraphPin* Pin = CreatePin(
-		InPinDirection,
-		Category,
-		InPinName
-	);
-	Pin->PinType.PinSubCategory = SubCategory;
-
-	return Pin;
-}
-
 UEdGraphPin* UDialogueGraphNodeBranch::CreateDefaultInputPin()
 {
-	return CreateDialoguePin(EGPD_Input, FName(TEXT("Input")));
+	return CreateDialoguePin(
+		EGPD_Input, 
+		FName(TEXT("Input")), 
+		FName(TEXT("Input"))
+		);
 }
 
 void UDialogueGraphNodeBranch::CreateDefaultOutputPin()
 {
 	const FString DefaultResponse = TEXT("Continue");
 	const FBranchCondition DefaultBranchCondition;
-	CreateDialoguePin(EGPD_Output, FName(DefaultResponse));
-	GetDialogueNodeInfo()->BranchOptions.Add(DefaultBranchCondition);
+	
+	CreateDialoguePin(
+		EGPD_Output,
+		FName(DefaultResponse), 
+		FName("Output")
+		);
+	CreateDialoguePin(
+		EGPD_Output,
+		FName(DefaultResponse), 
+		FName("Output 2")
+	);
+	
+	NodeInfo->BranchOptions.Add(DefaultBranchCondition);
+	NodeInfo->BranchOptions.Add(DefaultBranchCondition);
 }
 
 void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 {
-	UDialogueNodeInfoBranch* NodeInfo = GetDialogueNodeInfo();
 	if (NodeInfo == nullptr) {
 		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeBranch::SyncWithNodeResponse -> NodeInfo is nullptr"))
 		return;
@@ -77,8 +75,9 @@ void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 	while (NumInfoPins > NumGraphNodePins) {
 		CreateDialoguePin(
 			EGPD_Output,
-			FName(NodeInfo->BranchOptions[NumGraphNodePins].DialogueResponseKey.ToString())
-		);
+			FName(NodeInfo->BranchOptions[NumGraphNodePins].DialogueResponseKey.ToString()),
+			FName("Output")
+			);
 		NumGraphNodePins++;
 	}
 

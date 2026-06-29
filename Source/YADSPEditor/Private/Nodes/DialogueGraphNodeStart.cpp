@@ -1,18 +1,12 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeStart.h"
 
-UEdGraphPin* UDialogueGraphNodeStart::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
+void UDialogueGraphNodeStart::CreateDefaultOutputPin()
 {
-	const FName PinCategory = TEXT("Output");
-	const FName PinSubCategory = TEXT("StartPin");
-
-	UEdGraphPin* NewPin = CreatePin(
-		InPinDirection,
-		PinCategory,
-		InPinName
+	CreateDialoguePin(
+	EGPD_Output, 
+	FName(TEXT("Start")), 
+	FName(TEXT("Output"))
 	);
-	NewPin->PinType.PinSubCategory = PinSubCategory;
-
-	return NewPin;
 }

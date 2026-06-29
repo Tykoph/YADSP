@@ -1,10 +1,32 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeEnd.h"
+
+#include "YADSP.h"
 
 FText UDialogueGraphNodeEnd::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromString(TEXT("End"));
+}
+
+bool UDialogueGraphNodeEnd::CanUserDeleteNode() const
+{
+	const UEdGraph* CurrentGraph = GetGraph();
+	if (CurrentGraph == nullptr) {
+		UE_LOG(LogYADSP, Log, TEXT("UDialogueGraphNodeEnd::CanUserDeleteNode -> Current Graph is nullptr"));
+		return false;
+	}
+
+	int i = 0;
+	for (UEdGraphNode* Node : CurrentGraph->Nodes) {
+		if (Cast<UDialogueGraphNodeEnd>(Node)) {
+			i++;
+			if (i > 1)
+				return true;
+		}
+	}
+	
+	return false;
 }
 
 void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
@@ -18,32 +40,19 @@ void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 			FText::FromString(TEXT("Delete Node")),
 			FText::FromString(TEXT("Delete this node")),
 			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-			FUIAction(FExecuteAction::CreateLambda(
-				[Node]()
-				{
-					Node->GetGraph()->RemoveNode(Node);
-				}
-			))
+			FUIAction(
+				FExecuteAction::CreateLambda([Node]() { Node->GetGraph()->RemoveNode(Node); }),
+				FCanExecuteAction::CreateLambda([Node]() { return Node->CanUserDeleteNode(); })
+			)
 		);
 	}
 }
 
-UEdGraphPin* UDialogueGraphNodeEnd::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
-{
-	const FName Category = TEXT("Input");
-	const FName SubCategory = TEXT("EndPin");
-
-	UEdGraphPin* Pin = CreatePin(
-		InPinDirection,
-		Category,
-		InPinName
-	);
-	Pin->PinType.PinSubCategory = SubCategory;
-
-	return Pin;
-}
-
 UEdGraphPin* UDialogueGraphNodeEnd::CreateDefaultInputPin()
 {
-	return CreateDialoguePin(EGPD_Input, FName(TEXT("Finish")));
+	return CreateDialoguePin(
+		EGPD_Input, 
+		FName(TEXT("Finish")), 
+		FName(TEXT("Input"))
+		);
 }

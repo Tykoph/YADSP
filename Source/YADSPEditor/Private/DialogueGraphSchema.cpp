@@ -1,4 +1,4 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphSchema.h"
 
@@ -117,9 +117,25 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 	StartNode->NodePosX = 0;
 	StartNode->NodePosY = 0;
 
-	StartNode->CreateDialoguePin(EGPD_Output, FName(TEXT("Start")));
-
-	InGraph.AddNode(StartNode, true, true);
+	StartNode->CreateDialoguePin(
+		EGPD_Output, 
+		FName(TEXT("Start")), 
+		FName(TEXT("Output"))
+		);
+	InGraph.AddNode(StartNode);
+	
+	UDialogueGraphNodeEnd* EndNode = NewObject<UDialogueGraphNodeEnd>(&InGraph);
+	EndNode->CreateNewGuid();
+	EndNode->NodePosX = 300;
+	EndNode->NodePosY = 0;
+	
+	EndNode->CreateDialoguePin(
+		EGPD_Input, 
+		FName(TEXT("Finish")), 
+		FName(TEXT("Input"))
+		);
+	InGraph.AddNode(EndNode);
+	
 	InGraph.Modify();
 }
 
@@ -133,12 +149,15 @@ UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* 
 	ResultNode->InitNodeInfo(ResultNode);
 
 	// Setup node info and dialogue system reference
-	UDialogueNodeInfoBase* NodeInfo = ResultNode->GetNodeInfo();
-	if (NodeInfo == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("FNewNodeAction::PerformAction -> NodeInfo is nullptr"));
-		return nullptr;
+	ResultNode->DialogueSystem = Cast<UDialogueSystem>(ParentGraph->GetOuter());
+	if (ResultNode->ShouldReturnInfo()) {
+		UDialogueNodeInfoBase* NodeInfo = ResultNode->GetNodeInfo();
+		if (NodeInfo == nullptr) {
+			UE_LOG(LogYADSP, Error, TEXT("FNewNodeAction::PerformAction -> NodeInfo is nullptr"));
+			return nullptr;
+		}
+		NodeInfo->DialogueSystem = ResultNode->DialogueSystem.Get();
 	}
-	NodeInfo->DialogueSystem = Cast<UDialogueSystem>(ParentGraph->GetOuter());
 
 	// Create input and output pins
 	UEdGraphPin* InputPin = ResultNode->CreateDefaultInputPin();

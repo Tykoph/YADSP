@@ -1,10 +1,16 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "YADSPEditor/Public/Nodes/DialogueGraphNodeGoTo.h"
 
+#include "YADSP.h"
+
 FText UDialogueGraphNodeGoTo::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return FText::FromString(TEXT("GoTo"));
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeGoTo::GetNodeTitle -> NodeInfo is nullptr"))
+		return FText::FromString(TEXT("null"));
+	}
+	return FText::FromString((TEXT("GoTo %s"), NodeInfo->LabelName.ToString()));
 }
 
 void UDialogueGraphNodeGoTo::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
@@ -18,32 +24,19 @@ void UDialogueGraphNodeGoTo::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNo
 		   FText::FromString(TEXT("Delete Node")),
 		   FText::FromString(TEXT("Delete this node")),
 		   FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
-		   FUIAction(FExecuteAction::CreateLambda(
-			   [Node]()
-			   {
-				   Node->GetGraph()->RemoveNode(Node);
-			   }
-		   ))
+		   FUIAction(
+				FExecuteAction::CreateLambda([Node]() { Node->GetGraph()->RemoveNode(Node); }),
+				FCanExecuteAction::CreateLambda([Node]() { return Node->CanUserDeleteNode(); })
+			)
 	   );
 	}
 }
 
-UEdGraphPin* UDialogueGraphNodeGoTo::CreateDialoguePin(const EEdGraphPinDirection InPinDirection, const FName InPinName)
-{
-	const FName Category = TEXT("Input");
-	const FName SubCategory = TEXT("GoToPin");
-
-	UEdGraphPin* Pin = CreatePin(
-		InPinDirection,
-		Category,
-		InPinName
-	);
-	Pin->PinType.PinSubCategory = SubCategory;
-
-	return Pin;
-}
-
 UEdGraphPin* UDialogueGraphNodeGoTo::CreateDefaultInputPin()
 {
-	return CreateDialoguePin(EGPD_Input, FName(TEXT("Go To Node")));
+	return CreateDialoguePin(		
+		EGPD_Input, 
+		FName(TEXT("Go To")), 
+		FName(TEXT("Input"))
+		);
 }

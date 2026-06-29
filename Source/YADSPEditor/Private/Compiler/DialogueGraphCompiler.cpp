@@ -167,7 +167,11 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 		// Process input pin
 		if (RuntimeNode->InputPin != nullptr) {
 			UDialogueRuntimeGraphPin* InputPin = RuntimeNode->InputPin;
-			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Input, InputPin->PinName);
+			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(
+				EGPD_Input, 
+				InputPin->PinName,
+				FName(TEXT("Input"))
+				);
 			UIPin->PinId = InputPin->PinId;
 
 			// Add connection if the input pin is connected
@@ -180,7 +184,11 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 
 		// Process output pins
 		for (UDialogueRuntimeGraphPin* OutputPin : RuntimeNode->OutputPins) {
-			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(EGPD_Output, OutputPin->PinName);
+			UEdGraphPin* UIPin = NewNode->CreateDialoguePin(
+				EGPD_Output,
+				OutputPin->PinName, 
+				FName(TEXT("Output"))
+				);
 			UIPin->PinId = OutputPin->PinId;
 
 			// Add connection if the output pin is connected

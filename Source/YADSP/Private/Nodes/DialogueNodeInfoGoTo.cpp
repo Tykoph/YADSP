@@ -22,7 +22,7 @@ TArray<FString> UDialogueNodeInfoGoTo::GetAllLabelNodes() const
 		if (Node->NodeType == EDialogueNodeType::LabelNode){
 			const auto NodeInfo = Cast<UDialogueNodeInfoLabel>(Node->NodeInfo);
 			if (NodeInfo == nullptr) {
-				UE_LOG(LogYADSP, Error, TEXT("UDialogueNodeInfoGoTo::GetAllLabelNodes -> NodeInfo Cast is nullptr"),)
+				UE_LOG(LogYADSP, Error, TEXT("UDialogueNodeInfoGoTo::GetAllLabelNodes -> NodeInfo Cast is nullptr"));
 				continue;
 			}
 			Result.Add(NodeInfo->LabelName.ToString());
