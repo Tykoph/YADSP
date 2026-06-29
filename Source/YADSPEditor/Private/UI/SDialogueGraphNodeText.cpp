@@ -1,9 +1,9 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/UI/SDialogueGraphNodeText.h"
+#include "UI/SDialogueGraphNodeText.h"
 
 #include "DialogueGraphSettings.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+#include "Nodes/DialogueGraphNodeText.h"
 
 #include "DialogueSystem.h"
 #include "GSheetLocSystemLibrary.h"

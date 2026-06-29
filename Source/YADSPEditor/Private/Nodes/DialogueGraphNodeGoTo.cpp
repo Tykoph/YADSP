@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeGoTo.h"
+#include "Nodes/DialogueGraphNodeGoTo.h"
 
 #include "YADSP.h"
 
@@ -10,7 +10,7 @@ FText UDialogueGraphNodeGoTo::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeGoTo::GetNodeTitle -> NodeInfo is nullptr"))
 		return FText::FromString(TEXT("null"));
 	}
-	return FText::FromString((TEXT("GoTo %s"), NodeInfo->LabelName.ToString()));
+	return FText::FromString(TEXT("Go To Node"));
 }
 
 void UDialogueGraphNodeGoTo::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
@@ -38,5 +38,21 @@ UEdGraphPin* UDialogueGraphNodeGoTo::CreateDefaultInputPin()
 		EGPD_Input, 
 		FName(TEXT("Go To")), 
 		FName(TEXT("Input"))
+		);
+}
+
+void UDialogueGraphNodeGoTo::SyncWithLabelName()
+{
+	if (NodeInfo == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeBranch::SyncWithNodeResponse -> NodeInfo is nullptr"))
+		return;
+	}
+
+	RemovePinAt(0, EGPD_Output);
+
+	CreateDialoguePin(
+		EGPD_Output,
+		FName(NodeInfo->LabelName),
+		FName("Output")
 		);
 }

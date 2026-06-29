@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeLabel.h"
+#include "Nodes/DialogueGraphNodeLabel.h"
 
 #include "YADSP.h"
 

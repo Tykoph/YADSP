@@ -5,7 +5,7 @@
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoGameAction.h"
+#include "Nodes/DialogueNodeInfoGameAction.h"
 #include "DialogueGraphNodeGameAction.generated.h"
 
 UCLASS()
@@ -14,13 +14,13 @@ class UDialogueGraphNodeGameAction : public UDialogueGraphNodeBase
 	GENERATED_BODY()
 
 public: 
-	// UEdGraphNode Interface
+	// UEdGraphNode interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Green; }
 	virtual bool CanUserDeleteNode() const override { return true; }
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
-	// UDialogueGraphNodeBase Interface
+	// UDialogueGraphNodeBase interface
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
@@ -34,6 +34,7 @@ public:
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::GameActionNode; }
 	
 	virtual void OnPropertiesChanged() override { Modify(); }
+	// /////////
 
 protected:
 	UPROPERTY()

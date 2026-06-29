@@ -32,6 +32,7 @@ public:
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::BranchNode; }
 
 	virtual void OnPropertiesChanged() override { SyncWithNodeResponse(); }
+	// /////////
 	
 private:
 	void SyncWithNodeResponse();

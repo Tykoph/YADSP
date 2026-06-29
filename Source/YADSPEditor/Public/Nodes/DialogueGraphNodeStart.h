@@ -12,12 +12,12 @@ class UDialogueGraphNodeStart : public UDialogueGraphNodeBase
 	GENERATED_BODY()
 
 public:
-	// UEdGraphNode Interface
+	// UEdGraphNode interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString(TEXT("Start")); }
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::Red; }
 	virtual bool CanUserDeleteNode() const override { return false; }
 
-	// UDialogueGraphNodeBase Interface
+	// UDialogueGraphNodeBase interface
 	virtual void CreateDefaultOutputPin() override;
 
 	virtual bool ShouldReturnInfo() const override { return false; }

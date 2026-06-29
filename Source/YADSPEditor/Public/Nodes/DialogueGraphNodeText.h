@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "YADSP/Public/Nodes/DialogueNodeInfoText.h"
+#include "Nodes/DialogueNodeInfoText.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
 #include "EdGraph/EdGraphNode.h"

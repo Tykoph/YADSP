@@ -3,8 +3,8 @@
 #pragma once
 
 #include "SGraphNode.h"
-#include "YADSPEditor/Public/DialogueGraphEditorApp.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeText.h"
+#include "DialogueGraphEditorApp.h"
+#include "Nodes/DialogueGraphNodeText.h"
 
 class SDialogueGraphNodeText : public SGraphNode
 {

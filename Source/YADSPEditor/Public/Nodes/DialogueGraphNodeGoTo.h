@@ -5,7 +5,7 @@
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueGraphNodeBase.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoGoTo.h"
+#include "Nodes/DialogueNodeInfoGoTo.h"
 #include "DialogueGraphNodeGoTo.generated.h"
 
 UCLASS()
@@ -19,6 +19,7 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::FromHex("FF1FDD"); }
 	virtual bool CanUserDeleteNode() const override { return true; }
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
+	// /////////
 
 	// UDialogueGraphNodeBase interface
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
@@ -31,7 +32,13 @@ public:
 	}
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::GoToNode; }
-
+	
+	virtual void OnPropertiesChanged() override { SyncWithLabelName(); }
+	// /////////
+	
+private:
+	void SyncWithLabelName();
+	
 protected:
 	UPROPERTY()
 	TObjectPtr<UDialogueNodeInfoGoTo> NodeInfo = nullptr;

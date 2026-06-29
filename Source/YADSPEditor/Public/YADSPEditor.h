@@ -3,14 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetToolsModule.h"
 #include "AssetTypeCategories.h"
-#include "IAssetTools.h"
 #include "IAssetTypeActions.h"
 #include "Modules/ModuleManager.h"
 #include "Styling/SlateStyle.h"
 
-class FDialogueSystemEditorModule : public IModuleInterface
+class FYADSPEditorModule : public IModuleInterface
 {
 	TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
 	EAssetTypeCategories::Type DialogueGraphAssetCategory = EAssetTypeCategories::None;

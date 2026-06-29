@@ -1,8 +1,8 @@
 ﻿// Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/DialogueSystemEditor.h"
+#include "YADSPEditor.h"
 
-#include "YADSPEditor/Public/DialogueSystemAction.h"
+#include "DialogueSystemAction.h"
 #include "Factory/DialogueGraphFactories.h"
 
 #include "IAssetTools.h"
@@ -19,7 +19,7 @@
  * Creates and registers custom style set for icons and thumbnails
  * Registers custom pin factory for different dialogue graph node connections
  */
-void FDialogueSystemEditorModule::StartupModule()
+void FYADSPEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools = IAssetTools::Get();
 
@@ -69,7 +69,7 @@ void FDialogueSystemEditorModule::StartupModule()
  * Cleans up the Dialogue System editor module
  * Unregisters styles and pin factory
  */
-void FDialogueSystemEditorModule::ShutdownModule()
+void FYADSPEditorModule::ShutdownModule()
 {
 	FSlateStyleRegistry::UnRegisterSlateStyle(*DGStyleSet);
 	FEdGraphUtilities::UnregisterVisualPinFactory(PinFactory);
@@ -78,4 +78,4 @@ void FDialogueSystemEditorModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FDialogueSystemEditorModule, YADSPEditor)
+IMPLEMENT_MODULE(FYADSPEditorModule, YADSPEditor)

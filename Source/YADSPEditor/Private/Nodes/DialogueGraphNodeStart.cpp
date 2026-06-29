@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeStart.h"
+#include "Nodes/DialogueGraphNodeStart.h"
 
 void UDialogueGraphNodeStart::CreateDefaultOutputPin()
 {

@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeEnd.h"
+#include "Nodes/DialogueGraphNodeEnd.h"
 
 #include "YADSP.h"
 

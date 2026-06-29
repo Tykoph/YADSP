@@ -13,13 +13,13 @@ class UDialogueGraphNodeLabel : public UDialogueGraphNodeBase
 	GENERATED_BODY()
 
 public:
-	// UEdGraphNode Interface
+	// UEdGraphNode interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::FromHex("FF1FDD"); }
 	virtual bool CanUserDeleteNode() const override { return false; }
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 	
-	// UDialogueGraphNodeBase Interface
+	// UDialogueGraphNodeBase interface
 	virtual void CreateDefaultOutputPin() override;
 
 	virtual void InitNodeInfo(UObject* Output) override { NodeInfo = NewObject<UDialogueNodeInfoLabel>(Output); }

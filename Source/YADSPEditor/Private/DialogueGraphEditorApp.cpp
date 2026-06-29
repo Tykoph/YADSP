@@ -4,7 +4,7 @@
 #include "DialogueGraphSchema.h"
 #include "DialogueGraphSettings.h"
 #include "Compiler/DialogueGraphCompiler.h"
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeBase.h"
+#include "Nodes/DialogueGraphNodeBase.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
 #include "YADSP.h"

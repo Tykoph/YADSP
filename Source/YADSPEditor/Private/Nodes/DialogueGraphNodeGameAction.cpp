@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/Nodes/DialogueGraphNodeGameAction.h"
+#include "Nodes/DialogueGraphNodeGameAction.h"
 
 FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "YADSPEditor/Public/UI/SDialogueGraphPins.h"
+#include "UI/SDialogueGraphPins.h"
 
 
 FSlateColor SDialogueGraphTextPin::GetPinColor() const

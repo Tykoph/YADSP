@@ -4,7 +4,7 @@
 
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
-#include "YADSP/Public/Nodes/DialogueNodeInfoBase.h"
+#include "Nodes/DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.generated.h"
 
 UCLASS()

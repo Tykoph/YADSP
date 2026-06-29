@@ -11,7 +11,6 @@ FDialogueSystemAction::FDialogueSystemAction(EAssetTypeCategories::Type InAssetC
 	AssetCategory = InAssetCategory;
 }
 
-//  FAssetTypeActions_Base interface
 FText FDialogueSystemAction::GetName() const
 {
 	return FText::FromString(TEXT("Dialogue Graph"));

@@ -20,6 +20,7 @@ public:
 	virtual FColor GetTypeColor() const override;
 	virtual UClass* GetSupportedClass() const override;
 	virtual uint32 GetCategories() override;
+	// /////////
 
 	/**
 	 * Opens the dialogue graph editor for the specified asset objects.
