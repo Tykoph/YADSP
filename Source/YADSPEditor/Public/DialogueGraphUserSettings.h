@@ -71,5 +71,8 @@ public:
 	UPROPERTY(EditAnywhere, config, Category="Shortcuts")
 	FDialogueShortcut DeleteNodeShortcut = FDialogueShortcut(EKeys::Delete);
 
+	UPROPERTY(EditAnywhere, config, Category="Preferences")
+	bool bDisplayRichTextFlags = false;
+	
 	FOnShortcutsChanged OnShortcutsChanged;
 };

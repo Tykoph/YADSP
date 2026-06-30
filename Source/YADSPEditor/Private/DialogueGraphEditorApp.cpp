@@ -21,6 +21,9 @@
 #include "Nodes/DialogueGraphNodeLabel.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Widgets/Input/SComboBox.h"
+#include "Widgets/Input/SCheckBox.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Text/STextBlock.h"
 
 void FDialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef)
 {
@@ -64,7 +67,6 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	);
 
 	// Add Toolbar Extension for Language Selection
-	// TODO: add toggle rich text flags
 	const TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
 	ToolbarExtender->AddToolBarExtension(
 		"Asset",
@@ -73,6 +75,28 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& Builder)
 		{
 			Builder.AddSeparator();
+			Builder.AddWidget(
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.Padding(4.0f, 0.0f)
+				.VAlign(VAlign_Center)
+				[
+					SNew(SCheckBox)
+					.IsChecked_Lambda([]() { return UDialogueGraphUserSettings::Get()->bDisplayRichTextFlags ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState) {
+						UDialogueGraphUserSettings* Settings = UDialogueGraphUserSettings::Get();
+						Settings->bDisplayRichTextFlags = (NewState == ECheckBoxState::Checked);
+						Settings->SaveConfig();
+						if (WorkingGraphUI.IsValid()) {
+							WorkingGraphUI->NotifyGraphChanged();
+						}
+					})
+					[
+						SNew(STextBlock).Text(FText::FromString("Show Rich Text Flags"))
+					]
+				]
+			);
 			Builder.AddWidget(
 				SNew(SBox)
 				.WidthOverride(100.0f)

@@ -3,6 +3,7 @@
 #include "UI/SDialogueGraphNodeText.h"
 
 #include "DialogueGraphProjectSettings.h"
+#include "DialogueGraphUserSettings.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
 #include "DialogueSystem.h"
@@ -350,6 +351,9 @@ FText SDialogueGraphNodeText::GetDialogueComboText() const
 static FString StripRichTextTags(const FString& Input)
 {
 	FString Result = Input;
+	if (UDialogueGraphUserSettings::Get()->bDisplayRichTextFlags) {
+		return Result;
+	}
 	while (true) {
 		const int32 OpenIndex = Result.Find(TEXT("<"));
 		if (OpenIndex == INDEX_NONE) break;
