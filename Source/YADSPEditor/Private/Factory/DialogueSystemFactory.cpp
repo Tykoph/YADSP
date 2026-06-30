@@ -8,7 +8,7 @@ UDialogueSystemFactory::UDialogueSystemFactory(const FObjectInitializer& ObjectI
 	SupportedClass = UDialogueSystem::StaticClass();
 }
 
-UObject* UDialogueSystemFactory::FactoryCreateNew(UClass* UClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
+UObject* UDialogueSystemFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
 	UDialogueSystem* ProxyObj = NewObject<UDialogueSystem>(InParent, InName, Flags);
 	return ProxyObj;

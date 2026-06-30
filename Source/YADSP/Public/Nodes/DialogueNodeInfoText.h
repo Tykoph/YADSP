@@ -15,7 +15,7 @@ class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
 	GENERATED_BODY()
 
 public:
-	
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif

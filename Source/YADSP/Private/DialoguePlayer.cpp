@@ -161,8 +161,10 @@ void UDialoguePlayer::ProcessBranchNode()
 	for (int i = 0; i < BranchNodeInfo->BranchOptions.Num(); ++i) {
 		bool bIsValid;
 				
-		if (BranchNodeInfo->BranchOptions[i].Expression)
-			bIsValid = BranchNodeInfo->BranchOptions[i].Expression->ExecuteWithReturn();
+		if (BranchNodeInfo->BranchOptions[i].Expression) {
+			BranchNodeInfo->BranchOptions[i].Expression->ExecuteAction();
+			bIsValid = BranchNodeInfo->BranchOptions[i].Expression->GetResult();
+		}
 		else 
 			bIsValid = true;
 				

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "GameAction/GameExpression.h"
+#include "GameExpression.h"
 #include "BranchCondition.generated.h"
 
 USTRUCT()
