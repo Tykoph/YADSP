@@ -1,6 +1,6 @@
 // Copyright Tom Duby. All Rights Reserved.
 
-#include "DialogueGraphSettings.h"
+#include "DialogueGraphProjectSettings.h"
 
 #include "YADSP.h"
 #include "Engine/DataTable.h"
@@ -8,30 +8,30 @@
 #include "Components/RichTextBlock.h"
 #include "Brushes/SlateImageBrush.h"
 
-UDialogueGraphSettings::UDialogueGraphSettings()
+UDialogueGraphProjectSettings::UDialogueGraphProjectSettings()
 {
 	InitLanguageOptions();
 }
 
-const FString& UDialogueGraphSettings::GetPreviewLanguage() const
+const FString& UDialogueGraphProjectSettings::GetPreviewLanguage() const
 {
 	return PreviewLanguage;
 }
 
-void UDialogueGraphSettings::SetPreviewLanguage(const FString& InNewLanguage)
+void UDialogueGraphProjectSettings::SetPreviewLanguage(const FString& InNewLanguage)
 {
-	UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get();
+	UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get();
 	Settings->PreviewLanguage = InNewLanguage;
 	Settings->SaveConfig();
 	Settings->OnPreviewLanguageChanged.Broadcast(); 
 }
 
-const TArray<TSharedPtr<FString>>* UDialogueGraphSettings::GetLanguageOptions() const
+const TArray<TSharedPtr<FString>>* UDialogueGraphProjectSettings::GetLanguageOptions() const
 {
 	return &LanguageOptions;
 }
 
-TArray<FString> UDialogueGraphSettings::GetStyleOption() const
+TArray<FString> UDialogueGraphProjectSettings::GetStyleOption() const
 {
 	TArray<FString> Options;
 
@@ -50,7 +50,7 @@ TArray<FString> UDialogueGraphSettings::GetStyleOption() const
 	return Options;
 }
 
-void UDialogueGraphSettings::InitLanguageOptions()
+void UDialogueGraphProjectSettings::InitLanguageOptions()
 {
 	LanguageOptions.Add(MakeShared<FString>(TEXT("en-150")));
 	LanguageOptions.Add(MakeShared<FString>(TEXT("en-US")));
@@ -61,13 +61,13 @@ void UDialogueGraphSettings::InitLanguageOptions()
 	LanguageOptions.Add(MakeShared<FString>(TEXT("es-ES")));
 }
 
-void UDialogueGraphSettings::ResetCachedStyle()
+void UDialogueGraphProjectSettings::ResetCachedStyle()
 {
 	CachedStyleInstance.Reset();
 	OnRichTextStyleChanged.Broadcast();
 }
 
-TSharedPtr<ISlateStyle> UDialogueGraphSettings::GetRichTextStyleSet()
+TSharedPtr<ISlateStyle> UDialogueGraphProjectSettings::GetRichTextStyleSet()
 {
 	if (!CachedStyleInstance.IsValid()) {
 		CachedStyleInstance = MakeShareable(new FSlateStyleSet(TEXT("DialogueRichTextStyle")));
@@ -89,7 +89,7 @@ TSharedPtr<ISlateStyle> UDialogueGraphSettings::GetRichTextStyleSet()
 	return CachedStyleInstance;
 }
 
-void UDialogueGraphSettings::BindToDataTable(UDataTable* Table)
+void UDialogueGraphProjectSettings::BindToDataTable(UDataTable* Table)
 {
 	if (BoundDataTable.Get() != Table)
 	{
@@ -100,17 +100,17 @@ void UDialogueGraphSettings::BindToDataTable(UDataTable* Table)
 		BoundDataTable = Table;
 
 		if (Table) {
-			Table->OnDataTableChanged().AddUObject(this, &UDialogueGraphSettings::ResetCachedStyle);
+			Table->OnDataTableChanged().AddUObject(this, &UDialogueGraphProjectSettings::ResetCachedStyle);
 		}
 	}
 }
 
 #if WITH_EDITOR
-void UDialogueGraphSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void UDialogueGraphProjectSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	
-	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UDialogueGraphSettings, PreviewRichTextStyleSet)) {
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UDialogueGraphProjectSettings, PreviewRichTextStyleSet)) {
 		UDataTable* Table = PreviewRichTextStyleSet.LoadSynchronous();
 		if (Table == nullptr) {
 			UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphSettings::PostEditChangeProperty -> Table is not correctly initialized"))

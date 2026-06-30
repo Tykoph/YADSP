@@ -1,14 +1,15 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
+
 #include "Components/RichTextBlockDecorator.h"
-#include "DialogueGraphSettings.generated.h"
+#include "DialogueGraphProjectSettings.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnPreviewLanguageChanged);
 DECLARE_MULTICAST_DELEGATE(FOnRichTextStyleChanged);
 
-UCLASS(Config=EditorPerProjectUserSettings, meta=(DisplayName="YADSP"))
-class UDialogueGraphSettings : public UDeveloperSettings 
+UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="YADSP"))
+class UDialogueGraphProjectSettings : public UDeveloperSettings 
 {
 	GENERATED_BODY()
 
@@ -17,21 +18,16 @@ public:
 	virtual FName GetCategoryName() const override { return FName("Plugins"); }
 	virtual FName GetSectionName() const override { return FName("YADSP"); }
 
-	UDialogueGraphSettings();
-
+	UDialogueGraphProjectSettings();
+	
+	static UDialogueGraphProjectSettings* Get()
+	{
+		return GetMutableDefault<UDialogueGraphProjectSettings>();
+	}
+	
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
-	
-public:
-	FOnPreviewLanguageChanged OnPreviewLanguageChanged;
-
-	FOnRichTextStyleChanged OnRichTextStyleChanged;
-	
-	static UDialogueGraphSettings* Get()
-	{
-		return GetMutableDefault<UDialogueGraphSettings>();
-	}
 	
 	/**
 	 * Gets the currently selected language code for previewing localized text.
@@ -47,6 +43,8 @@ public:
 	static void SetPreviewLanguage(const FString& InNewLanguage);
 
 	const TArray<TSharedPtr<FString>>* GetLanguageOptions() const;
+
+	TSharedPtr<ISlateStyle> GetRichTextStyleSet();
 	
 	UFUNCTION()
 	TArray<FString> GetStyleOption() const;
@@ -57,13 +55,15 @@ public:
 	UPROPERTY(EditAnywhere, config, Category="Preview")
 	TArray<TSubclassOf<URichTextBlockDecorator>> PreviewDecorators;
 
-	TSharedPtr<ISlateStyle> GetRichTextStyleSet();
-
 	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(GetOptions="GetStyleOption"))
 	FName SpeakerPreviewStyle;
 	
 	UPROPERTY(EditAnywhere, config, Category="Preview", meta=(GetOptions="GetStyleOption"))
 	FName DialoguePreviewStyle;
+		
+	FOnPreviewLanguageChanged OnPreviewLanguageChanged;
+
+	FOnRichTextStyleChanged OnRichTextStyleChanged;
 	
 private:
 	void BindToDataTable(UDataTable* Table);

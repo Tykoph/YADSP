@@ -2,7 +2,7 @@
 
 #include "UI/SDialogueGraphNodeText.h"
 
-#include "DialogueGraphSettings.h"
+#include "DialogueGraphProjectSettings.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
 #include "DialogueSystem.h"
@@ -369,7 +369,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview() const
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<FDialogueGraphEditorApp> App = GetGraphEditorApp()) {
-				Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+				Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
 			}
 			
 			FString CombinedSpeakers;
@@ -404,7 +404,7 @@ void SDialogueGraphNodeText::UpdateDialoguePreview() const
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<FDialogueGraphEditorApp> App = GetGraphEditorApp()) {
-				Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+				Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
 			}
 
 			if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueKey.IsNone()) {
@@ -441,7 +441,7 @@ FText SDialogueGraphNodeText::GetPreviewDialogueText() const
 
 void SDialogueGraphNodeText::EnsurePreviewCacheUpToDate() const
 {
-	FString CurrentLanguage = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+	FString CurrentLanguage = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
 	
 	if (CurrentLanguage != LastPreviewLanguage) {
 		LastPreviewLanguage = CurrentLanguage;

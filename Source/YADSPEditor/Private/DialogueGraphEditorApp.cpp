@@ -1,8 +1,11 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueGraphEditorApp.h"
+
+#include "DialogueGraphCommands.h"
 #include "DialogueGraphSchema.h"
-#include "DialogueGraphSettings.h"
+#include "DialogueGraphProjectSettings.h"
+#include "DialogueGraphUserSettings.h"
 #include "Compiler/DialogueGraphCompiler.h"
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "DialogueSystemAppMode.h"
@@ -11,6 +14,12 @@
 
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
+#include "Nodes/DialogueGraphNodeEnd.h"
+#include "Nodes/DialogueGraphNodeGameAction.h"
+#include "Nodes/DialogueGraphNodeGoTo.h"
+#include "Nodes/DialogueGraphNodeLabel.h"
+#include "Nodes/DialogueGraphNodeText.h"
 #include "Widgets/Input/SComboBox.h"
 
 void FDialogueGraphEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef)
@@ -29,6 +38,10 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 		UE_LOG(LogYADSP, Error, TEXT("DialogueGraphEditorApp::InitEditor -> Working Asset is null ptr"));
 		return;
 	}
+	
+	// keyboard Shortcut
+	FDialogueGraphCommands::Register();
+	BindCommands();
 	
 	WorkingAsset->SetPreSaveListener([this]() { OnWorkingGraphAssetPreSave(); });
 
@@ -51,6 +64,7 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	);
 
 	// Add Toolbar Extension for Language Selection
+	// TODO: add toggle rich text flags
 	const TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
 	ToolbarExtender->AddToolBarExtension(
 		"Asset",
@@ -64,7 +78,7 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 				.WidthOverride(100.0f)
 				[
 					SNew(SComboBox<TSharedPtr<FString>>)
-					.OptionsSource(UDialogueGraphSettings::Get()->GetLanguageOptions())
+					.OptionsSource(UDialogueGraphProjectSettings::Get()->GetLanguageOptions())
 					.OnGenerateWidget_Lambda([](const TSharedPtr<FString>& Item)
 					{
 						return SNew(STextBlock).Text(FText::FromString(*Item));
@@ -72,14 +86,14 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 					.OnSelectionChanged_Lambda([this](const TSharedPtr<FString>& NewSelection, ESelectInfo::Type SelectInfo)
 					{
 						if (NewSelection.IsValid()) {
-							UDialogueGraphSettings::SetPreviewLanguage(*NewSelection);
+							UDialogueGraphProjectSettings::SetPreviewLanguage(*NewSelection);
 						}
 					})
 					[
 						SNew(STextBlock)
 						.Text_Lambda([this]()
 						{
-							return FText::FromString(UDialogueGraphSettings::Get()->GetPreviewLanguage());
+							return FText::FromString(UDialogueGraphProjectSettings::Get()->GetPreviewLanguage());
 						})
 					]
 				]
@@ -95,7 +109,9 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	// Update the graph editor from the working asset
 	FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(WorkingAsset, WorkingGraphEditor);
 
-	UDialogueGraphSettings::Get()->OnPreviewLanguageChanged.AddSP(this, &FDialogueGraphEditorApp::OnLanguageChanged);
+	UDialogueGraphProjectSettings::Get()->OnPreviewLanguageChanged.AddSP(this, &FDialogueGraphEditorApp::OnLanguageChanged);
+	UDialogueGraphUserSettings::Get()->OnShortcutsChanged.AddSP(this, &FDialogueGraphEditorApp::UpdateShortcuts);
+	UpdateShortcuts(); 
 }
 
 void FDialogueGraphEditorApp::OnLanguageChanged() const
@@ -113,18 +129,14 @@ void FDialogueGraphEditorApp::OnClose()
 	FAssetEditorToolkit::OnClose();
 }
 
-// Called when the properties of the node detail view change
 void FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const
 {
 	if (WorkingGraphUI != nullptr) {
-		// Get the node getting modified
 		UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(WorkingGraphUI->GetSelectedNodes());
 		if (SelectedNode != nullptr) {
-			// Call OnPropertiesChanged() on the selected node
 			SelectedNode->OnPropertiesChanged();
 		}
 
-		// Notify the graph UI that the graph has changed
 		WorkingGraphUI->NotifyGraphChanged();
 	}
 }
@@ -144,6 +156,85 @@ UDialogueGraphNodeBase* FDialogueGraphEditorApp::GetSelectedNode(const FGraphPan
 	}
 	
 	return nullptr;
+}
+
+void FDialogueGraphEditorApp::BindCommands()
+{
+	GraphEditorCommands = MakeShareable(new FUICommandList);
+
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateTextNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeText::StaticClass())
+	);
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateBranchNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeBranch::StaticClass())
+	);
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateGameActionNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeGameAction::StaticClass())
+	);
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateGoToNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeGoTo::StaticClass())
+	);
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateLabelNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeLabel::StaticClass())
+	);
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().CreateEndNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCreateNode, UDialogueGraphNodeEnd::StaticClass())
+	);
+	
+	GraphEditorCommands->MapAction(
+		FDialogueGraphCommands::Get().DeleteNode,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnDeleteNodes),
+		FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanDeleteNodes)
+	);
+}
+
+void FDialogueGraphEditorApp::UpdateShortcuts()
+{
+	if (const UDialogueGraphUserSettings* Settings = UDialogueGraphUserSettings::Get()) {
+		FDialogueGraphCommands::Get().CreateTextNode->SetActiveChord(Settings->CreateTextNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().CreateBranchNode->SetActiveChord(Settings->CreateBranchNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().CreateGameActionNode->SetActiveChord(Settings->CreateGameActionNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().CreateGoToNode->SetActiveChord(Settings->CreateGoToNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().CreateLabelNode->SetActiveChord(Settings->CreateLabelNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().CreateEndNode->SetActiveChord(Settings->CreateEndNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+		FDialogueGraphCommands::Get().DeleteNode->SetActiveChord(Settings->DeleteNodeShortcut.GetInputChord(), EMultipleKeyBindingIndex::Primary);
+	}
+}
+
+void FDialogueGraphEditorApp::OnCreateNode(UClass* NodeClass) const
+{
+	if (WorkingGraphEditor != nullptr) {
+		const FVector2D SpawnLocation = WorkingGraphUI->GetPasteLocation();
+		UEdGraphPin* FromPin = nullptr;
+		FNewNodeAction NodeAction(NodeClass, FText::GetEmpty(), FText::GetEmpty(), FText::GetEmpty(), 0);
+		NodeAction.PerformAction(WorkingGraphEditor, FromPin, SpawnLocation, true);
+	}
+}
+
+void FDialogueGraphEditorApp::OnDeleteNodes() const
+{
+	if (WorkingGraphUI.IsValid()) {
+		const FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
+		for (UObject* Node : SelectedNodes) {
+			if (UEdGraphNode* GraphNode = Cast<UEdGraphNode>(Node)) {
+				GraphNode->GetGraph()->RemoveNode(GraphNode);
+			}
+		}
+		
+		WorkingGraphUI->ClearSelectionSet();
+		WorkingGraphUI->NotifyGraphChanged();
+	}
+}
+
+bool FDialogueGraphEditorApp::CanDeleteNodes() const
+{
+	return WorkingGraphUI.IsValid() && WorkingGraphUI->GetSelectedNodes().Num() > 0;
 }
 
 void FDialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView)

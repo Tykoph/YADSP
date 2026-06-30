@@ -14,12 +14,6 @@
 class YADSPEDITOR_API FDialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
-	/**
-	 * Registers tab spawners with the provided tab manager.
-	 * Sets up the available tabs for the dialogue graph editor interface.
-	 * 
-	 * @param TabManagerRef Reference to the tab manager that will handle the registered spawners
-	 */
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef) override;
 
 	/**
@@ -74,6 +68,7 @@ public:
 	virtual void OnClose() override;
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const;
 	void OnWorkingGraphAssetPreSave() const;
+	TSharedRef<FUICommandList> GetGraphEditorCommands() const { return GraphEditorCommands.ToSharedRef(); }
 
 protected:
 	/**
@@ -82,6 +77,13 @@ protected:
 	 * @return Pointer to the selected dialogue graph node, or nullptr if no valid node is selected
 	 */
 	static class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet);
+	TSharedPtr<FUICommandList> GraphEditorCommands;
+	
+	void BindCommands();
+	void UpdateShortcuts();
+	void OnCreateNode(UClass* NodeClass) const;
+	void OnDeleteNodes() const;
+	bool CanDeleteNodes() const;
 
 private:
 	void OnLanguageChanged() const;

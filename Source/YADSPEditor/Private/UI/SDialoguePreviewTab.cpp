@@ -4,7 +4,7 @@
 #include "GSheetLocSystemLibrary.h"
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
-#include "DialogueGraphSettings.h"
+#include "DialogueGraphProjectSettings.h"
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueNodeInfoText.h"
 #include "Widgets/Text/SRichTextBlock.h"
@@ -17,7 +17,7 @@
 void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp)
 {
 	DialogueGraphApp = InApp;
-	UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get();
+	UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get();
 	
 	TArray<TSharedRef<ITextDecorator>> Decorators;
 
@@ -87,7 +87,7 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 		App->OnGraphSelectionChangedDelegate.Remove(SelectionChangedHandle);
 	}
 	
-	if (UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get()) {
+	if (UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get()) {
 		Settings->OnRichTextStyleChanged.Remove(StyleChangedHandle);
 	}
 }
@@ -106,7 +106,7 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 	for (UObject* Obj : InSelectionSet) {
 		if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Obj)) {
 			if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
-				const FString Language = UDialogueGraphSettings::Get()->GetPreviewLanguage();
+				const FString Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
 				
 				CurrentNode = NodeInfo;
 				
@@ -159,7 +159,7 @@ void SDialoguePreviewTab::RefreshPreview()
 
 void SDialoguePreviewTab::OnRichTextStyleChanged() const
 {
-	if (UDialogueGraphSettings* Settings = UDialogueGraphSettings::Get()) {
+	if (UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get()) {
 		if (SpeakerRichTextBlock.IsValid()) {
 			SpeakerRichTextBlock->SetDecoratorStyleSet(Settings->GetRichTextStyleSet().Get());
 			SpeakerRichTextBlock->SetTextStyle(Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle));

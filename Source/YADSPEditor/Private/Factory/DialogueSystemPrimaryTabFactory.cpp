@@ -30,9 +30,10 @@ TSharedRef<SWidget> FDialogueSystemPrimaryTabFactory::CreateTabBody(const FWorkf
 		SNew(SGraphEditor)
 		.IsEditable(true)
 		.GraphEvents(GraphEvents)
+		.AdditionalCommands(App->GetGraphEditorCommands()) 
 		.GraphToEdit(App->GetGraphEditor());
 	App->SetWorkingGraphUi(GraphEditor);
-
+	
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
