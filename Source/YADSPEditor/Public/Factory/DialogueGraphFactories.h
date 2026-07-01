@@ -9,18 +9,18 @@
  * Factory for creating visual representations of graph pins in the Dialogue Editor.
  * This class determines which SWidget should be used for different pin types.
  */
-struct FDialoguePinFactory : public FGraphPanelPinFactory
+struct FDialoguePinFactory : FGraphPanelPinFactory
 {
-	virtual ~FDialoguePinFactory() override;
-	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override;
+	virtual ~FDialoguePinFactory() override {};
+	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* InPin) const override;
 };
 
 /**
- * Factory for creating visual representations of graph nodes in the Dialogue Editor.
+ * Factory for creating graph nodes with custom slate visual in the Dialogue Editor.
  * This class determines which SWidget should be used for different node types.
  */
-struct FDialogueGraphNodeFactory : public FGraphPanelNodeFactory
+struct FDialogueGraphNodeFactory : FGraphPanelNodeFactory
 {
-	virtual ~FDialogueGraphNodeFactory() override;
-	virtual TSharedPtr<class SGraphNode> CreateNode(class UEdGraphNode* Node) const override;
+	virtual ~FDialogueGraphNodeFactory() override {};
+	virtual TSharedPtr<SGraphNode> CreateNode(UEdGraphNode* InNode) const override;
 };

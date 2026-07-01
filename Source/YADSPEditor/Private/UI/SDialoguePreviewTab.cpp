@@ -48,12 +48,18 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialog
 		+ SScrollBox::Slot()
 		.Padding(10.0f)
 		[
-			SAssignNew(SpeakerRichTextBlock, SRichTextBlock)
-			.Text(FText::GetEmpty())
-			.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
-			.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle))
-			.Decorators(Decorators)
-			.AutoWrapText(this)
+			SNew(SBorder)
+			.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
+			.BorderBackgroundColor(FLinearColor(.36f, 0.36f, 0.36f, 0.25f))
+			.Padding(FMargin(10.0f))
+			[
+				SAssignNew(SpeakerRichTextBlock, SRichTextBlock)
+				.Text(FText::GetEmpty())
+				.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
+				.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle))
+				.Decorators(Decorators)
+				.AutoWrapText(this)
+			]
 		]
 		+ SScrollBox::Slot()
 		.Padding(10.0f)

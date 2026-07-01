@@ -32,8 +32,6 @@ public: // UEdGraphNode iInterface
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::TextNode; }
 
-	UDialogueNodeInfoText* GetDialogueNodeInfo() const { return NodeInfo; }
-
 protected:
 	UPROPERTY()
 	TObjectPtr<UDialogueNodeInfoText> NodeInfo = nullptr;

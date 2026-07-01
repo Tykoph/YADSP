@@ -3,14 +3,10 @@
 #include "Factory/DialogueGraphFactories.h"
 
 #include "YADSP.h"
-#include "EdGraph/EdGraphPin.h"
 #include "UI/SDialogueGraphPins.h"
 #include "UI/SDialogueGraphNodeText.h"
-#include "Nodes/DialogueGraphNodeText.h"
-
-FDialoguePinFactory::~FDialoguePinFactory()
-{
-}
+#include "UI/SDialogueGraphNodeBranch.h"
+#include "EdGraph/EdGraphPin.h"
 
 TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* InPin) const
 {
@@ -49,14 +45,20 @@ TSharedPtr<SGraphPin> FDialoguePinFactory::CreatePin(UEdGraphPin* InPin) const
 	return nullptr;
 }
 
-FDialogueGraphNodeFactory::~FDialogueGraphNodeFactory()
+TSharedPtr<SGraphNode> FDialogueGraphNodeFactory::CreateNode(UEdGraphNode* InNode) const
 {
-}
-
-TSharedPtr<SGraphNode> FDialogueGraphNodeFactory::CreateNode(UEdGraphNode* Node) const
-{
-	if (UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Node)) {
-		return SNew(SDialogueGraphNodeText, TextNode);
+	if (const UDialogueGraphNodeBase* Node = Cast<UDialogueGraphNodeBase>(InNode)) {
+		switch (Node->GetNodeType()) {
+			case EDialogueNodeType::TextNode:
+				return SNew(SDialogueGraphNodeText, Cast<UDialogueGraphNodeText>(InNode));
+			case EDialogueNodeType::BranchNode:
+				return SNew(SDialogueGraphNodeBranch, Cast<UDialogueGraphNodeBranch>(InNode));
+			case EDialogueNodeType::GameActionNode:
+				return nullptr;
+			default:
+				return nullptr;
+		}
 	}
+	
 	return nullptr;
 }

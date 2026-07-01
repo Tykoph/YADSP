@@ -32,13 +32,7 @@ public:
 	}
 
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::GoToNode; }
-	
-	virtual void OnPropertiesChanged() override { SyncWithLabelName(); }
-	// /////////
-	
-private:
-	void SyncWithLabelName();
-	
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UDialogueNodeInfoGoTo> NodeInfo = nullptr;

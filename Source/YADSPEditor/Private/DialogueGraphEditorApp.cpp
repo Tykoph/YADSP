@@ -74,7 +74,6 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 		GetToolkitCommands(),
 		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& Builder)
 		{
-			Builder.AddSeparator();
 			Builder.AddWidget(
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
@@ -97,6 +96,7 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 					]
 				]
 			);
+			Builder.AddSeparator();
 			Builder.AddWidget(
 				SNew(SBox)
 				.WidthOverride(100.0f)

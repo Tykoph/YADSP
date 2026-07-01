@@ -64,26 +64,35 @@ void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 		return;
 	}
 	
-	int NumGraphNodePins = Pins.Num() - 1;
-	const int NumInfoPins = NodeInfo->BranchOptions.Num();
+	int32 NumOutputPins = 0;
+	for (const UEdGraphPin* Pin : Pins) {
+		if (Pin->Direction == EGPD_Output) {
+			NumOutputPins++;
+		}
+	}
+	
+	const int32 NumInfoPins = NodeInfo->BranchOptions.Num();
 
-	while (NumGraphNodePins > NumInfoPins) {
-		RemovePinAt(NumGraphNodePins - 1, EGPD_Output);
-		NumGraphNodePins--;
+	while (NumOutputPins > NumInfoPins) {
+		RemovePinAt(NumOutputPins - 1, EGPD_Output);
+		NumOutputPins--;
 	}
 
-	while (NumInfoPins > NumGraphNodePins) {
+	while (NumInfoPins > NumOutputPins) {
 		CreateDialoguePin(
 			EGPD_Output,
-			FName(NodeInfo->BranchOptions[NumGraphNodePins].DialogueResponseKey.ToString()),
+			FName(NodeInfo->BranchOptions[NumOutputPins].DialogueResponseKey.ToString()),
 			FName("Output")
 			);
-		NumGraphNodePins++;
+		NumOutputPins++;
 	}
 
-	int Index = 1;
-	for (const FBranchCondition& BranchCondition : NodeInfo->BranchOptions) {
-		GetPinAt(Index)->PinName = FName(BranchCondition.DialogueResponseKey.ToString());
-		Index++;
+	int32 OptionIndex = 0;
+	for (UEdGraphPin* Pin : Pins)
+	{
+		if (Pin->Direction == EGPD_Output && OptionIndex < NodeInfo->BranchOptions.Num()) {
+			Pin->PinName = FName(NodeInfo->BranchOptions[OptionIndex].DialogueResponseKey.ToString());
+			OptionIndex++;
+		}
 	}
 }

@@ -9,11 +9,10 @@
 class SDialogueGraphNodeText : public SGraphNode
 {
 public:
-	virtual ~SDialogueGraphNodeText() override;
+	virtual ~SDialogueGraphNodeText() override {};
 	SLATE_BEGIN_ARGS(SDialogueGraphNodeText)
 		{
 		}
-
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UDialogueGraphNodeText* InNode);
@@ -21,17 +20,14 @@ public:
 	virtual void UpdateGraphNode() override;
 	
 protected:
+	// Helper to get the hosting editor app to access settings like Language
+	TSharedPtr<FDialogueGraphEditorApp> GetGraphEditorApp() const;
+	
 	virtual void CreateBelowPinControls(TSharedPtr<SVerticalBox> InMainBox) override;
 
 	FText GetPreviewSpeakerText() const;
 	FText GetPreviewDialogueText() const;
 	void EnsurePreviewCacheUpToDate() const; 
-	
-	// Helper to get the hosting editor app to access settings like Language
-	TSharedPtr<FDialogueGraphEditorApp> GetGraphEditorApp() const;
-
-	TSharedPtr<FString> CurrentSpeakerSelection;
-	TSharedPtr<FString> CurrentDialogueSelection;
 
 	void OnDialogueSelected(TSharedPtr<FString> InNewSelection, ESelectInfo::Type SelectInfo);
 
