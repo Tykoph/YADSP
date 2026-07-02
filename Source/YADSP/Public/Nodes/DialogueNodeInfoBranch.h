@@ -19,6 +19,9 @@ public:
 	UFUNCTION()
 	TArray<FString> GetTextList() const;
 	
+	UFUNCTION()
+	TArray<FString> GetTooltipList() const;
+	
 	UPROPERTY(EditAnywhere)
 	bool bAutoChoice = false;
 	

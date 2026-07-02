@@ -22,6 +22,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))
 	FName DialogueResponseKey = TEXT("Continue");
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))
-	FName ConditionTooltipKey = TEXT("Continue");
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTooltipList"))
+	FName ConditionTooltipKey = TEXT("None");
 };

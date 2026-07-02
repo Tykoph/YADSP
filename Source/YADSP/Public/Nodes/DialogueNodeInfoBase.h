@@ -6,6 +6,8 @@
 #include "DialogueSystem.h"
 #include "DialogueNodeInfoBase.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnPropertiesChanged);
+
 UCLASS()
 class YADSP_API UDialogueNodeInfoBase : public UObject
 {
@@ -14,4 +16,6 @@ class YADSP_API UDialogueNodeInfoBase : public UObject
 public:
 	UPROPERTY()
 	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
+	
+	FOnPropertiesChanged OnPropertiesChanged;
 };

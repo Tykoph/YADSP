@@ -32,3 +32,19 @@ TArray<FString> UDialogueNodeInfoBranch::GetTextList() const
 
 	return Options;
 }
+
+TArray<FString> UDialogueNodeInfoBranch::GetTooltipList() const
+{
+	TArray<FString> Options;
+	
+	auto List = GetTextList();
+	Options.Reserve(List.Num() + 1);
+	
+	Options.Add(TEXT("None"));
+	for (auto Item : List) {
+		Options.Add(Item);
+	}
+	
+	return Options;
+}
+

@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "DialogueGraphEditorApp.h"
-#include "Nodes/DialogueNodeInfoText.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
+#include "Nodes/DialogueGraphNodeText.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Text/SRichTextBlock.h"
@@ -23,14 +24,23 @@ private:
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet);
 	void OnRichTextStyleChanged() const;
 	void RefreshPreview();
+	void ProcessTextNode(FText& NewPreviewText, FText& NewSpeakerPreviewText, const UDialogueGraphNodeText* TextNode);
+	void ProcessBranchNode(const UDialogueGraphNodeBranch* BranchNode);
 
-	UDialogueNodeInfoText* CurrentNode = nullptr;
+
+	UDialogueNodeInfoBase* CurrentNode = nullptr;
 	
 	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 	
 	TSharedPtr<SRichTextBlock> DialogueRichTextBlock;
 	TSharedPtr<SRichTextBlock> SpeakerRichTextBlock;
+	TSharedPtr<SBorder> SpeakerBox;
+	TSharedPtr<SBorder> DialogueBox;
+	TSharedPtr<SVerticalBox> OptionsBox;
 	
+	TArray<FString> NewOptionsPreviewTexts;
+
+	TArray<TSharedRef<ITextDecorator>> CachedDecorators;
 	TArray<TObjectPtr<UObject>> InstantiatedObjects;
 	FGraphPanelSelectionSet CachedSelection;
 	

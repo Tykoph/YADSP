@@ -7,8 +7,6 @@
 #include "DialogueSkipEnum.h"
 #include "DialogueNodeInfoText.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnPropertiesChanged);
-
 UCLASS(BlueprintType)
 class YADSP_API UDialogueNodeInfoText : public UDialogueNodeInfoBase
 {
@@ -37,8 +35,6 @@ public:
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition="SkipDialogue == ESkipDialogue::AutoSkipAfterTime", ClampMin = 0))
 	float SkipAfterSeconds;
-
-	FOnPropertiesChanged OnPropertiesChanged;
 	
 public:
 	UFUNCTION()

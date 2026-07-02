@@ -13,6 +13,7 @@
 #include "Styling/CoreStyle.h"
 #include "Components/RichTextBlock.h"
 #include "Components/RichTextBlockDecorator.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
 
 void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp)
 {
@@ -42,35 +43,53 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialog
 
 	Decorators.Add(SRichTextBlock::ImageDecorator());
 
-	ChildSlot
+	const TSharedPtr<SScrollBox> PreviewBox = SNew(SScrollBox);
+
+	PreviewBox->AddSlot()
+	.Padding(10.0f)
 	[
-		SNew(SScrollBox)
-		+ SScrollBox::Slot()
-		.Padding(10.0f)
+		SAssignNew(SpeakerBox, SBorder)
+		.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
+		.BorderBackgroundColor(FLinearColor(.36f, 0.36f, 0.36f, 0.25f))
+		.Padding(FMargin(10.0f))
+		.Visibility(EVisibility::Collapsed)
 		[
-			SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
-			.BorderBackgroundColor(FLinearColor(.36f, 0.36f, 0.36f, 0.25f))
-			.Padding(FMargin(10.0f))
-			[
-				SAssignNew(SpeakerRichTextBlock, SRichTextBlock)
-				.Text(FText::GetEmpty())
-				.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
-				.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle))
-				.Decorators(Decorators)
-				.AutoWrapText(this)
-			]
+			SAssignNew(SpeakerRichTextBlock, SRichTextBlock)
+			.Text(FText::GetEmpty())
+			.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
+			.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->SpeakerPreviewStyle))
+			.Decorators(Decorators)
+			.AutoWrapText(true)
 		]
-		+ SScrollBox::Slot()
-		.Padding(10.0f)
+	];
+
+	PreviewBox->AddSlot()
+	.Padding(10.0f)
+	[
+		SAssignNew(DialogueBox, SBorder)
+		.BorderBackgroundColor(FLinearColor(0,0,0,0))
+		.Visibility(EVisibility::Collapsed)
 		[
 			SAssignNew(DialogueRichTextBlock, SRichTextBlock)
 			.Text(FText::GetEmpty())
 			.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
 			.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->DialoguePreviewStyle))
 			.Decorators(Decorators)
-			.WrapTextAt(500.0f)
+			.AutoWrapText(true)
 		]
+	];
+	
+	SAssignNew(OptionsBox, SVerticalBox);
+
+	PreviewBox->AddSlot()
+	.Padding(10.0f)
+	[
+		OptionsBox.ToSharedRef()
+	];
+
+	ChildSlot
+	[
+		PreviewBox.ToSharedRef()
 	];
 
 	if (InApp.IsValid()) {
@@ -98,62 +117,127 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 	}
 }
 
+void SDialoguePreviewTab::ProcessTextNode(FText& NewPreviewText, FText& NewSpeakerPreviewText, const UDialogueGraphNodeText* TextNode)
+{
+	if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
+		const FString Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
+				
+		CurrentNode = NodeInfo;
+				
+		if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueKey.IsNone()) {
+			FDataTableRowHandle Handle;
+			Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
+			Handle.RowName = NodeInfo->DialogueKey;
+			NewPreviewText = FText::FromString(UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language));
+
+			FString CombinedSpeakers;
+			for (const FName& ID : NodeInfo->SpeakerKeys) {
+				if (ID.IsNone()) 
+					continue;
+				if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT(", ");
+				
+				if (NodeInfo->DialogueSystem->SpeakerDataTable) {
+					FDataTableRowHandle SpeakerHandle;
+					SpeakerHandle.DataTable = NodeInfo->DialogueSystem->SpeakerDataTable;
+					SpeakerHandle.RowName = ID;
+					CombinedSpeakers += UGSheetLocSystemLibrary::GetLocalizedStringManual(SpeakerHandle, Language);
+				}
+				else {
+					CombinedSpeakers += ID.ToString();
+				}
+			}
+			NewSpeakerPreviewText = FText::FromString(CombinedSpeakers);
+		}
+		else if (!NodeInfo->DialogueKey.IsNone()) {
+			NewPreviewText = FText::FromString(NodeInfo->DialogueKey.ToString());
+		}
+				
+		PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
+	}
+}
+
+void SDialoguePreviewTab::ProcessBranchNode(const UDialogueGraphNodeBranch* BranchNode)
+{
+	if (UDialogueNodeInfoBranch* NodeInfo = Cast<UDialogueNodeInfoBranch>(BranchNode->GetNodeInfo())) {
+		const FString Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
+				
+		CurrentNode = NodeInfo;
+				
+		if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->BranchOptions.IsEmpty()) {
+			for (FBranchCondition ID : NodeInfo->BranchOptions) {
+				if (ID.DialogueResponseKey.IsNone()) 
+					continue;
+				if (NodeInfo->DialogueSystem->DialogueDataTable) {
+					FDataTableRowHandle OptionHandle;
+					OptionHandle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
+					OptionHandle.RowName = ID.DialogueResponseKey;
+					NewOptionsPreviewTexts.Add(UGSheetLocSystemLibrary::GetLocalizedStringManual(OptionHandle, Language));
+				}
+				else {
+					NewOptionsPreviewTexts.Add(ID.DialogueResponseKey.ToString());
+				}
+			}
+		}
+				
+		PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
+	}
+}
+
 void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet)
 {
 	CachedSelection = InSelectionSet;
 	
 	FText NewPreviewText = FText::GetEmpty();
 	FText NewSpeakerPreviewText = FText::GetEmpty();
-
+	NewOptionsPreviewTexts.Empty();
+	
 	if (CurrentNode) {
 		CurrentNode->OnPropertiesChanged.Remove(PropertyChangedHandle);
 	}
 	
 	for (UObject* Obj : InSelectionSet) {
 		if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Obj)) {
-			if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
-				const FString Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
-				
-				CurrentNode = NodeInfo;
-				
-				if (NodeInfo->DialogueSystem && NodeInfo->DialogueSystem->DialogueDataTable && !NodeInfo->DialogueKey.IsNone()) {
-					FDataTableRowHandle Handle;
-					Handle.DataTable = NodeInfo->DialogueSystem->DialogueDataTable;
-					Handle.RowName = NodeInfo->DialogueKey;
-					NewPreviewText = FText::FromString(UGSheetLocSystemLibrary::GetLocalizedStringManual(Handle, Language));
-
-					FString CombinedSpeakers;
-					for (const FName& ID : NodeInfo->SpeakerKeys) {
-						if (ID.IsNone()) continue;
-						if (!CombinedSpeakers.IsEmpty()) CombinedSpeakers += TEXT(", ");
-				
-						if (NodeInfo->DialogueSystem->SpeakerDataTable) {
-							FDataTableRowHandle SpeakerHandle;
-							SpeakerHandle.DataTable = NodeInfo->DialogueSystem->SpeakerDataTable;
-							SpeakerHandle.RowName = ID;
-							CombinedSpeakers += UGSheetLocSystemLibrary::GetLocalizedStringManual(SpeakerHandle, Language);
-						}
-						else {
-							CombinedSpeakers += ID.ToString();
-						}
-					}
-					NewSpeakerPreviewText = FText::FromString(CombinedSpeakers);
-				}
-				else if (!NodeInfo->DialogueKey.IsNone()) {
-					NewPreviewText = FText::FromString(NodeInfo->DialogueKey.ToString());
-				}
-				
-				PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
-				break; // Use only the first selected node
-			}
+			ProcessTextNode(NewPreviewText, NewSpeakerPreviewText, TextNode);
+			break;
+		}
+		if (const UDialogueGraphNodeBranch* Branch = Cast<UDialogueGraphNodeBranch>(Obj)) {
+			ProcessBranchNode(Branch);
+			break;
 		}
 	}
 
-	if (DialogueRichTextBlock.IsValid()) {
+	if (DialogueRichTextBlock.IsValid() && DialogueBox.IsValid()) {
 		DialogueRichTextBlock->SetText(NewPreviewText);
+		DialogueBox->SetVisibility(NewSpeakerPreviewText.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible);
 	}
-	if (SpeakerRichTextBlock.IsValid()) {
+	if (SpeakerRichTextBlock.IsValid() && SpeakerBox.IsValid()) {
 		SpeakerRichTextBlock->SetText(NewSpeakerPreviewText);
+		SpeakerBox->SetVisibility(NewSpeakerPreviewText.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible);
+	}
+
+	if (OptionsBox.IsValid()) {
+		OptionsBox->ClearChildren();
+		if (UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get()) {
+			for (int32 i = 0; i < NewOptionsPreviewTexts.Num(); ++i) {
+				OptionsBox->AddSlot()
+				.AutoHeight()
+				.Padding(0.0f, 2.0f, 0.0f, 2.0f)
+				[
+					SNew(SBorder)
+					.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
+					.BorderBackgroundColor(FLinearColor(0.05f, 0.05f, 0.05f, 0.5f))
+					.Padding(FMargin(5.0f))
+					[
+						SNew(SRichTextBlock)
+						.Text(FText::FromString(NewOptionsPreviewTexts[i]))
+						.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
+						.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->DialoguePreviewStyle))
+						.Decorators(CachedDecorators)
+						.WrapTextAt(500.0f)
+					]
+				];
+			}
+		}
 	}
 }
 
