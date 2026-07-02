@@ -26,9 +26,6 @@ public:
 
 	UPROPERTY(EditAnywhere, meta=(GetOptions="GetDialogueFromTable"))
 	FName DialogueKey;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<USoundCue> DialogueSound;
 
 	UPROPERTY(EditAnywhere)
 	ESkipDialogue SkipDialogue = ESkipDialogue::NoSkip;

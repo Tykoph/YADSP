@@ -325,14 +325,7 @@ void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNod
 			break;
 		
 		case ESkipDialogue::AutoSkipAfterSound:
-			if (InNodeInfo->DialogueSound == nullptr) {
-				UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessDialogueAutoSkip -> No DialogueSound provided"));
-				break;
-			}
-			CurrentSkipTime = InNodeInfo->DialogueSound->GetDuration();
-			
-			// TODO: Make a custom sound player to replace this simple implementation (optional for)
-			UGameplayStatics::PlaySound2D(GetWorld(), InNodeInfo->DialogueSound);
+			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
 			AutoSkipDialogue(CurrentSkipTime);
 			break;
 		
