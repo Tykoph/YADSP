@@ -42,12 +42,13 @@ public:
 
 	virtual UEdGraphPin* CreateDefaultInputPin() { return nullptr; }
 	virtual void CreateDefaultOutputPin() { /* Don't do anything by default */ }
-
 	virtual bool ShouldReturnInfo() const { return true; }
 	virtual void InitNodeInfo(UObject* Output) { /* Nothing by default */ }
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const { return nullptr; }
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) { /* None by default */ }
 	
+	virtual bool CanUserDeleteNode() const override {return true; };
+
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }
 	
 	virtual void OnPropertiesChanged() { /* Nothing by default */ }

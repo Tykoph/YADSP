@@ -15,7 +15,7 @@
  * Manages the display of speaker names, dialogue text, and response options.
  * Provides functionality for text wrapping and justification based on content size.
  */
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class YADSP_API UDialogueWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -48,13 +48,13 @@ public:
 	void ClearDialogueOption(int Index);
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<URichTextBlock> SpeakerName = nullptr;
+	TObjectPtr<URichTextBlock> SpeakerTextBlock = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<URichTextBlock> DialogueText = nullptr;
+	TObjectPtr<URichTextBlock> DialogueTextBlock = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> ResponseBox = nullptr;
+	TObjectPtr<UPanelWidget> ResponseBox = nullptr;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UDialogueResponseWidget> DialogueOptionWidgetClass;

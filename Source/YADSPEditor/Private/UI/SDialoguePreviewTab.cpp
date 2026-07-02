@@ -191,9 +191,10 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 	FText NewSpeakerPreviewText = FText::GetEmpty();
 	NewOptionsPreviewTexts.Empty();
 	
-	if (CurrentNode) {
+	if (CurrentNode.IsValid()) {
 		CurrentNode->OnPropertiesChanged.Remove(PropertyChangedHandle);
 	}
+	CurrentNode.Reset();
 	
 	for (UObject* Obj : InSelectionSet) {
 		if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(Obj)) {

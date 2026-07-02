@@ -247,6 +247,12 @@ void FDialogueGraphEditorApp::OnDeleteNodes() const
 		const FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
 		for (UObject* Node : SelectedNodes) {
 			if (UEdGraphNode* GraphNode = Cast<UEdGraphNode>(Node)) {
+				if (const UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
+					if (!DialogueNode->CanUserDeleteNode()) {
+						continue;
+					}
+				}
+				
 				GraphNode->GetGraph()->RemoveNode(GraphNode);
 			}
 		}

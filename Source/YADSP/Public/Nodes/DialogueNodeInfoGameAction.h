@@ -21,10 +21,13 @@ class YADSP_API UDialogueNodeInfoGameAction : public UDialogueNodeInfoBase
 
 
 public:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+	
 	UPROPERTY(EditAnywhere)
 	EGameActionExecutionMode GameActionExecutionMode = EGameActionExecutionMode::Sequence;
 	
 	UPROPERTY(EditAnywhere, Instanced)
 	TArray<TObjectPtr<UGameActionBase>> GameActions;
 };
-

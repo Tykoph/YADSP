@@ -28,7 +28,7 @@ private:
 	void ProcessBranchNode(const UDialogueGraphNodeBranch* BranchNode);
 
 
-	UDialogueNodeInfoBase* CurrentNode = nullptr;
+	TWeakObjectPtr<UDialogueNodeInfoBase> CurrentNode;
 	
 	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 	

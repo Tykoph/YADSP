@@ -9,7 +9,7 @@
 #include "Components/RichTextBlock.h"
 #include "DialogueResponseWidget.generated.h"
 
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class YADSP_API UDialogueResponseWidget : public UUserWidget
 {
 	GENERATED_BODY()

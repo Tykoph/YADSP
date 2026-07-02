@@ -37,17 +37,17 @@ void UDialogueWidget::NativeDestruct()
 
 void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FText& InSpeaker)
 {
-	if (SpeakerName == nullptr || DialogueText == nullptr) {
+	if (SpeakerTextBlock == nullptr || DialogueTextBlock == nullptr) {
 		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::UpdateDisplay_Implementation -> %s%s"),
-			(SpeakerName ? TEXT("") : TEXT("WorkingAsset is Null. ")),
-			(DialogueText ? TEXT("") : TEXT("WorkingGraphEditor is Null. "))
+			(SpeakerTextBlock ? TEXT("") : TEXT("WorkingAsset is Null. ")),
+			(DialogueTextBlock ? TEXT("") : TEXT("WorkingGraphEditor is Null. "))
 			);
 		return;
 	}
 	
-	SpeakerName->SetText(InSpeaker);
-	DialogueText->SetText(InText);
-	UpdateTextWrapping(DialogueText, InText.ToString());
+	SpeakerTextBlock->SetText(InSpeaker);
+	DialogueTextBlock->SetText(InText);
+	UpdateTextWrapping(DialogueTextBlock, InText.ToString());
 }
 
 void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions)
