@@ -1,6 +1,7 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "UI/DialogueUIManager.h"
+#include "Engine/World.h"
 #include "YADSP.h"
 
 void UDialogueUIManager::BeginPlay()

@@ -7,6 +7,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/RichTextBlock.h"
 #include "Fonts/FontMeasure.h"
+#include "Framework/Application/SlateApplication.h"
 
 void UDialogueWidget::NativeConstruct()
 {
@@ -47,7 +48,7 @@ void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FT
 	
 	SpeakerTextBlock->SetText(InSpeaker);
 	DialogueTextBlock->SetText(InText);
-	UpdateTextWrapping(DialogueTextBlock, InText.ToString());
+	// UpdateTextWrapping(DialogueTextBlock, InText.ToString());
 }
 
 void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions)

@@ -16,7 +16,6 @@ class UDialogueGraphNodeText : public UDialogueGraphNodeBase
 public: // UEdGraphNode iInterface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override { return FColor::FromHex(TEXT("007FFF")); }
-	virtual bool CanUserDeleteNode() const override { return true; }
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 
 	// UDialogueGraphNodeBase iInterface

@@ -22,9 +22,9 @@ public:
 	UFUNCTION()
 	TArray<FString> GetTooltipList() const;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	bool bAutoChoice = false;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	TArray<FBranchCondition> BranchOptions;
 };

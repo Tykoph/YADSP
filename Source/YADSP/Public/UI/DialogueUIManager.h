@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "DialogueSubsystem.h"
 #include "DialogueWidget.h"
 #include "DialogueUIManager.generated.h"
@@ -22,10 +23,10 @@ public:
 	UFUNCTION()
 	void OnDialogueEnded();
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="YADSP")
 	TSubclassOf<UDialogueWidget> DialogueWidgetClass;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	TObjectPtr<UUserWidget> DialogueUI;
 	
 private:

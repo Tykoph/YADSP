@@ -7,6 +7,8 @@
 #include "DialogueSystem.h"
 #include "DialogueSystemLibrary.h"
 #include "YADSP.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 #include "Nodes/DialogueNodeInfoGameAction.h"
 #include "Nodes/DialogueNodeInfoText.h"
@@ -162,8 +164,11 @@ void UDialoguePlayer::ProcessBranchNode()
 		bool bIsValid;
 				
 		if (BranchNodeInfo->BranchOptions[i].Expression) {
-			BranchNodeInfo->BranchOptions[i].Expression->ExecuteAction();
-			bIsValid = BranchNodeInfo->BranchOptions[i].Expression->GetResult();
+			
+			UGameExpression* InstancedExpression = DuplicateObject<UGameExpression>(BranchNodeInfo->BranchOptions[i].Expression, this);
+			InstancedExpression->ExecuteAction();
+
+			bIsValid = InstancedExpression->GetResult();
 		}
 		else 
 			bIsValid = true;
@@ -173,7 +178,7 @@ void UDialoguePlayer::ProcessBranchNode()
 				
 		if (BranchNodeInfo->bAutoChoice && bIsValid) {
 			ChooseOptionAtIndex(i);
-			break;
+			return;
 		}
 				
 		FBranchOption CurrentBranch;
@@ -183,6 +188,12 @@ void UDialoguePlayer::ProcessBranchNode()
 				DialogueSystem, DialogueSystem->DialogueDataTable, BranchNodeInfo->BranchOptions[i].ConditionTooltipKey));
 		CurrentBranch.bExpressionIsValid = bIsValid;
 		BranchToDisplay.Add(CurrentBranch);
+	}
+	
+	if (BranchNodeInfo->bAutoChoice) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessBranchNode -> No expression in branch node is valid, ending dialogue."));
+		FinishDialogue();
+		return;
 	}
 			
 	DialogueSubsystem->OnBranchOptionsRequested.Broadcast(BranchToDisplay);

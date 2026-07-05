@@ -47,7 +47,7 @@ public:
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const { return nullptr; }
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* NodeInfo) { /* None by default */ }
 	
-	virtual bool CanUserDeleteNode() const override {return true; };
+	virtual bool CanUserDeleteNode() const override { return true; };
 
 	virtual EDialogueNodeType GetNodeType() const { return EDialogueNodeType::Unknown; }
 	

@@ -23,16 +23,16 @@ public:
 	UFUNCTION()
 	void OnButtonClicked();
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
 	TObjectPtr<UButton> ResponseButton = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
 	TObjectPtr<URichTextBlock> ResponseButtonText = nullptr;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	bool bIsValid = true;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	FText OptionTooltip;
 	
 private:

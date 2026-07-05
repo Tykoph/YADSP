@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "DialogueSubsystem.h"
 #include "GameActionSubsystem.h"
 #include "Nodes/DialogueNodeInfoText.h"

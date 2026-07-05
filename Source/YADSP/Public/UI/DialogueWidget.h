@@ -25,10 +25,10 @@ protected:
 	virtual void NativeDestruct() override;
 	
 public:	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="YADSP")
 	void UpdateDisplay(const FText& InText, const FText& InSpeaker);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="YADSP")
 	void OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions);
 	
 	/**
@@ -38,32 +38,32 @@ public:
 	* @param InDialogueTextBlock - Target text block widget to check
 	* @param InText - String content to measure for wrapping
 	*/
-	UFUNCTION(BlueprintCallable, Category="Dialog")
+	UFUNCTION(BlueprintCallable, Category="YADSP")
 	static void UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, const FString& InText);
 	
 	UFUNCTION()
 	void OnDialogueEnded();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category="YADSP")
 	void ClearDialogueOption(int Index);
 	
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
 	TObjectPtr<URichTextBlock> SpeakerTextBlock = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
 	TObjectPtr<URichTextBlock> DialogueTextBlock = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
 	TObjectPtr<UPanelWidget> ResponseBox = nullptr;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="YADSP")
 	TSubclassOf<UDialogueResponseWidget> DialogueOptionWidgetClass;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	TArray<TObjectPtr<UUserWidget>> DialogueOptionsWidgets;
 	
 protected:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	TArray<FText> DialogueOptions;
 	
 private:

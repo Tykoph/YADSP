@@ -1,6 +1,7 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #include "UI/DialogueResponseWidget.h"
+#include "Engine/World.h"
 
 #include "DialogueSubsystem.h"
 #include "YADSP.h"

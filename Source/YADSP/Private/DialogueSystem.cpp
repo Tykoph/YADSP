@@ -1,8 +1,9 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #include "DialogueSystem.h"
 #include "UObject/ObjectSaveContext.h"
 
+#if WITH_EDITOR
 void UDialogueSystem::PreSave(FObjectPreSaveContext SaveContext)
 {
 	Super::PreSave(SaveContext);
@@ -10,3 +11,4 @@ void UDialogueSystem::PreSave(FObjectPreSaveContext SaveContext)
 		OnPreSaveListenerPtr();
 	}
 }
+#endif

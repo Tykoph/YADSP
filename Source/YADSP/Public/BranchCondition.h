@@ -11,17 +11,17 @@ struct FBranchCondition
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, Category="YADSP")
 	TObjectPtr<UGameExpression> Expression;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	bool bHideIfExpressionFail = false;
 	
 	UPROPERTY()
 	bool bExpressionIsValid = false;
 	
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"))
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTextList"), Category="YADSP")
 	FName DialogueResponseKey = TEXT("Continue");
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTooltipList"))
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetTooltipList"), Category="YADSP")
 	FName ConditionTooltipKey = TEXT("None");
 };

@@ -1,9 +1,10 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "RuntimeGraph/DialogueSystemRuntimeGraph.h"
+#include "Engine/DataTable.h"
 #include "UObject/Object.h"
 #include "DialogueSystem.generated.h"
 
@@ -19,10 +20,12 @@ class YADSP_API UDialogueSystem : public UObject
 	GENERATED_BODY()
 
 public:
+#if WITH_EDITOR
 	void SetPreSaveListener(TFunction<void()> InListener) { OnPreSaveListenerPtr = MoveTemp(InListener); }
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+#endif
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	FString DialogueName = TEXT("Dialogue Name");
 
 	// Runtime graph that manages dialogue node execution and connections
@@ -30,15 +33,17 @@ public:
 	TObjectPtr<UDialogueSystemRuntimeGraph> Graph = nullptr;
 
 	// DataTable containing speakers names
-	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
+	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"), Category="YADSP")
 	TObjectPtr<UDataTable> SpeakerDataTable;
 
 	// DataTable containing dialogue text
-	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"))
+	UPROPERTY(EditAnywhere, meta=(RowType="GSheetLocDataLine"), Category="YADSP")
 	TObjectPtr<UDataTable> DialogueDataTable;
 
 private:
 
+#if WITH_EDITOR
 	// Function pointer to callback executed before saving
 	TFunction<void()> OnPreSaveListenerPtr = nullptr;
+#endif
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BranchOption.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "DialogueSystem.h"
 #include "DialogueSubsystem.generated.h"
 
@@ -18,19 +19,19 @@ class YADSP_API UDialogueSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="YADSP")
 	FOnDialogueStarted OnDialogueStarted;
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="YADSP")
 	FOnDialogueLineRequested OnDialogueLineRequested;
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="YADSP")
 	FOnDialogueEnded OnDialogueEnded;
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="YADSP")
 	FOnOptionSelected OnOptionSelected;
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="YADSP")
 	FOnBranchOptionsRequested OnBranchOptionsRequested;
 	
 };

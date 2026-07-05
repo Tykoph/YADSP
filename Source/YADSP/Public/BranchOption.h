@@ -10,10 +10,10 @@ struct YADSP_API FBranchOption
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	FText DialogueText;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	FText Tooltip;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="YADSP")
 	bool bExpressionIsValid = false;
 };

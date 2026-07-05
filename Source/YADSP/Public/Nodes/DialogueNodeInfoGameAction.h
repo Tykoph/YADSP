@@ -25,9 +25,9 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	EGameActionExecutionMode GameActionExecutionMode = EGameActionExecutionMode::Sequence;
 	
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, Category="YADSP")
 	TArray<TObjectPtr<UGameActionBase>> GameActions;
 };

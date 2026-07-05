@@ -12,6 +12,6 @@ class YADSP_API UDialogueNodeInfoLabel : public UDialogueNodeInfoBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	FName LabelName = TEXT("DefaultLabelName");
 };

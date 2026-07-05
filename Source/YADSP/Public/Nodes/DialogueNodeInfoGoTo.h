@@ -12,7 +12,7 @@ class YADSP_API UDialogueNodeInfoGoTo : public UDialogueNodeInfoBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, meta=(GetOptions="GetAllLabelNodes"))
+	UPROPERTY(EditAnywhere, meta=(GetOptions="GetAllLabelNodes"), Category="YADSP")
 	FName LabelName;
 	
 	UFUNCTION()

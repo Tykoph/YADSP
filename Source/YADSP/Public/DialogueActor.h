@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "DialogueSystem.h"
 #include "DialoguePlayer.h"
 #include "Components/BillboardComponent.h"
@@ -31,7 +32,7 @@ class YADSP_API ADialogueActor : public AActor
 	virtual ~ADialogueActor() override;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="YADSP")
 	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 
 	/**
@@ -46,7 +47,7 @@ public:
 	 * @param InPlayerController The player controller that will be used during dialogue playback
 	 * @param OnDialogueEnded Callback function that will be executed when the dialogue sequence completes
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="YADSP")
 	void PlayDialogue(APlayerController* InPlayerController, FDialogueEndCallback OnDialogueEnded) const;
 
 protected:
