@@ -48,7 +48,6 @@ void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FT
 	
 	SpeakerTextBlock->SetText(InSpeaker);
 	DialogueTextBlock->SetText(InText);
-	// UpdateTextWrapping(DialogueTextBlock, InText.ToString());
 }
 
 void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions)
@@ -79,33 +78,6 @@ void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBr
 		DialogueOption->SetDialogueOption(InBranchOptions[i].DialogueText, i);
 		DialogueOption->bIsValid = InBranchOptions[i].bExpressionIsValid;
 		DialogueOption->OptionTooltip = InBranchOptions[i].Tooltip;
-	}
-}
-
-void UDialogueWidget::UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, const FString& InText)
-{
-	if (InDialogueTextBlock == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::IsTextWrapping -> DialogueTextBlock is nullptr"))
-		return;
-	}
-	
-	InDialogueTextBlock->ForceLayoutPrepass();
-	const FSlateFontInfo FontInfo = InDialogueTextBlock->GetCurrentDefaultTextStyle().Font;
-	const TSharedPtr<FSlateFontMeasure> FontMeasure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
-	
-	// Calculate Text Width
-	if (FontMeasure.IsValid()) {
-		const FVector2D TextSize = FontMeasure->Measure(InText, FontInfo);
-		const FVector2D ContainerText = InDialogueTextBlock->GetCachedGeometry().GetLocalSize();
-		if (TextSize.X > ContainerText.X) {
-			InDialogueTextBlock->SetJustification(ETextJustify::Left);
-		}
-		else {
-			InDialogueTextBlock->SetJustification(ETextJustify::Center);
-		}
-	}
-	else {
-		UE_LOG(LogYADSP, Warning, TEXT("UDialogueWidget::IsTextWrapping -> Font Measure is invalid"))
 	}
 }
 

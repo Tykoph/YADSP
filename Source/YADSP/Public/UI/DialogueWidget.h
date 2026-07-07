@@ -13,7 +13,6 @@
 /**
  * Controller class for handling dialogue UI widgets in the game.
  * Manages the display of speaker names, dialogue text, and response options.
- * Provides functionality for text wrapping and justification based on content size.
  */
 UCLASS(Abstract, Blueprintable)
 class YADSP_API UDialogueWidget : public UUserWidget
@@ -32,15 +31,6 @@ public:
 	void OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions);
 	
 	/**
-	* Checks if the dialogue text needs to be wrapped and adjusts its justification accordingly.
-	* If text width exceeds container width, justification will be set to "Left".
-	* Otherwise, justification will be set to "Center".
-	* @param InDialogueTextBlock - Target text block widget to check
-	* @param InText - String content to measure for wrapping
-	*/
-	UFUNCTION(BlueprintCallable, Category="YADSP")
-	static void UpdateTextWrapping(URichTextBlock* InDialogueTextBlock, const FString& InText);
-	
 	UFUNCTION()
 	void OnDialogueEnded();
 
