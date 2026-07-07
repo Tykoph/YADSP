@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
 
-
 /**
  * Asset type actions for Dialogue System assets.
  * Handles the registration and customization of dialogue graph assets in the Unreal Editor.
@@ -13,7 +12,8 @@
 class YADSPEDITOR_API FDialogueSystemAction : public FAssetTypeActions_Base
 {
 public:
-	FDialogueSystemAction(EAssetTypeCategories::Type InAssetCategory);
+	/** Constructor that assigns the asset category. */
+	explicit FDialogueSystemAction(EAssetTypeCategories::Type InAssetCategory);
 	
 	//  FAssetTypeActions_Base interface
 	virtual FText GetName() const override;

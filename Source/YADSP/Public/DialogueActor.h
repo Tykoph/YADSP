@@ -27,11 +27,12 @@ UCLASS(Blueprintable)
 class YADSP_API ADialogueActor : public AActor
 {
 	GENERATED_BODY()
-
+	
 	ADialogueActor();
 	virtual ~ADialogueActor() override;
 
 public:
+	// The dialogue system asset associated with this actor.
 	UPROPERTY(EditAnywhere, Category="YADSP")
 	TObjectPtr<UDialogueSystem> DialogueSystem = nullptr;
 
@@ -63,6 +64,7 @@ protected:
 #endif
 
 private:
+	// The dialogue player component handling playback.
 	UPROPERTY(Category="Dialogue", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UDialoguePlayer> DialoguePlayer;
 };

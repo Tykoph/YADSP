@@ -7,12 +7,20 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
+/**
+ * Slate widget representing the properties tab in the dialogue graph editor.
+ */
 class YADSPEDITOR_API SDialoguePropertiesTab : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SDialoguePropertiesTab) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the properties tab widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InApp Pointer to the hosting dialogue graph editor application.
+	 */
 	void Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp);
 
 private:

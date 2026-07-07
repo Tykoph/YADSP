@@ -24,11 +24,11 @@ public:
 	UPROPERTY()
 	EDialogueNodeType NodeType = EDialogueNodeType::Unknown;
 
-	// Pointer to the input pin of the node, if any.
+	// Inbound connection interface accepting execution flow from previous nodes.
 	UPROPERTY()
 	TObjectPtr<UDialogueRuntimeGraphPin> InputPin;
 	
-	// Array of output pins connected to this node.
+	// Outbound connection interfaces determining flow to subsequent nodes.
 	UPROPERTY()
 	TArray<TObjectPtr<UDialogueRuntimeGraphPin>> OutputPins;
 
@@ -36,7 +36,7 @@ public:
 	UPROPERTY()
 	FVector2D NodePosition;
 
-	// Pointer to additional information about the node, if any.
+	// The associated payload defining the data parameters for this node.
 	UPROPERTY()
 	TObjectPtr<UDialogueNodeInfoBase> NodeInfo = nullptr;
 };

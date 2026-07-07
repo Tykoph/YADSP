@@ -13,7 +13,9 @@
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<FNewNodeAction> NewEndNodeAction(
+	// Grouping ID 0 for the context menu action
+
+	const TSharedPtr<FNewNodeAction> NewEndNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeEnd::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -23,7 +25,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	TSharedPtr<FNewNodeAction> NewTextNodeAction(
+	const TSharedPtr<FNewNodeAction> NewTextNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeText::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -33,7 +35,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		)
 	);
 
-	TSharedPtr<FNewNodeAction> NewGameActionNodeAction(
+	const TSharedPtr<FNewNodeAction> NewGameActionNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeGameAction::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -42,8 +44,8 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			0
 		)
 	);
-	
-	TSharedPtr<FNewNodeAction> NewBranchNodeAction(
+
+	const TSharedPtr<FNewNodeAction> NewBranchNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeBranch::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -52,8 +54,8 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			0
 		)
 	);
-	
-	TSharedPtr<FNewNodeAction> NewGoToNodeAction(
+
+	const TSharedPtr<FNewNodeAction> NewGoToNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeGoTo::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -62,8 +64,8 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			0
 		)
 	);
-	
-	TSharedPtr<FNewNodeAction> NewLabelNodeAction(
+
+	const TSharedPtr<FNewNodeAction> NewLabelNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNodeLabel::StaticClass(),
 			FText::FromString(TEXT("Node")),
@@ -126,7 +128,7 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 	
 	UDialogueGraphNodeEnd* EndNode = NewObject<UDialogueGraphNodeEnd>(&InGraph);
 	EndNode->CreateNewGuid();
-	EndNode->NodePosX = 300;
+	EndNode->NodePosX = 300; // Offset the end node by 300 units to the right of the start node
 	EndNode->NodePosY = 0;
 	
 	EndNode->CreateDialoguePin(
@@ -139,7 +141,7 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 	InGraph.Modify();
 }
 
-UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, bool bSelectNewNode)
+UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, const bool bSelectNewNode)
 {
 	// Create a new node instance of the specified class
 	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr);

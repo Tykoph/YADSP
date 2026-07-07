@@ -8,13 +8,16 @@
 
 class UDialogueRuntimeGraphNode;
 
+/**
+ * Container managing the full execution graph structure of a dialogue sequence.
+ */
 UCLASS()
 class YADSP_API UDialogueSystemRuntimeGraph : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	// Array of nodes in the graph.
+	// The full set of nodes allocated to this specific execution context.
 	UPROPERTY()
 	TArray<TObjectPtr<UDialogueRuntimeGraphNode>> Nodes;
 };

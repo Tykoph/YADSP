@@ -5,14 +5,17 @@
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowTabFactory.h"
 
+/**
+ * Factory responsible for creating the properties tab in the dialogue editor.
+ */
 class YADSPEDITOR_API FDialogueSystemPropertiesTabFactory : public FWorkflowTabFactory
 {
 public:
-	FDialogueSystemPropertiesTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App);
+	explicit FDialogueSystemPropertiesTabFactory(TSharedPtr<class FDialogueGraphEditorApp> App);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
-	TWeakPtr<class FDialogueGraphEditorApp> DialogueGraphApp;
+	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 };

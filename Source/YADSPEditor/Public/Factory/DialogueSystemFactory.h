@@ -19,9 +19,11 @@ class YADSPEDITOR_API UDialogueSystemFactory : public UFactory
 	GENERATED_BODY()
 
 public:
-	UDialogueSystemFactory(const FObjectInitializer& ObjectInitializer);
+	explicit UDialogueSystemFactory(const FObjectInitializer& ObjectInitializer);
 	
+	/** Creates the actual UDialogueSystem object instance. */
 	virtual UObject* FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 	
+	/** Returns whether this factory is currently allowed to create new objects. */
 	virtual bool CanCreateNew() const override;
 };

@@ -4,6 +4,9 @@
 
 #include "DialogueNodeType.generated.h"
 
+/**
+ * Defines the types of nodes available in a dialogue graph.
+ */
 UENUM()
 enum class EDialogueNodeType : uint8
 {

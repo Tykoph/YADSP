@@ -12,6 +12,7 @@
 struct FDialoguePinFactory : FGraphPanelPinFactory
 {
 	virtual ~FDialoguePinFactory() override {};
+	/** Creates the slate widget representation for a given graph pin. */
 	virtual TSharedPtr<SGraphPin> CreatePin(UEdGraphPin* InPin) const override;
 };
 
@@ -22,5 +23,6 @@ struct FDialoguePinFactory : FGraphPanelPinFactory
 struct FDialogueGraphNodeFactory : FGraphPanelNodeFactory
 {
 	virtual ~FDialogueGraphNodeFactory() override {};
+	/** Creates the slate widget representation for a given graph node. */
 	virtual TSharedPtr<SGraphNode> CreateNode(UEdGraphNode* InNode) const override;
 };

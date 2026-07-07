@@ -38,17 +38,17 @@ void FYADSPEditorModule::StartupModule()
 		DGStyleSet->RootToContentDir(
 			TEXT("DialogueGraphThumbnail_128"),
 			TEXT(".png")),
-		FVector2D(128.0f, 128.0f));
+		FVector2D(128.0f, 128.0f)); // Set dimensions to 128x128 pixels to match the icon file
 	FSlateImageBrush* ThumbnailActorBrush = new FSlateImageBrush(
 		DGStyleSet->RootToContentDir(
 			TEXT("DialogueActorThumbnail"),
 			TEXT(".png")),
-		FVector2D(128.0f, 128.0f));
+		FVector2D(128.0f, 128.0f)); // Set dimensions to 128x128 pixels to match the icon file
 	FSlateImageBrush* IconBrush = new FSlateImageBrush(
 		DGStyleSet->RootToContentDir(
 			TEXT("DialogueGraphIcon_128"),
 			TEXT(".png")),
-		FVector2D(128.0f, 128.0f));
+		FVector2D(128.0f, 128.0f)); // Set dimensions to 128x128 pixels to match the icon file
 
 	DGStyleSet->Set(TEXT("ClassThumbnail.DialogueSystem"), ThumbnailGraphBrush);
 	DGStyleSet->Set(TEXT("ClassIcon.DialogueSystem"), IconBrush);

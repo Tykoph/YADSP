@@ -62,18 +62,24 @@ public:
 	void AutoSkipDialogue(float InTime);
 
 private:
+	/** Select the first link of a node to continue the dialogue. */
 	void ExecuteAutoSkip();
 	
 	void ProcessTextNode();
 	void ProcessBranchNode();
+	
 	void ProcessGameActionNode();
+	
 	void ProcessGoToNode();
 	void FinishDialogue();
 	
 	UFUNCTION()
 	void OnGameActionFinished();
 	
+	/** Sets up the auto-skip timer if the current node is configured for it. */
 	void ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNodeInfo);
+	
+	/** Utility to convert an array of FStrings into an array of localized FTexts. */
 	static TArray<FText> ConvertStringArrayToTextArray(const TArray<FString>& InStringArray);
 	
 	UPROPERTY()

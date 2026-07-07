@@ -57,6 +57,7 @@ void UDialogueGraphNodeBranch::CreateDefaultOutputPin()
 	NodeInfo->BranchOptions.Add(DefaultBranchCondition);
 }
 
+
 void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 {
 	if (NodeInfo == nullptr) {
@@ -73,11 +74,13 @@ void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 	
 	const int32 NumInfoPins = NodeInfo->BranchOptions.Num();
 
+	// Remove any excess output pins from the end of the list
 	while (NumOutputPins > NumInfoPins) {
 		RemovePinAt(NumOutputPins - 1, EGPD_Output);
 		NumOutputPins--;
 	}
-
+	
+	// Create new output pins for any additional branch options
 	while (NumInfoPins > NumOutputPins) {
 		CreateDialoguePin(
 			EGPD_Output,
@@ -87,6 +90,7 @@ void UDialogueGraphNodeBranch::SyncWithNodeResponse()
 		NumOutputPins++;
 	}
 
+	// Update the names of all output pins to match the corresponding branch option keys
 	int32 OptionIndex = 0;
 	for (UEdGraphPin* Pin : Pins)
 	{

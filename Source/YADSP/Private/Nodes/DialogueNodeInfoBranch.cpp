@@ -7,8 +7,14 @@ void UDialogueNodeInfoBranch::PostEditChangeProperty(FPropertyChangedEvent& Prop
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UDialogueNodeInfoBranch, BranchOptions)) {
+		// Ensure that a branch node always has at least 2 options
 		if (BranchOptions.Num() < 2) {
 			BranchOptions.SetNum(2);
+			for (int i = 0; i < 2; ++i) {
+				if (BranchOptions[i].DialogueResponseKey.IsNone()) {
+					BranchOptions[i].DialogueResponseKey = FName(TEXT("Continue"));
+				}
+			}
 		}
 	}
 }

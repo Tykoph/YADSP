@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Framework/Commands/Commands.h"
 
+/**
+ * Defines UI commands available within the Dialogue Graph Editor context.
+ */
 class FDialogueGraphCommands : public TCommands<FDialogueGraphCommands>
 {
 public:
 	FDialogueGraphCommands();
-	virtual void RegisterCommands() override;
 
 	TSharedPtr<FUICommandInfo> CreateTextNode;
 	TSharedPtr<FUICommandInfo> CreateBranchNode;
@@ -19,4 +21,8 @@ public:
 	TSharedPtr<FUICommandInfo> CreateEndNode;
 	
 	TSharedPtr<FUICommandInfo> DeleteNode;
+	
+protected:
+	/** Registers the graph editor commands with the UI system. */
+	virtual void RegisterCommands() override;
 };

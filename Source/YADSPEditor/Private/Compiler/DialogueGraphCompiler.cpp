@@ -16,8 +16,6 @@
 #include "Nodes/DialogueGraphNodeStart.h"
 #include "Nodes/DialogueGraphNodeText.h"
 
-// Update the opened Dialogue Graph Asset with the current graph editor
-// Called when opening a Dialogue Graph Asset
 void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* InWorkingAsset, UEdGraph* InWorkingGraphEditor)
 {
 	if (InWorkingAsset == nullptr || InWorkingGraphEditor == nullptr) {
@@ -35,6 +33,7 @@ void FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(UDialogueSystem* InWork
 	TArray<TPair<FGuid, FGuid>> Connections;
 	Connections.Reserve(InWorkingGraphEditor->Nodes.Num());
 	TMap<FGuid, UDialogueRuntimeGraphPin*> IdToPinMap;
+	// Reserve double the node count to account for both input and output pins per node
 	IdToPinMap.Reserve(InWorkingGraphEditor->Nodes.Num() * 2);
 
 	// Loop through all the nodes in the graph editor

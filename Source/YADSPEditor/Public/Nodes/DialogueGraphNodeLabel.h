@@ -7,6 +7,9 @@
 #include "Nodes/DialogueNodeInfoLabel.h"
 #include "DialogueGraphNodeLabel.generated.h"
 
+/**
+ * Represents a label node in the dialogue graph, acting as a destination for go-to nodes.
+ */
 UCLASS()
 class UDialogueGraphNodeLabel : public UDialogueGraphNodeBase
 {

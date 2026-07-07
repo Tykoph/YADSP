@@ -7,6 +7,9 @@
 #include "DialogueGraphNodeBase.h"
 #include "DialogueGraphNodeEnd.generated.h"
 
+/**
+ * Represents the end node in the dialogue graph, terminating the dialogue sequence.
+ */
 UCLASS()
 class UDialogueGraphNodeEnd : public UDialogueGraphNodeBase
 {

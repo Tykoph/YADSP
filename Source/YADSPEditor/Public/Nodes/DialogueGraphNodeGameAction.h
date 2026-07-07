@@ -8,6 +8,9 @@
 #include "Nodes/DialogueNodeInfoGameAction.h"
 #include "DialogueGraphNodeGameAction.generated.h"
 
+/**
+ * Represents a game action node in the dialogue graph, triggering specific events or logic.
+ */
 UCLASS()
 class UDialogueGraphNodeGameAction : public UDialogueGraphNodeBase
 {

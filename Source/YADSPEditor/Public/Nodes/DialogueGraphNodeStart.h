@@ -6,6 +6,9 @@
 #include "DialogueGraphNodeBase.h"
 #include "DialogueGraphNodeStart.generated.h"
 
+/**
+ * Represents the starting node in the dialogue graph, initiating the dialogue sequence.
+ */
 UCLASS()
 class UDialogueGraphNodeStart : public UDialogueGraphNodeBase
 {

@@ -6,6 +6,9 @@
 #include "Nodes/DialogueNodeInfoBranch.h"
 #include "DialogueGraphNodeBranch.generated.h"
 
+/**
+ * Represents a branching node in the dialogue graph editor, allowing multiple conversational paths.
+ */
 UCLASS()
 class UDialogueGraphNodeBranch : public UDialogueGraphNodeBase
 {
@@ -34,6 +37,7 @@ public:
 	// /////////
 	
 private:
+	/** Synchronizes the node's visual representation with its underlying response data. */
 	void SyncWithNodeResponse();
 
 protected:

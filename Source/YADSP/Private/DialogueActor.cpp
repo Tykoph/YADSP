@@ -3,17 +3,20 @@
 #include "DialogueActor.h"
 #include "DialoguePlayer.h"
 
-// Constructor: Initializes the dialogue actor, sets up editor sprite component and registers blueprint compilation callback
+/**
+ * Initializes the dialogue actor, sets up the editor sprite component, and registers the blueprint compilation callback.
+ */
 ADialogueActor::ADialogueActor()
 {
 	DialoguePlayer = CreateDefaultSubobject<UDialoguePlayer>("DialoguePlayer");
 
+// Editor-only properties for visualization and blueprint compilation events
 #if WITH_EDITORONLY_DATA
 	SpriteComponent = CreateEditorOnlyDefaultSubobject<UBillboardComponent>(TEXT("Sprite"));
 	RootComponent = SpriteComponent;
 
 	if (!IsRunningCommandlet() && (SpriteComponent != nullptr)) {
-		// Structure to hold one-time initialization.
+		// Holds one-time initialization data for the dialogue actor's editor sprite.
 		struct FConstructorStatics
 		{
 			ConstructorHelpers::FObjectFinderOptional<UTexture2D> SpriteTexture;
@@ -36,9 +39,9 @@ ADialogueActor::ADialogueActor()
 #endif
 }
 
-// Destructor: Unregisters from blueprint compilation events to prevent callbacks after destruction
 ADialogueActor::~ADialogueActor()
 {
+// Cleanup editor-only event bindings
 #if WITH_EDITOR
 	if (GEditor) {
 		GEditor->OnBlueprintCompiled().RemoveAll(this);
@@ -51,7 +54,6 @@ void ADialogueActor::PlayDialogue(APlayerController* InPlayerController, const F
 	DialoguePlayer->PlayDialogue(DialogueSystem, InPlayerController, OnDialogueEnded);
 }
 
-// Returns the editor-only billboard component used for visualization in the editor
 UBillboardComponent* ADialogueActor::GetEditorSpriteComponent() const
 {
 #if WITH_EDITORONLY_DATA

@@ -3,6 +3,9 @@
 #pragma once
 #include "DialogueSystem.h"
 
+/**
+ * Utility for compiling dialogue graphs and syncing them to working assets.
+ */
 class FDialogueGraphCompiler
 {
 public:

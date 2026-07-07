@@ -187,7 +187,7 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
         		SNew(STextBlock)
         		.Text(this, &SDialogueGraphNodeText::GetPreviewDialogueText)
         		.AutoWrapText(true)
-        		.WrapTextAt(200.0f)
+        		.WrapTextAt(200.0f) // Constrain the text width to 200 units to maintain a tidy node appearance 
 			]
         ]
 	];
@@ -259,12 +259,12 @@ void SDialogueGraphNodeText::RefreshSpeakerList()
 	}
 }
 
-
 void SDialogueGraphNodeText::OnAddSpeaker()
 {
 	UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
 	UDialogueNodeInfoText* NodeInfo = TextNode ? Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo()) : nullptr;
 
+	// Create a transaction, determine a default speaker to add (falling back to NAME_None), and trigger UI updates
 	if (NodeInfo) {
 		const FScopedTransaction Transaction(FText::FromString("Add Speaker"));
 		NodeInfo->Modify();
@@ -281,7 +281,6 @@ void SDialogueGraphNodeText::OnAddSpeaker()
 	}
 }
 
-
 void SDialogueGraphNodeText::OnRemoveSpeaker(const int32 InIndex)
 {
 	UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode);
@@ -296,7 +295,6 @@ void SDialogueGraphNodeText::OnRemoveSpeaker(const int32 InIndex)
 		UpdateSpeakerPreview();
 	}
 }
-
 
 void SDialogueGraphNodeText::OnSpeakerComboChanged(const TSharedPtr<FString>& InNewSelection, ESelectInfo::Type SelectInfo, const int32 InIndex) const
 {
@@ -360,6 +358,7 @@ void SDialogueGraphNodeText::UpdateSpeakerPreview() const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
+			// Default fallback language for previewing localized speaker names
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<FDialogueGraphEditorApp> App = GetGraphEditorApp()) {
@@ -395,7 +394,7 @@ void SDialogueGraphNodeText::UpdateDialoguePreview() const
 {
 	if (const UDialogueGraphNodeText* TextNode = Cast<UDialogueGraphNodeText>(GraphNode)) {
 		if (const UDialogueNodeInfoText* NodeInfo = Cast<UDialogueNodeInfoText>(TextNode->GetNodeInfo())) {
-
+			// Default fallback language for previewing localized dialogue text
 			FString Language = TEXT("en-US");
 
 			if (TSharedPtr<FDialogueGraphEditorApp> App = GetGraphEditorApp()) {

@@ -21,6 +21,7 @@ bool UDialogueGraphNodeEnd::CanUserDeleteNode() const
 	for (UEdGraphNode* Node : CurrentGraph->Nodes) {
 		if (Cast<UDialogueGraphNodeEnd>(Node)) {
 			i++;
+			// Ensure that at least one End node remains in the graph; allow deletion only if more than 1 exists
 			if (i > 1)
 				return true;
 		}

@@ -8,6 +8,9 @@
 #include "Nodes/DialogueNodeInfoGoTo.h"
 #include "DialogueGraphNodeGoTo.generated.h"
 
+/**
+ * Represents a go-to node in the dialogue graph, directing the flow to a specific label.
+ */
 UCLASS()
 class UDialogueGraphNodeGoTo : public UDialogueGraphNodeBase
 {

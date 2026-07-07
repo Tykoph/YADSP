@@ -99,6 +99,7 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 			Builder.AddSeparator();
 			Builder.AddWidget(
 				SNew(SBox)
+				// Set a fixed width for the language selection combo box to maintain toolbar layout
 				.WidthOverride(100.0f)
 				[
 					SNew(SComboBox<TSharedPtr<FString>>)
@@ -236,6 +237,8 @@ void FDialogueGraphEditorApp::OnCreateNode(UClass* NodeClass) const
 	if (WorkingGraphEditor != nullptr) {
 		const FVector2D SpawnLocation = WorkingGraphUI->GetPasteLocation();
 		UEdGraphPin* FromPin = nullptr;
+		
+		// 0 is the default grouping ID for the new node action
 		FNewNodeAction NodeAction(NodeClass, FText::GetEmpty(), FText::GetEmpty(), FText::GetEmpty(), 0);
 		NodeAction.PerformAction(WorkingGraphEditor, FromPin, SpawnLocation, true);
 	}

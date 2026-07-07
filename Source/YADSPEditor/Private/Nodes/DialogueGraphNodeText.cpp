@@ -16,6 +16,7 @@ FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 	
 	if (NodeInfo->Title.IsEmpty()) {
 		FString DialogueTextStr = NodeInfo->DialogueKey.ToString();
+		// Limit the title length to 15 characters to prevent the node UI from becoming too wide
 		if (DialogueTextStr.Len() > 15) {
 			DialogueTextStr = DialogueTextStr.Left(15) + TEXT("...");
 		}

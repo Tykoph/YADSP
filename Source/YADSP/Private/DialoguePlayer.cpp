@@ -24,6 +24,15 @@
 
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerController* InPlayerController, const FDialogueEndCallback OnDialogueEnded)
 {
+	if (InDialogueAsset == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No dialogue asset provided"));
+		return;
+	}
+	if (InPlayerController == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No player controller provided"));
+		return;
+	}
+	
 	DialogueSubsystem = GetWorld()->GetSubsystem<UDialogueSubsystem>(); 
 	GameActionSubsystem = GetWorld()->GetSubsystem<UGameActionSubsystem>(); 
 	
@@ -33,14 +42,6 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerCont
 	}
 	if (GameActionSubsystem == nullptr) {
 		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> GameActionSubsystem not found"));
-		return;
-	}
-	if (InDialogueAsset == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No dialogue asset provided"));
-		return;
-	}
-	if (InPlayerController == nullptr) {
-		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::PlayDialogue -> No player controller provided"));
 		return;
 	}
 	
@@ -223,10 +224,12 @@ void UDialoguePlayer::ProcessGameActionNode()
 		if (InstancedActions.Num() == 1) {
 			FOnGameActionCompleted OnCompleted;
 			OnCompleted.BindDynamic(this, &UDialoguePlayer::OnGameActionFinished);
-			if (InstancedActions.Num() == 1) 
+			if (InstancedActions[0]) 
 				GameActionSubsystem->ExecuteGameAction(InstancedActions[0], OnCompleted);
-			else
-				UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGameActionNode ->InstancedActions[0] is nullptr"));
+			else {
+				UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessGameActionNode ->InstancedActions[0] is nullptr, skipping to next node"));
+				ChooseOptionAtIndex(0);
+			}
 		}
 		else {
 			FOnGameActionSequenceCompleted OnSequenceCompleted;
@@ -292,11 +295,11 @@ void UDialoguePlayer::FinishDialogue()
 // TODO: Find a better way to calculate the timer based on text length (especially for non-alphabetic languages)
 float UDialoguePlayer::CalculateSkipTimer(const FString& InText)
 {
-	// Calculate the length of the text in seconds at a reading rate of 15 words per second
+	// Calculate duration assuming an approximate reading rate of 15 characters per second
 	float Length = InText.Len();
 	Length = Length / 15;
 
-	// Add some extra padding time before the text is automatically skipped
+	// Add 20% padding time to ensure the player can comfortably finish reading
 	Length = Length * 1.2;
 
 	return Length;
@@ -328,6 +331,7 @@ void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNod
 {
 	switch (InNodeInfo->SkipDialogue) {
 		case ESkipDialogue::NoSkip:
+			//TODO: Implement skip based on input
 			break;
 		
 		case ESkipDialogue::AutoSkipBasedOnText:

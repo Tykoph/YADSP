@@ -18,6 +18,7 @@ FText FDialogueSystemAction::GetName() const
 
 FColor FDialogueSystemAction::GetTypeColor() const
 {
+	// Return Azure blue color for the dialogue system asset icon
 	return FColor::FromHex("007fff");
 }
 

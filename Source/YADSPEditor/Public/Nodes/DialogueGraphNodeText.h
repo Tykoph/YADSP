@@ -8,6 +8,9 @@
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueGraphNodeText.generated.h"
 
+/**
+ * Represents a text node in the dialogue graph, displaying spoken dialogue lines.
+ */
 UCLASS()
 class UDialogueGraphNodeText : public UDialogueGraphNodeBase
 {

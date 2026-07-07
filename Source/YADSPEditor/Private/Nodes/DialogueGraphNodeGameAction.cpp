@@ -11,6 +11,7 @@ FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType)
 			if (!NodeInfo->GameActions[0])
 				return FText::FromString(TEXT("GameAction"));
 			FString ActionDataName = NodeInfo->GameActions[0]->GetActionDisplayName().ToString();
+			// Truncate the action display name if it exceeds 15 characters for UI readability
 			if (ActionDataName.Len() > 15) {
 				ActionDataName = ActionDataName.Left(15) + TEXT("...");
 			}
@@ -25,6 +26,7 @@ FText UDialogueGraphNodeGameAction::GetNodeTitle(ENodeTitleType::Type TitleType)
 			}
 			Result.RemoveAt(Result.Len() - 2, 1);
 			Result.TrimEndInline();
+			// Truncate the concatenated sequence of action names if the total length exceeds 15 characters for ui readability
 			if (Result.Len() > 15) {
 				Result = Result.Left(15) + TEXT("...");
 			}

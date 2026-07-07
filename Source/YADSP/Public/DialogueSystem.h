@@ -21,10 +21,15 @@ class YADSP_API UDialogueSystem : public UObject
 
 public:
 #if WITH_EDITOR
+	/**
+	 * Registers a callback to be executed before this asset is saved.
+	 * @param InListener The callback function to store.
+	 */
 	void SetPreSaveListener(TFunction<void()> InListener) { OnPreSaveListenerPtr = MoveTemp(InListener); }
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 #endif
 	
+	// The internal name identifying this dialogue system.
 	UPROPERTY(EditAnywhere, Category="YADSP")
 	FString DialogueName = TEXT("Dialogue Name");
 

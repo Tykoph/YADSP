@@ -12,12 +12,14 @@
 class SDialogueGraphTextPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphTextPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphTextPin) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the text pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
@@ -34,12 +36,14 @@ protected:
 class SDialogueGraphStartPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphStartPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphStartPin) {}
 	SLATE_END_ARGS()
-
+	
+	/**
+	 * Constructs the start pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
@@ -56,12 +60,14 @@ protected:
 class SDialogueGraphEndPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphEndPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphEndPin) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the end pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
@@ -78,12 +84,14 @@ protected:
 class SDialogueGraphActionPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphActionPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphActionPin) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the action pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
@@ -100,12 +108,14 @@ protected:
 class SDialogueGraphBranchPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphBranchPin)
-		{
-		}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphBranchPin) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the branch pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);
@@ -122,12 +132,14 @@ protected:
 class SDialogueGraphGoToPin : public SGraphPin
 {
 public:
-	SLATE_BEGIN_ARGS(SDialogueGraphGoToPin)
-	{
-	}
-
+	SLATE_BEGIN_ARGS(SDialogueGraphGoToPin) {}
 	SLATE_END_ARGS()
 
+	/**
+	 * Constructs the goto pin widget.
+	 * @param InArgs The Slate arguments for this widget.
+	 * @param InPin Pointer to the corresponding editor graph pin.
+	 */
 	void Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 	{
 		SGraphPin::Construct(SGraphPin::FArguments(), InPin);

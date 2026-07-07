@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "YADSP",
-	"Description": "Yet Another Dialogue System Plugin",
+	"Description": "Yet Another Dialogue System Plugin, graph-based dialogue system with integrated game actions and localization support.",
 	"Category": "Dialogue System",
 	"CreatedBy": "Tom Duby",
 	"CreatedByURL": "https://github.com/Tykoph/YADSP",

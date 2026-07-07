@@ -5,6 +5,9 @@
 #include "DialogueSkipEnum.generated.h"
 
 // TODO : Make it a global option for a project and possibility to be override by each dialogue.
+/**
+ * Defines the rules for automatically skipping dialogue lines.
+ */
 UENUM()
 enum class ESkipDialogue : uint8
 {

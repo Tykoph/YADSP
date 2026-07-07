@@ -70,7 +70,7 @@ void SDialogueGraphNodeBranch::CreateBelowPinControls(const TSharedPtr<SVertical
 				SNew(STextBlock)
 				.Text(this, &SDialogueGraphNodeBranch::GetPreviewOptionText, i)
 				.AutoWrapText(true)
-				.WrapTextAt(200.0f)
+				.WrapTextAt(200.0f) // Hardcoded wrap width to keep the preview node relatively compact 
 			]
 		];
 	}
@@ -87,8 +87,9 @@ void SDialogueGraphNodeBranch::UpdateOptionTextPreview() const
 
 	if (const UDialogueGraphNodeBranch* TextNode = Cast<UDialogueGraphNodeBranch>(GraphNode)) {
 		if (UDialogueNodeInfoBranch* NodeInfo = Cast<UDialogueNodeInfoBranch>(TextNode->GetNodeInfo())) {
+			// Fallback to English (US) if the editor app or project settings cannot provide a preview language
 			FString Language = TEXT("en-US");
-
+			
 			if (TSharedPtr<FDialogueGraphEditorApp> App = GetGraphEditorApp()) {
 				Language = UDialogueGraphProjectSettings::Get()->GetPreviewLanguage();
 			}

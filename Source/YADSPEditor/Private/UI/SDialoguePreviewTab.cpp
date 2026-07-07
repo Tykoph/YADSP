@@ -234,7 +234,7 @@ void SDialoguePreviewTab::OnGraphSelectionChanged(const FGraphPanelSelectionSet&
 						.DecoratorStyleSet(Settings->GetRichTextStyleSet().Get())
 						.TextStyle(&Settings->GetRichTextStyleSet()->GetWidgetStyle<FTextBlockStyle>(Settings->DialoguePreviewStyle))
 						.Decorators(CachedDecorators)
-						.WrapTextAt(500.0f)
+						.AutoWrapText(true)
 					]
 				];
 			}

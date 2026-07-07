@@ -6,11 +6,16 @@
 #include "WorkflowOrientedApp/ApplicationMode.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 
+/**
+ * Application mode for the Dialogue System Editor.
+ */
 class YADSPEDITOR_API FDialogueSystemAppMode : public FApplicationMode
 {
 public:
-	FDialogueSystemAppMode(TSharedPtr<class FDialogueGraphEditorApp> App);
+	/** Initializes the app mode with the owning editor. */
+	explicit FDialogueSystemAppMode(TSharedPtr<class FDialogueGraphEditorApp> App);
 
+	/** Registers layout tabs for this app mode. */
 	virtual void RegisterTabFactories(TSharedPtr<FTabManager> InTabManager) override;
 	virtual void PreDeactivateMode() override;
 	virtual void PostActivateMode() override;

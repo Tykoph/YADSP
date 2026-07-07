@@ -29,30 +29,30 @@ FDialogueSystemAppMode::FDialogueSystemAppMode(TSharedPtr<class FDialogueGraphEd
 				->Split
 				(
 					FTabManager::NewStack()
-					->SetSizeCoefficient(0.2)
+					->SetSizeCoefficient(0.2) // Allocate 20% of horizontal space to the Graph Details tab
 					->AddTab("GraphDetailsTab", ETabState::OpenedTab)
 				)
 				->Split
 				(
 					FTabManager::NewStack()
-					->SetSizeCoefficient(0.6)
+					->SetSizeCoefficient(0.6) // Allocate 60% of horizontal space to the Graph Primary tab
 					->AddTab("GraphPrimaryTab", ETabState::OpenedTab)
 				)
 				->Split
 				(
 					FTabManager::NewSplitter()
 					->SetOrientation(Orient_Vertical)
-					->SetSizeCoefficient(0.2)
+					->SetSizeCoefficient(0.2) // Allocate the remaining 20% of horizontal space to the right panel
 					->Split
 					(
 						FTabManager::NewStack()
-						->SetSizeCoefficient(0.5)
+						->SetSizeCoefficient(0.5) // Evenly split the right panel vertically, giving 50% to Graph Preview
 						->AddTab("GraphPreviewTab", ETabState::OpenedTab)
 					)
 					->Split
 					(
 						FTabManager::NewStack()
-						->SetSizeCoefficient(0.5)
+						->SetSizeCoefficient(0.5) // Allocate the remaining 50% of vertical space to Node Properties
 						->AddTab("GraphPropertyTab", ETabState::OpenedTab)
 					)
 				)

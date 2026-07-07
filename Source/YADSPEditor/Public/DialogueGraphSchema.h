@@ -16,13 +16,24 @@ class UDialogueGraphSchema : public UEdGraphSchema
 	GENERATED_BODY()
 
 public:
-	// Retrieves available actions for the graph context menu.
+	/**
+	 * Retrieves available actions for the graph context menu.
+	 * @param ContextMenuBuilder The builder to add actions to.
+	 */
 	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
 
-	// Validates if two pins can be connected and returns the appropriate response.
+	/**
+	 * Validates if two pins can be connected and returns the appropriate response.
+	 * @param PinA The first pin.
+	 * @param PinB The second pin.
+	 * @return Connection response indicating if and how pins can be connected.
+	 */
 	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* PinA, const UEdGraphPin* PinB) const override;
 
-	// Creates default nodes when a new graph is created
+	/**
+	 * Creates default nodes when a new graph is created.
+	 * @param InGraph The graph being initialized.
+	 */
 	virtual void CreateDefaultNodesForGraph(UEdGraph& InGraph) const override;
 };
 
@@ -36,8 +47,6 @@ struct FNewNodeAction : public FEdGraphSchemaAction
 	GENERATED_BODY()
 
 public:
-	FNewNodeAction() : FEdGraphSchemaAction(), ClassTemplatePtr(nullptr) {}
-	
 	/**
 	 * Constructor for creating a new node action.
 	 * @param ClassTemplate The class template to use for creating the new node
@@ -46,7 +55,7 @@ public:
 	 * @param InToolTip Tooltip text shown when hovering over the menu item
 	 * @param InGrouping Grouping priority for menu item ordering
 	 */
-	FNewNodeAction(UClass* ClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping) :
+	FNewNodeAction(UClass* ClassTemplate, const FText& InNodeCategory, const FText& InMenuDesc, const FText& InToolTip, const int32 InGrouping) :
 		FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGrouping), ClassTemplatePtr(ClassTemplate) { }
 
 	/**
@@ -60,5 +69,5 @@ public:
 	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, bool bSelectNewNode = true) override;
 
 protected:
-	UClass* ClassTemplatePtr = nullptr;
+	TObjectPtr<UClass> ClassTemplatePtr = nullptr;
 };

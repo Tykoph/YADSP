@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
+/** Delegate fired when the graph panel selection changes. */
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGraphSelectionChangedDelegate, const FGraphPanelSelectionSet&);
+
 /**
  * Editor application for managing and editing dialogue graphs.
  * Provides functionality for graph editing, node selection, and property updates.
@@ -14,6 +17,7 @@
 class YADSPEDITOR_API FDialogueGraphEditorApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
+	/** Registers the tab spawners for the dialogue graph editor. */
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManagerRef) override;
 
 	/**
@@ -26,9 +30,12 @@ public:
 	 */
 	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit);
 
+	/** Gets the dialogue system working asset. */
 	class UDialogueSystem* GetDialogueGraph() const { return WorkingAsset; }
+	/** Gets the working graph editor. */
 	UEdGraph* GetGraphEditor() const { return WorkingGraphEditor; }
 
+	/** Sets the slate widget used for the graph editor UI. */
 	void SetWorkingGraphUi(const TSharedPtr<SGraphEditor>& InWorkingGraphUI) { WorkingGraphUI = InWorkingGraphUI; }
 
 	/**
@@ -39,7 +46,7 @@ public:
 	 */
 	void SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView);
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnGraphSelectionChangedDelegate, const FGraphPanelSelectionSet&);
+	/** Invoked when graph selection is updated. */
 	FOnGraphSelectionChangedDelegate OnGraphSelectionChangedDelegate;
 
 	/**
@@ -65,9 +72,19 @@ public:
 	{
 	}
 
+	/** Called when the application is closing. */
 	virtual void OnClose() override;
+	
+	/**
+	 * Handles property change events from the node details view.
+	 * @param Event The property changed event data.
+	 */
 	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& Event) const;
+	
+	/** Invoked prior to saving the working graph asset to sync state. */
 	void OnWorkingGraphAssetPreSave() const;
+	
+	/** Returns the list of UI commands for the graph editor. */
 	TSharedRef<FUICommandList> GetGraphEditorCommands() const { return GraphEditorCommands.ToSharedRef(); }
 
 protected:
@@ -77,14 +94,24 @@ protected:
 	 * @return Pointer to the selected dialogue graph node, or nullptr if no valid node is selected
 	 */
 	static class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet);
-	TSharedPtr<FUICommandList> GraphEditorCommands;
 	
+	/** Binds all actions to their respective commands. */
 	void BindCommands();
+	
+	/** Updates editor shortcuts from user settings. */
 	void UpdateShortcuts();
+	
+	/** Creates a new node of the given class. */
 	void OnCreateNode(UClass* NodeClass) const;
+	
+	/** Deletes currently selected nodes. */
 	void OnDeleteNodes() const;
+	
+	/** Checks if any of the selected nodes can be deleted. */
 	bool CanDeleteNodes() const;
 
+	TSharedPtr<FUICommandList> GraphEditorCommands;
+	
 private:
 	void OnLanguageChanged() const;
 	

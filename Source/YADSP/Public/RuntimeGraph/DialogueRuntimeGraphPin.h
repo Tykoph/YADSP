@@ -17,7 +17,7 @@ class YADSP_API UDialogueRuntimeGraphPin : public UObject
 	GENERATED_BODY()
 
 public:
-	// The name of the pin used to identify it within the graph.
+	// Internal display name, often used to differentiate distinct exit paths.
 	UPROPERTY()
 	FName PinName;
 
@@ -25,11 +25,11 @@ public:
 	UPROPERTY()
 	FGuid PinId;
 
-	// Pointer to the connected pin, if any.
+	// The counterpart pin linked across the graph. Null if unlinked.
 	UPROPERTY()
 	TObjectPtr<UDialogueRuntimeGraphPin> ConnectedPin;
 
-	// Pointer to the parent node of this pin.
+	// The node that owns and manages this pin object.
 	UPROPERTY()
 	TObjectPtr<UDialogueRuntimeGraphNode> ParentNode;
 };
