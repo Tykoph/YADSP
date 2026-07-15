@@ -173,6 +173,7 @@ void SDialogueGraphNodeText::CreateBelowPinControls(const TSharedPtr<SVerticalBo
         		.Text(this, &SDialogueGraphNodeText::GetPreviewSpeakerText)
         		.Font(FCoreStyle::GetDefaultFontStyle("Bold", 10))
         		.ColorAndOpacity(FLinearColor::Yellow)
+        		.WrapTextAt(200.0f) // Constrain the text width to 200 units to maintain a tidy node appearance 
         	]
         ]
         + SVerticalBox::Slot()
