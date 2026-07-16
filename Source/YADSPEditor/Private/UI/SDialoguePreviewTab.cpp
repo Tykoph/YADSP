@@ -5,15 +5,20 @@
 #include "DialogueSystem.h"
 #include "DialogueGraphEditorApp.h"
 #include "DialogueGraphProjectSettings.h"
+#include "DialogueGraphUserSettings.h"
+
 #include "Nodes/DialogueGraphNodeText.h"
 #include "Nodes/DialogueNodeInfoText.h"
+#include "Nodes/DialogueGraphNodeBranch.h"
+
 #include "Widgets/Text/SRichTextBlock.h"
 #include "Widgets/Layout/SScrollBox.h"
+
 #include "Styling/SlateStyle.h"
 #include "Styling/CoreStyle.h"
+
 #include "Components/RichTextBlock.h"
 #include "Components/RichTextBlockDecorator.h"
-#include "Nodes/DialogueGraphNodeBranch.h"
 
 void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp)
 {
@@ -89,7 +94,12 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialog
 
 	ChildSlot
 	[
-		PreviewBox.ToSharedRef()
+		SNew(SBorder)
+	   .BorderImage(FAppStyle::GetBrush("WhiteBrush"))
+	   .BorderBackgroundColor_Lambda([]() { return UDialogueGraphUserSettings::Get()->PreviewBackgroundColor; })
+	   [
+		   PreviewBox.ToSharedRef()
+	   ]
 	];
 
 	if (InApp.IsValid()) {

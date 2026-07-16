@@ -22,7 +22,9 @@ public:
 	 * @param InApp Pointer to the hosting dialogue graph editor application.
 	 */
 	void Construct(const FArguments& InArgs, TSharedPtr<FDialogueGraphEditorApp> InApp);
-
+protected:
+	FReply OnColorBlockClicked(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent);
+	
 private:
 	TWeakPtr<FDialogueGraphEditorApp> DialogueGraphApp;
 };

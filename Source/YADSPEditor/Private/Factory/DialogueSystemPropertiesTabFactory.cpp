@@ -21,7 +21,6 @@ TSharedRef<SWidget> FDialogueSystemPropertiesTabFactory::CreateTabBody(const FWo
 		UE_LOG(LogYADSP, Error, TEXT("DialogueSystemPrimaryTabFactory::CreateTabBody -> App is invalid"));
 		return SNew(SBox);
 	}
-	
 	return SNew(SDialoguePropertiesTab, App);
 }
 

@@ -104,6 +104,10 @@ public:
 	UPROPERTY(EditAnywhere, config, Category="Preferences")
 	bool bDisplayRichTextFlags = false;
 	
+	// The background color of the preview tab
+	UPROPERTY(EditAnywhere, config, Category="Preferences")
+	FLinearColor PreviewBackgroundColor = FLinearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	
 	/** Invoked when shortcut settings are modified. */
 	FOnShortcutsChanged OnShortcutsChanged;
 };
