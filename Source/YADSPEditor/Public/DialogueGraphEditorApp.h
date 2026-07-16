@@ -88,14 +88,14 @@ protected:
 	virtual void PostUndo(bool bSuccess) override;
 	virtual void PostRedo(bool bSuccess) override;
 	// /////////
-	
+
 	/**
 	 * Retrieves the currently selected node from the graph editor.
 	 * @param InSelectionSet The set of currently selected graph elements
 	 * @return Pointer to the selected dialogue graph node, or nullptr if no valid node is selected
 	 */
 	static class UDialogueGraphNodeBase* GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet);
-	
+
 	/** Binds all actions to their respective commands. */
 	void BindCommands();
 	
@@ -110,7 +110,16 @@ protected:
 	
 	/** Checks if any of the selected nodes can be deleted. */
 	bool CanDeleteNodes() const;
-
+	
+	bool CanCopyNodes() const;
+	void OnCopyNodes() const;
+	bool CanPasteNodes() const;
+	void OnPasteNodes() const;
+	bool CanCutNodes() const;
+	void OnCutNodes() const;
+	bool CanDuplicateNodes() const;
+	void OnDuplicateNodes() const;
+	
 	TSharedPtr<FUICommandList> GraphEditorCommands;
 	
 private:

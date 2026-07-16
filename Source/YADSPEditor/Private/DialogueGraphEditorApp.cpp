@@ -10,11 +10,13 @@
 #include "Nodes/DialogueGraphNodeBase.h"
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
+#include "EdGraphUtilities.h"
 #include "YADSP.h"
 #include "Framework/Commands/GenericCommands.h"
 
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "HAL/PlatformApplicationMisc.h"
 #include "Nodes/DialogueGraphNodeBranch.h"
 #include "Nodes/DialogueGraphNodeEnd.h"
 #include "Nodes/DialogueGraphNodeGameAction.h"
@@ -142,11 +144,32 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	GEditor->RegisterForUndo(this);
 }
 
-void FDialogueGraphEditorApp::OnLanguageChanged() const
+void FDialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView)
 {
-	if (WorkingGraphUI.IsValid()) {
-		WorkingGraphUI->NotifyGraphChanged();
+	SelectedNodeDetailView = InSelectedNodeDetailView;
+	if (!SelectedNodeDetailView.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::SetSelectedNodeDetailView -> SelectedNodeDetailView is not valid"));
+		return;
 	}
+	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(this, &FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+}
+
+void FDialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet) const
+{
+	if (!SelectedNodeDetailView.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnGraphSelectionChanged -> SelectedNodeDetailView is not valid"));
+		return;
+	}
+	
+	const UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(InSelectionSet);
+	if (SelectedNode != nullptr) {
+		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
+	}
+	else {
+		SelectedNodeDetailView->SetObject(nullptr);
+	}
+
+	OnGraphSelectionChangedDelegate.Broadcast(InSelectionSet);
 }
 
 void FDialogueGraphEditorApp::OnClose()
@@ -236,6 +259,27 @@ void FDialogueGraphEditorApp::BindCommands()
 		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnDeleteNodes),
 		FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanDeleteNodes)
 	);
+	
+	GraphEditorCommands->MapAction(
+	FGenericCommands::Get().Copy,
+	FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCopyNodes),
+	FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanCopyNodes)
+);
+	GraphEditorCommands->MapAction(
+		FGenericCommands::Get().Paste,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnPasteNodes),
+		FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanPasteNodes)
+	);
+	GraphEditorCommands->MapAction(
+		FGenericCommands::Get().Cut,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnCutNodes),
+		FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanCutNodes)
+	);
+	GraphEditorCommands->MapAction(
+		FGenericCommands::Get().Duplicate,
+		FExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::OnDuplicateNodes),
+		FCanExecuteAction::CreateSP(this, &FDialogueGraphEditorApp::CanDuplicateNodes)
+	);
 }
 
 void FDialogueGraphEditorApp::UpdateShortcuts()
@@ -253,38 +297,44 @@ void FDialogueGraphEditorApp::UpdateShortcuts()
 
 void FDialogueGraphEditorApp::OnCreateNode(UClass* NodeClass) const
 {
-	if (WorkingGraphEditor != nullptr) {
-		const FVector2D SpawnLocation = WorkingGraphUI->GetPasteLocation();
-		UEdGraphPin* FromPin = nullptr;
-		
-		// 0 is the default grouping ID for the new node action
-		FNewNodeAction NodeAction(NodeClass, FText::GetEmpty(), FText::GetEmpty(), FText::GetEmpty(), 0);
-		NodeAction.PerformAction(WorkingGraphEditor, FromPin, SpawnLocation, true);
+	if (WorkingGraphEditor == nullptr) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnCreateNode -> WorkingGraphEditor is nullptr"));
+		return;
 	}
+	
+	const FVector2D SpawnLocation = WorkingGraphUI->GetPasteLocation();
+	UEdGraphPin* FromPin = nullptr;
+		
+	// 0 is the default grouping ID for the new node action
+	FNewNodeAction NodeAction(NodeClass, FText::GetEmpty(), FText::GetEmpty(), FText::GetEmpty(), 0);
+	NodeAction.PerformAction(WorkingGraphEditor, FromPin, SpawnLocation, true);
 }
 
 void FDialogueGraphEditorApp::OnDeleteNodes() const
 {
-	if (WorkingGraphUI.IsValid()) {
-		const FScopedTransaction Transaction(FText::FromString("Delete Dialogue Node"));
-		const FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
-		
-		for (UObject* Node : SelectedNodes) {
-			if (UEdGraphNode* GraphNode = Cast<UEdGraphNode>(Node)) {
-				if (const UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
-					if (!DialogueNode->CanUserDeleteNode()) {
-						continue;
-					}
-				}
-				GraphNode->GetGraph()->Modify();
-				GraphNode->Modify();
-				GraphNode->GetGraph()->RemoveNode(GraphNode);
-			}
-		}
-		
-		WorkingGraphUI->ClearSelectionSet();
-		WorkingGraphUI->NotifyGraphChanged();
+	if (!WorkingGraphUI.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnDeleteNodes -> WorkingGraphUI is not valid"));
+		return;
 	}
+	
+	const FScopedTransaction Transaction(FText::FromString("Delete Dialogue Node"));
+	const FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
+		
+	for (UObject* Node : SelectedNodes) {
+		if (UEdGraphNode* GraphNode = Cast<UEdGraphNode>(Node)) {
+			if (const UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
+				if (!DialogueNode->CanUserDeleteNode()) {
+					continue;
+				}
+			}
+			GraphNode->GetGraph()->Modify();
+			GraphNode->Modify();
+			GraphNode->GetGraph()->RemoveNode(GraphNode);
+		}
+	}
+		
+	WorkingGraphUI->ClearSelectionSet();
+	WorkingGraphUI->NotifyGraphChanged();
 }
 
 bool FDialogueGraphEditorApp::CanDeleteNodes() const
@@ -292,29 +342,127 @@ bool FDialogueGraphEditorApp::CanDeleteNodes() const
 	return WorkingGraphUI.IsValid() && WorkingGraphUI->GetSelectedNodes().Num() > 0;
 }
 
-void FDialogueGraphEditorApp::SetSelectedNodeDetailView(const TSharedPtr<IDetailsView>& InSelectedNodeDetailView)
+bool FDialogueGraphEditorApp::CanCopyNodes() const
 {
-	SelectedNodeDetailView = InSelectedNodeDetailView;
-	if (!SelectedNodeDetailView.IsValid()) {
-		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::SetSelectedNodeDetailView -> SelectedNodeDetailView is not valid"));
-		return;
-	}
-	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(this, &FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated);
+	return WorkingGraphUI.IsValid() && WorkingGraphUI->GetSelectedNodes().Num() > 0;
 }
 
-void FDialogueGraphEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& InSelectionSet) const
+void FDialogueGraphEditorApp::OnCopyNodes() const
 {
-	if (!SelectedNodeDetailView.IsValid()) {
-		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnGraphSelectionChanged -> SelectedNodeDetailView is not valid"));
-	}
-	
-	const UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(InSelectionSet);
-	if (SelectedNode != nullptr) {
-		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
-	}
-	else {
-		SelectedNodeDetailView->SetObject(nullptr);
+	if (!WorkingGraphUI.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::OnCopyNodes -> WorkingGraphUI is not valid"));
+		return;
 	}
 
-	OnGraphSelectionChangedDelegate.Broadcast(InSelectionSet);
+	FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
+    
+	for (auto Iterator = SelectedNodes.CreateIterator(); Iterator; ++Iterator) {
+		const UDialogueGraphNodeBase* Node = Cast<UDialogueGraphNodeBase>(*Iterator);
+		if (Node && Node->GetNodeType() == EDialogueNodeType::StartNode) {
+			Iterator.RemoveCurrent();
+		}
+	}
+
+	if (SelectedNodes.Num() == 0) return;
+
+	FString ExportedText;
+	FEdGraphUtilities::ExportNodesToText(SelectedNodes, ExportedText);
+	FPlatformApplicationMisc::ClipboardCopy(*ExportedText);
+}
+
+bool FDialogueGraphEditorApp::CanPasteNodes() const
+{
+	if (!WorkingGraphUI.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::CanPasteNodes -> WorkingGraphUI is not valid"));
+		return false;
+	}
+    
+    FString ClipboardContent;
+    FPlatformApplicationMisc::ClipboardPaste(ClipboardContent);
+    return FEdGraphUtilities::CanImportNodesFromText(WorkingGraphEditor, ClipboardContent);
+}
+
+void FDialogueGraphEditorApp::OnPasteNodes() const
+{
+	if (!WorkingGraphUI.IsValid()) {
+		UE_LOG(LogYADSP, Error, TEXT("FDialogueGraphEditorApp::CanPasteNodes -> OnPasteNodes is not valid"));
+		return;
+	}
+
+    FString ClipboardContent;
+    FPlatformApplicationMisc::ClipboardPaste(ClipboardContent);
+
+    const FScopedTransaction Transaction(FText::FromString("Paste Dialogue Nodes"));
+    WorkingGraphEditor->Modify();
+    WorkingGraphUI->ClearSelectionSet();
+
+    TSet<UEdGraphNode*> PastedNodes;
+    FEdGraphUtilities::ImportNodesFromText(WorkingGraphEditor, ClipboardContent, PastedNodes);
+
+    const FVector2D PasteLocation = WorkingGraphUI->GetPasteLocation();
+	
+	FVector2D MinPos(FLT_MAX, FLT_MAX);
+	FVector2D MaxPos(-FLT_MAX, -FLT_MAX);
+	for (const UEdGraphNode* GraphNode : PastedNodes) {
+		MinPos.X = FMath::Min(MinPos.X, static_cast<float>(GraphNode->NodePosX));
+		MinPos.Y = FMath::Min(MinPos.Y, static_cast<float>(GraphNode->NodePosY));
+		MaxPos.X = FMath::Max(MaxPos.X, static_cast<float>(GraphNode->NodePosX));
+		MaxPos.Y = FMath::Max(MaxPos.Y, static_cast<float>(GraphNode->NodePosY));
+	}
+	
+	const FVector2D Center = (MinPos + MaxPos) * 0.5f;
+	const FVector2D Offset = PasteLocation - Center;
+	
+    for (UEdGraphNode* GraphNode : PastedNodes) {
+        if (UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
+            if (DialogueNode->GetNodeInfo()) {
+                UDialogueNodeInfoBase* NewInfo = DuplicateObject(DialogueNode->GetNodeInfo(), DialogueNode);
+                NewInfo->SetFlags(RF_Transactional);
+                DialogueNode->SetNodeInfo(NewInfo);
+            }
+
+            DialogueNode->CreateNewGuid();
+            
+            DialogueNode->DialogueSystem = WorkingAsset;
+            if (DialogueNode->GetNodeInfo()) {
+                DialogueNode->GetNodeInfo()->DialogueSystem = WorkingAsset;
+            }
+        	
+            DialogueNode->NodePosX += Offset.X;
+            DialogueNode->NodePosY += Offset.Y;
+
+            WorkingGraphUI->SetNodeSelection(DialogueNode, true);
+        }
+    }
+
+    WorkingGraphUI->NotifyGraphChanged();
+}
+
+bool FDialogueGraphEditorApp::CanCutNodes() const
+{
+	return CanCopyNodes() && CanDeleteNodes();
+}
+
+void FDialogueGraphEditorApp::OnCutNodes() const
+{
+	OnCopyNodes();
+	OnDeleteNodes();
+}
+
+bool FDialogueGraphEditorApp::CanDuplicateNodes() const
+{
+	return CanCopyNodes();
+}
+
+void FDialogueGraphEditorApp::OnDuplicateNodes() const
+{
+	OnCopyNodes();
+	OnPasteNodes();
+}
+
+void FDialogueGraphEditorApp::OnLanguageChanged() const
+{
+	if (WorkingGraphUI.IsValid()) {
+		WorkingGraphUI->NotifyGraphChanged();
+	}
 }

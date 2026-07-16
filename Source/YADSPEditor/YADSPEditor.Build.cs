@@ -35,6 +35,7 @@ public class YADSPEditor : ModuleRules
 				"EditorFramework",
 				"DeveloperSettings",
 				"UMG",
+				"ApplicationCore",
 			}
 		);
 	}
