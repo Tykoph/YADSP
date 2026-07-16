@@ -24,7 +24,10 @@ public:
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPin() override;
 
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfo = NewObject<UDialogueNodeInfoBranch>(Output); }
+	virtual void InitNodeInfo(UObject* Output) override
+	{
+		NodeInfo = NewObject<UDialogueNodeInfoBranch>(Output, NAME_None, RF_Transactional);
+	}
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfo; }
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* InNodeInfo) override
 	{

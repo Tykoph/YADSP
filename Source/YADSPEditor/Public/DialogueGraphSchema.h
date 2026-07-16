@@ -1,4 +1,4 @@
-﻿// Copyright Tom Duby. All Rights Reserved.
+// Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
 
@@ -47,6 +47,8 @@ struct FNewNodeAction : public FEdGraphSchemaAction
 	GENERATED_BODY()
 
 public:
+	FNewNodeAction() : FEdGraphSchemaAction(), ClassTemplatePtr(nullptr) {}
+
 	/**
 	 * Constructor for creating a new node action.
 	 * @param ClassTemplate The class template to use for creating the new node

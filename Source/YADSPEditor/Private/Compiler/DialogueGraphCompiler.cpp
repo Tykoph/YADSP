@@ -119,25 +119,25 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 		// Determine node type and create corresponding node object
 		switch (RuntimeNode->NodeType) {
 			case EDialogueNodeType::StartNode:
-				NewNode = NewObject<UDialogueGraphNodeStart>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeStart>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::EndNode:
-				NewNode = NewObject<UDialogueGraphNodeEnd>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeEnd>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::TextNode:
-				NewNode = NewObject<UDialogueGraphNodeText>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeText>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::GameActionNode:
-				NewNode = NewObject<UDialogueGraphNodeGameAction>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeGameAction>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::BranchNode:
-				NewNode = NewObject<UDialogueGraphNodeBranch>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeBranch>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::GoToNode:
-				NewNode = NewObject<UDialogueGraphNodeGoTo>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeGoTo>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			case EDialogueNodeType::LabelNode:
-				NewNode = NewObject<UDialogueGraphNodeLabel>(InWorkingGraphEditor);
+				NewNode = NewObject<UDialogueGraphNodeLabel>(InWorkingGraphEditor, NAME_None, RF_Transactional);
 				break;
 			default:
 				// Log an error for unknown node types
@@ -152,7 +152,9 @@ void FDialogueGraphCompiler::UpdateGraphEditorFromWorkingAsset(UDialogueSystem* 
 
 		// Handle node information duplication
 		if (RuntimeNode->NodeInfo != nullptr) {
-			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, NewNode));
+			UDialogueNodeInfoBase* DuplicatedInfo = DuplicateObject(RuntimeNode->NodeInfo, NewNode);
+			DuplicatedInfo->SetFlags(RF_Transactional);
+			NewNode->SetNodeInfo(DuplicatedInfo);
 		}
 		else {
 			NewNode->InitNodeInfo(NewNode);

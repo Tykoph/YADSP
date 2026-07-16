@@ -24,7 +24,10 @@ public:
 	// UDialogueGraphNodeBase interface
 	virtual void CreateDefaultOutputPin() override;
 
-	virtual void InitNodeInfo(UObject* Output) override { NodeInfo = NewObject<UDialogueNodeInfoLabel>(Output); }
+	virtual void InitNodeInfo(UObject* Output) override
+	{
+		NodeInfo = NewObject<UDialogueNodeInfoLabel>(Output, NAME_None, RF_Transactional);
+	}
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override { return NodeInfo; }
 	virtual void SetNodeInfo(UDialogueNodeInfoBase* InNodeInfo) override 
 	{

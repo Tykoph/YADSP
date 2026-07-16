@@ -23,7 +23,16 @@ public:
 	// UDialogueGraphNodeBase interface
 	virtual void CreateDefaultOutputPin() override;
 
-	virtual bool ShouldReturnInfo() const override { return false; }
+	virtual void InitNodeInfo(UObject* Output) override
+	{
+		NodeInfo = NewObject<UDialogueNodeInfoBase>(Output, NAME_None, RF_Transactional);
+	}
 	
 	virtual EDialogueNodeType GetNodeType() const override { return EDialogueNodeType::StartNode; }
+	
+	virtual bool ShouldReturnInfo() const override { return false; }
+	
+protected:
+	UPROPERTY()
+	TObjectPtr<UDialogueNodeInfoBase> NodeInfo = nullptr;
 };

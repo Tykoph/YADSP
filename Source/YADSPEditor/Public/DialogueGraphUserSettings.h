@@ -33,6 +33,7 @@ struct FDialogueShortcut
 	UPROPERTY(EditAnywhere, config, Category="Shortcut")
 	bool bShift = false;
 
+	FDialogueShortcut() {}
 	explicit FDialogueShortcut(const FKey& InKey) : Key(InKey) {}
 
 	/**

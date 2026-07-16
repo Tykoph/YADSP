@@ -11,6 +11,7 @@
 #include "DialogueSystemAppMode.h"
 #include "DialogueSystem.h"
 #include "YADSP.h"
+#include "Framework/Commands/GenericCommands.h"
 
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
@@ -137,6 +138,8 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	UDialogueGraphProjectSettings::Get()->OnPreviewLanguageChanged.AddSP(this, &FDialogueGraphEditorApp::OnLanguageChanged);
 	UDialogueGraphUserSettings::Get()->OnShortcutsChanged.AddSP(this, &FDialogueGraphEditorApp::UpdateShortcuts);
 	UpdateShortcuts(); 
+	
+	GEditor->RegisterForUndo(this);
 }
 
 void FDialogueGraphEditorApp::OnLanguageChanged() const
@@ -146,9 +149,9 @@ void FDialogueGraphEditorApp::OnLanguageChanged() const
 	}
 }
 
-
 void FDialogueGraphEditorApp::OnClose()
 {
+	GEditor->UnregisterForUndo(this);
 	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
 	WorkingAsset->SetPreSaveListener(nullptr);
 	FAssetEditorToolkit::OnClose();
@@ -169,6 +172,22 @@ void FDialogueGraphEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyC
 void FDialogueGraphEditorApp::OnWorkingGraphAssetPreSave() const
 {
 	FDialogueGraphCompiler::UpdateWorkingAssetFromGraph(WorkingAsset, WorkingGraphEditor);
+}
+
+void FDialogueGraphEditorApp::PostUndo(bool bSuccess)
+{
+	if (WorkingGraphUI.IsValid()) {
+		WorkingGraphUI->ClearSelectionSet();
+		WorkingGraphUI->NotifyGraphChanged();
+	}
+}
+
+void FDialogueGraphEditorApp::PostRedo(bool bSuccess)
+{
+	if (WorkingGraphUI.IsValid()) {
+		WorkingGraphUI->ClearSelectionSet();
+		WorkingGraphUI->NotifyGraphChanged();
+	}
 }
 
 UDialogueGraphNodeBase* FDialogueGraphEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& InSelectionSet)
@@ -247,7 +266,9 @@ void FDialogueGraphEditorApp::OnCreateNode(UClass* NodeClass) const
 void FDialogueGraphEditorApp::OnDeleteNodes() const
 {
 	if (WorkingGraphUI.IsValid()) {
+		const FScopedTransaction Transaction(FText::FromString("Delete Dialogue Node"));
 		const FGraphPanelSelectionSet SelectedNodes = WorkingGraphUI->GetSelectedNodes();
+		
 		for (UObject* Node : SelectedNodes) {
 			if (UEdGraphNode* GraphNode = Cast<UEdGraphNode>(Node)) {
 				if (const UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
@@ -255,7 +276,8 @@ void FDialogueGraphEditorApp::OnDeleteNodes() const
 						continue;
 					}
 				}
-				
+				GraphNode->GetGraph()->Modify();
+				GraphNode->Modify();
 				GraphNode->GetGraph()->RemoveNode(GraphNode);
 			}
 		}

@@ -22,7 +22,7 @@ public:
 	
 	TSharedPtr<FUICommandInfo> DeleteNode;
 	
-protected:
+public:
 	/** Registers the graph editor commands with the UI system. */
 	virtual void RegisterCommands() override;
 };

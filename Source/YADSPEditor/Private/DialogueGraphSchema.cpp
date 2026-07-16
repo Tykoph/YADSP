@@ -114,7 +114,7 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 
 void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 {
-	UDialogueGraphNodeStart* StartNode = NewObject<UDialogueGraphNodeStart>(&InGraph);
+	UDialogueGraphNodeStart* StartNode = NewObject<UDialogueGraphNodeStart>(&InGraph, NAME_None, RF_Transactional);
 	StartNode->CreateNewGuid();
 	StartNode->NodePosX = 0;
 	StartNode->NodePosY = 0;
@@ -126,7 +126,7 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 		);
 	InGraph.AddNode(StartNode);
 	
-	UDialogueGraphNodeEnd* EndNode = NewObject<UDialogueGraphNodeEnd>(&InGraph);
+	UDialogueGraphNodeEnd* EndNode = NewObject<UDialogueGraphNodeEnd>(&InGraph, NAME_None, RF_Transactional);
 	EndNode->CreateNewGuid();
 	EndNode->NodePosX = 300; // Offset the end node by 300 units to the right of the start node
 	EndNode->NodePosY = 0;
@@ -143,8 +143,11 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 
 UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D InLocation, const bool bSelectNewNode)
 {
+	const FScopedTransaction Transaction(FText::FromString(TEXT("Create New Node")));
+	ParentGraph->Modify();
+	
 	// Create a new node instance of the specified class
-	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr);
+	UDialogueGraphNodeBase* ResultNode = NewObject<UDialogueGraphNodeBase>(ParentGraph, ClassTemplatePtr, NAME_None, RF_Transactional);
 	ResultNode->CreateNewGuid();
 	ResultNode->NodePosX = InLocation.X;
 	ResultNode->NodePosY = InLocation.Y;

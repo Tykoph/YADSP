@@ -64,13 +64,9 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override { return FLinearColor(0.15f, 0.2f, 0.5f, 0.5f); }
 	virtual FString GetDocumentationLink() const override { return TEXT("doc link"); }
 
-	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override
-	{
-	}
+	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
 
-	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override
-	{
-	}
+	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
 
 	/** Called when the application is closing. */
 	virtual void OnClose() override;
@@ -88,6 +84,11 @@ public:
 	TSharedRef<FUICommandList> GetGraphEditorCommands() const { return GraphEditorCommands.ToSharedRef(); }
 
 protected:
+	// FEditorUndiClient interface
+	virtual void PostUndo(bool bSuccess) override;
+	virtual void PostRedo(bool bSuccess) override;
+	// /////////
+	
 	/**
 	 * Retrieves the currently selected node from the graph editor.
 	 * @param InSelectionSet The set of currently selected graph elements

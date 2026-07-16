@@ -42,7 +42,13 @@ void UDialogueGraphNodeEnd::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 			FText::FromString(TEXT("Delete this node")),
 			FSlateIcon(TEXT("YADSPStyle"), TEXT("DialogueGraphEditor.NodeDeleteNodeIcon")),
 			FUIAction(
-				FExecuteAction::CreateLambda([Node]() { Node->GetGraph()->RemoveNode(Node); }),
+				FExecuteAction::CreateLambda([Node]()
+				{
+					const FScopedTransaction Transaction(FText::FromString(TEXT("Delete Node")));
+					Node->GetGraph()->Modify();
+					Node->Modify();
+					Node->GetGraph()->RemoveNode(Node);
+				}),
 				FCanExecuteAction::CreateLambda([Node]() { return Node->CanUserDeleteNode(); })
 			)
 		);
