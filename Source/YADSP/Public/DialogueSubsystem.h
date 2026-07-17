@@ -36,7 +36,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
  * Delegate broadcast when the player selects a dialogue option.
  * @param Index The index of the selected option.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOptionSelected, int, Index);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOptionSelected, int, Index);	
+
+/**
+ * Delegate broadcast when the current dialogue sequence ends.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContinueDialogue);
 
 /**
  * Global subsystem that coordinates dialogue events across the game.
@@ -48,23 +53,27 @@ class YADSP_API UDialogueSubsystem : public UWorldSubsystem
 
 public:
 	// Event fired when a new dialogue begins.
-	UPROPERTY(BlueprintAssignable, Category="YADSP")
+	UPROPERTY(BlueprintAssignable, Category = "YADSP")
 	FOnDialogueStarted OnDialogueStarted;
 	
 	// Event fired when dialogue UI should display a new line.
-	UPROPERTY(BlueprintAssignable, Category="YADSP")
+	UPROPERTY(BlueprintAssignable, Category = "YADSP")
 	FOnDialogueLineRequested OnDialogueLineRequested;
 	
 	// Event fired when the dialogue has concluded.
-	UPROPERTY(BlueprintAssignable, Category="YADSP")
+	UPROPERTY(BlueprintAssignable, Category = "YADSP")
 	FOnDialogueEnded OnDialogueEnded;
 	
 	// Event fired to notify the system which dialogue option was chosen.
-	UPROPERTY(BlueprintAssignable, Category="YADSP")
+	UPROPERTY(BlueprintAssignable, Category = "YADSP")
 	FOnOptionSelected OnOptionSelected;
 	
 	// Event fired when dialogue UI should present branch choices.
-	UPROPERTY(BlueprintAssignable, Category="YADSP")
+	UPROPERTY(BlueprintAssignable, Category = "YADSP")
 	FOnBranchOptionsRequested OnBranchOptionsRequested;
+	
+	// Event fired to notify the dialogue player to continue the dialogue
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "YADSP")
+	FOnContinueDialogue OnContinueDialogue;
 	
 };

@@ -73,6 +73,7 @@ private:
 	FGraphPanelSelectionSet CachedSelection;
 	
 	FDelegateHandle SelectionChangedHandle;
+	FDelegateHandle LanguageChangedHandle;
 	FDelegateHandle StyleChangedHandle;
 	FDelegateHandle PropertyChangedHandle;
 };

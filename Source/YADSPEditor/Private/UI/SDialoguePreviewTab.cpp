@@ -107,6 +107,7 @@ void SDialoguePreviewTab::Construct(const FArguments& InArgs, TSharedPtr<FDialog
 	}
 	
 	StyleChangedHandle = Settings->OnRichTextStyleChanged.AddRaw(this, &SDialoguePreviewTab::OnRichTextStyleChanged);
+	LanguageChangedHandle = Settings->OnPreviewLanguageChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
 }
 
 SDialoguePreviewTab::~SDialoguePreviewTab()
@@ -124,6 +125,7 @@ SDialoguePreviewTab::~SDialoguePreviewTab()
 	
 	if (UDialogueGraphProjectSettings* Settings = UDialogueGraphProjectSettings::Get()) {
 		Settings->OnRichTextStyleChanged.Remove(StyleChangedHandle);
+		Settings->OnPreviewLanguageChanged.Remove(LanguageChangedHandle);
 	}
 }
 
@@ -161,7 +163,8 @@ void SDialoguePreviewTab::ProcessTextNode(FText& NewPreviewText, FText& NewSpeak
 		else if (!NodeInfo->DialogueKey.IsNone()) {
 			NewPreviewText = FText::FromString(NodeInfo->DialogueKey.ToString());
 		}
-				
+		
+		NodeInfo->OnPropertiesChanged.Remove(PropertyChangedHandle);
 		PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
 	}
 }
@@ -189,6 +192,7 @@ void SDialoguePreviewTab::ProcessBranchNode(const UDialogueGraphNodeBranch* Bran
 			}
 		}
 				
+		NodeInfo->OnPropertiesChanged.Remove(PropertyChangedHandle);
 		PropertyChangedHandle = NodeInfo->OnPropertiesChanged.AddRaw(this, &SDialoguePreviewTab::RefreshPreview);
 	}
 }

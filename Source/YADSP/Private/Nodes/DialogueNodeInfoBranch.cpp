@@ -17,6 +17,8 @@ void UDialogueNodeInfoBranch::PostEditChangeProperty(FPropertyChangedEvent& Prop
 			}
 		}
 	}
+	
+	OnPropertiesChanged.Broadcast();
 }
 #endif
 

@@ -33,7 +33,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Play Dialogue", Category = "YADSP", AutoCreateRefTerm = "OnDialogueEnded"))
 	void PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerController* InPlayerController, FDialogueEndCallback OnDialogueEnded);
-
+	
+	/** 
+	 * Progresses the current dialogue to the next node in the graph.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (DiplayName = "Continue Dialogue", Category = "YADSP"))
+	void ContinueDialogue();
+	
 	/**
 	 * @brief Chooses the option at the given index in the current dialogue node.
 	 *
@@ -52,19 +58,16 @@ public:
 	 * @param InText The FText to calculate the skip timer for
 	 * @return A float representing the time in seconds until the dialogue should automatically be skipped.
 	 */
-	static float CalculateSkipTimer(const FString& InText);
+	static float CalculateAutoProgressTimer(const FString& InText);
 
 	/**
 	 * Sets up a timer to automatically skip the current dialogue after a given amount of time.
 	 *
 	 * @param InTime The amount of time to wait before automatically skipping the dialogue.
 	 */
-	void AutoSkipDialogue(float InTime);
+	void AutoProgressDialogue(float InTime);
 
 private:
-	/** Select the first link of a node to continue the dialogue. */
-	void ExecuteAutoSkip();
-	
 	void ProcessTextNode();
 	void ProcessBranchNode();
 	
@@ -76,8 +79,8 @@ private:
 	UFUNCTION()
 	void OnGameActionFinished();
 	
-	/** Sets up the auto-skip timer if the current node is configured for it. */
-	void ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNodeInfo);
+	/** Sets up the auto-progress timer if the current node is configured for it. */
+	void ProcessDialogueAutoProgress(const UDialogueNodeInfoText* InNodeInfo);
 	
 	/** Utility to convert an array of FStrings into an array of localized FTexts. */
 	static TArray<FText> ConvertStringArrayToTextArray(const TArray<FString>& InStringArray);
@@ -101,6 +104,6 @@ private:
 	UPROPERTY()
 	FDialogueEndCallback OnDialogueEndedCallback;
 	
-	float CurrentSkipTime = 0.0f;
-	FTimerHandle AutoSkipTimerHandle;
+	float CurrentProgressTime = 0.0f;
+	FTimerHandle AutoProgressTimerHandle;
 };

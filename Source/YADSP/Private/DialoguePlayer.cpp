@@ -19,9 +19,6 @@
 #include "RuntimeGraph/DialogueRuntimeGraphNode.h"
 #include "RuntimeGraph/DialogueRuntimeGraphPin.h"
 
-#include "Sound/SoundCue.h"
-#include "Kismet/GameplayStatics.h"
-
 void UDialoguePlayer::PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerController* InPlayerController, const FDialogueEndCallback OnDialogueEnded)
 {
 	if (InDialogueAsset == nullptr) {
@@ -71,8 +68,14 @@ void UDialoguePlayer::PlayDialogue(UDialogueSystem* InDialogueAsset, APlayerCont
 
 	DialogueSubsystem->OnDialogueStarted.Broadcast(InDialogueAsset, InPlayerController);
     DialogueSubsystem->OnOptionSelected.AddUniqueDynamic(this, &UDialoguePlayer::ChooseOptionAtIndex);
+	DialogueSubsystem->OnContinueDialogue.AddUniqueDynamic(this, &UDialoguePlayer::ContinueDialogue);
 	
 	// Play the first node
+	ChooseOptionAtIndex(0);
+}
+
+void UDialoguePlayer::ContinueDialogue()
+{
 	ChooseOptionAtIndex(0);
 }
 
@@ -149,7 +152,7 @@ void UDialoguePlayer::ProcessTextNode()
 		FText::FromString(CombinedSpeakerNames)
 		);
 		
-	ProcessDialogueAutoSkip(TextNodeInfo);
+	ProcessDialogueAutoProgress(TextNodeInfo);
 }
 
 void UDialoguePlayer::ProcessBranchNode()
@@ -293,7 +296,7 @@ void UDialoguePlayer::FinishDialogue()
 }
 
 // TODO: Find a better way to calculate the timer based on text length (especially for non-alphabetic languages)
-float UDialoguePlayer::CalculateSkipTimer(const FString& InText)
+float UDialoguePlayer::CalculateAutoProgressTimer(const FString& InText)
 {
 	// Calculate duration assuming an approximate reading rate of 15 characters per second
 	float Length = InText.Len();
@@ -305,14 +308,9 @@ float UDialoguePlayer::CalculateSkipTimer(const FString& InText)
 	return Length;
 }
 
-void UDialoguePlayer::AutoSkipDialogue(const float InTime)
+void UDialoguePlayer::AutoProgressDialogue(const float InTime)
 {
-	GetWorld()->GetTimerManager().SetTimer(AutoSkipTimerHandle, this, &UDialoguePlayer::ExecuteAutoSkip, InTime, false);
-}
-
-void UDialoguePlayer::ExecuteAutoSkip()
-{
-	ChooseOptionAtIndex(0);
+	GetWorld()->GetTimerManager().SetTimer(AutoProgressTimerHandle, this, &UDialoguePlayer::ContinueDialogue, InTime, false);
 }
 
 void UDialoguePlayer::OnGameActionFinished()
@@ -327,30 +325,30 @@ void UDialoguePlayer::OnGameActionFinished()
 	ChooseOptionAtIndex(0);
 }
 
-void UDialoguePlayer::ProcessDialogueAutoSkip(const UDialogueNodeInfoText* InNodeInfo)
+void UDialoguePlayer::ProcessDialogueAutoProgress(const UDialogueNodeInfoText* InNodeInfo)
 {
-	switch (InNodeInfo->SkipDialogue) {
-		case ESkipDialogue::NoSkip:
-			//TODO: Implement skip based on input
+	switch (InNodeInfo->ProgressDialogue) {
+		case EDialogueProgression::WaitForInput:
+			// Wait for a player input, does nothing on its own
 			break;
 		
-		case ESkipDialogue::AutoSkipBasedOnText:
-			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
-			AutoSkipDialogue(CurrentSkipTime);
+		case EDialogueProgression::AutoAfterText:
+			CurrentProgressTime = CalculateAutoProgressTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
+			AutoProgressDialogue(CurrentProgressTime);
 			break;
 		
-		case ESkipDialogue::AutoSkipAfterSound:
-			CurrentSkipTime = CalculateSkipTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
-			AutoSkipDialogue(CurrentSkipTime);
+		case EDialogueProgression::AutoAfterSound:
+			CurrentProgressTime = CalculateAutoProgressTimer(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, InNodeInfo->DialogueKey));
+			AutoProgressDialogue(CurrentProgressTime);
 			break;
 		
-		case ESkipDialogue::AutoSkipAfterTime:
-			CurrentSkipTime = InNodeInfo->SkipAfterSeconds;
-			AutoSkipDialogue(CurrentSkipTime);
+		case EDialogueProgression::AutoAfterTime:
+			CurrentProgressTime = InNodeInfo->ProgressAfterSeconds;
+			AutoProgressDialogue(CurrentProgressTime);
 			break;
 
 		default:
-			UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessDialogueAutoSkip -> Unknown Skip Dialogue"));
+			UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessDialogueAutoProgress -> Unknown Progress Dialogue enum"));
 			break;
 	}
 }

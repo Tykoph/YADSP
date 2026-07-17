@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
-#include "DialogueSkipEnum.h"
+#include "DialogueProgressEnum.h"
 #include "DialogueNodeInfoText.generated.h"
 
 /**
@@ -50,8 +50,8 @@ public:
 	// TODO: rework the skip system to be dialogue or project managed. Maybe keep an override parameter on text nodes. 
 	// Determines if and how this text automatically progresses.
 	UPROPERTY(EditAnywhere, Category="YADSP")
-	ESkipDialogue SkipDialogue = ESkipDialogue::NoSkip;
+	EDialogueProgression ProgressDialogue = EDialogueProgression::WaitForInput;
 	// Custom time in seconds to wait before auto-skipping.
-	UPROPERTY(EditAnywhere, meta=(EditCondition="SkipDialogue == ESkipDialogue::AutoSkipAfterTime", ClampMin = 0), Category="YADSP")
-	float SkipAfterSeconds;
+	UPROPERTY(EditAnywhere, meta=(EditCondition="ProgressDialogue == EDialogueProgression::AutoSkipAfterTime", ClampMin = 0), Category="YADSP")
+	float ProgressAfterSeconds;
 };
