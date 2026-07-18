@@ -34,6 +34,11 @@ struct FDialogueShortcut
 	bool bShift = false;
 
 	FDialogueShortcut() {}
+	
+	/** 
+	 * Constructs a shortcut with a specific primary key.
+	 * @param InKey The primary key to assign to this shortcut.
+	 */
 	explicit FDialogueShortcut(const FKey& InKey) : Key(InKey) {}
 
 	/**

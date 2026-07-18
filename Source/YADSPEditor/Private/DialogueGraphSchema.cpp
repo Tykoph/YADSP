@@ -96,7 +96,8 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 	if (PinA->GetOwningNode() == PinB->GetOwningNode()) {
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of the same node"));
 	}
-
+	
+	// Ensure that output pins can only have a single connection; break existing ones if a new connection is formed
 	if (PinB->Direction == EGPD_Output) {
 		if (PinB->LinkedTo.Num() > 0) {
 			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_B, TEXT("Break B"));
@@ -128,7 +129,7 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& InGraph) const
 	
 	UDialogueGraphNodeEnd* EndNode = NewObject<UDialogueGraphNodeEnd>(&InGraph, NAME_None, RF_Transactional);
 	EndNode->CreateNewGuid();
-	EndNode->NodePosX = 300; // Offset the end node by 300 units to the right of the start node
+	EndNode->NodePosX = 300; // Offset the end node by 300 units to the right of the start node to prevent overlap
 	EndNode->NodePosY = 0;
 	
 	EndNode->CreateDialoguePin(

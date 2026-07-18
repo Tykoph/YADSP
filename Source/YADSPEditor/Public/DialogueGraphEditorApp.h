@@ -83,12 +83,12 @@ public:
 	/** Returns the list of UI commands for the graph editor. */
 	TSharedRef<FUICommandList> GetGraphEditorCommands() const { return GraphEditorCommands.ToSharedRef(); }
 
-protected:
-	// FEditorUndiClient interface
+	// FEditorUndoClient interface
 	virtual void PostUndo(bool bSuccess) override;
 	virtual void PostRedo(bool bSuccess) override;
 	// /////////
 
+protected:
 	/**
 	 * Retrieves the currently selected node from the graph editor.
 	 * @param InSelectionSet The set of currently selected graph elements
@@ -111,13 +111,28 @@ protected:
 	/** Checks if any of the selected nodes can be deleted. */
 	bool CanDeleteNodes() const;
 	
+	/** Checks if any of the selected nodes can be copied to the clipboard. */
 	bool CanCopyNodes() const;
+	
+	/** Copies the currently selected nodes to the clipboard. */
 	void OnCopyNodes() const;
+	
+	/** Checks if valid nodes exist in the clipboard to be pasted. */
 	bool CanPasteNodes() const;
+	
+	/** Pastes nodes from the clipboard into the current graph. */
 	void OnPasteNodes() const;
+	
+	/** Checks if any of the selected nodes can be cut from the graph. */
 	bool CanCutNodes() const;
+	
+	/** Cuts the currently selected nodes, copying them to the clipboard and removing them from the graph. */
 	void OnCutNodes() const;
+	
+	/** Checks if any of the selected nodes can be duplicated. */
 	bool CanDuplicateNodes() const;
+	
+	/** Duplicates the currently selected nodes in the graph. */
 	void OnDuplicateNodes() const;
 	
 	TSharedPtr<FUICommandList> GraphEditorCommands;

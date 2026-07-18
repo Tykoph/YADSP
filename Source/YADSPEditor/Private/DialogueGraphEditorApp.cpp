@@ -140,7 +140,8 @@ void FDialogueGraphEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	UDialogueGraphProjectSettings::Get()->OnPreviewLanguageChanged.AddSP(this, &FDialogueGraphEditorApp::OnLanguageChanged);
 	UDialogueGraphUserSettings::Get()->OnShortcutsChanged.AddSP(this, &FDialogueGraphEditorApp::UpdateShortcuts);
 	UpdateShortcuts(); 
-	
+
+	// Register with the global editor undo system to intercept and handle structural changes in the graph
 	GEditor->RegisterForUndo(this);
 }
 
@@ -365,6 +366,7 @@ void FDialogueGraphEditorApp::OnCopyNodes() const
 
 	if (SelectedNodes.Num() == 0) return;
 
+	// Serialize the selected nodes into a string representation and store them in the system clipboard
 	FString ExportedText;
 	FEdGraphUtilities::ExportNodesToText(SelectedNodes, ExportedText);
 	FPlatformApplicationMisc::ClipboardCopy(*ExportedText);
@@ -400,7 +402,8 @@ void FDialogueGraphEditorApp::OnPasteNodes() const
     FEdGraphUtilities::ImportNodesFromText(WorkingGraphEditor, ClipboardContent, PastedNodes);
 
     const FVector2D PasteLocation = WorkingGraphUI->GetPasteLocation();
-	
+
+	// Calculate the bounding box of the pasted nodes to center them around the current cursor location
 	FVector2D MinPos(FLT_MAX, FLT_MAX);
 	FVector2D MaxPos(-FLT_MAX, -FLT_MAX);
 	for (const UEdGraphNode* GraphNode : PastedNodes) {

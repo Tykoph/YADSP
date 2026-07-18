@@ -13,12 +13,13 @@ FText UDialogueGraphNodeText::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		UE_LOG(LogYADSP, Error, TEXT("UDialogueGraphNodeText::GetNodeTitle -> NodeInfo is nullptr"))
 		return FText::FromString(TEXT("null"));
 	}
-	
+
 	if (NodeInfo->Title.IsEmpty()) {
+		constexpr int32 MaxTitleLength = 15;
 		FString DialogueTextStr = NodeInfo->DialogueKey.ToString();
-		// Limit the title length to 15 characters to prevent the node UI from becoming too wide
-		if (DialogueTextStr.Len() > 15) {
-			DialogueTextStr = DialogueTextStr.Left(15) + TEXT("...");
+		// Limit the title length to MaxTitleLength characters to prevent the node UI from becoming too wide
+		if (DialogueTextStr.Len() > MaxTitleLength) {
+			DialogueTextStr = DialogueTextStr.Left(MaxTitleLength) + TEXT("...");
 		}
 		return FText::FromString(DialogueTextStr);
 	}
