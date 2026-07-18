@@ -2,11 +2,9 @@
 
 #include "UI/DialogueResponseWidget.h"
 #include "Engine/World.h"
-
 #include "DialogueSubsystem.h"
 #include "YADSP.h"
 #include "Components/Button.h"
-#include "Components/RichTextBlock.h"
 
 void UDialogueResponseWidget::NativeConstruct()
 {
@@ -17,11 +15,11 @@ void UDialogueResponseWidget::NativeConstruct()
 	}
 }
 
-void UDialogueResponseWidget::SetDialogueOption(const FText& InText, const int InIndex)
+void UDialogueResponseWidget::SetDialogueOption(const FGSheetLocSystemLocalizedText& InTextRowHandle, const int InIndex)
 {
 	ButtonIndex = InIndex;
 	if (ResponseButtonText) {
-		ResponseButtonText->SetText(InText);
+		ResponseButtonText->SetLocalizedText(InTextRowHandle.TextKey, InTextRowHandle.LocSystemDataTable);
 	}
 	
 	if (ResponseButton) {

@@ -3,10 +3,9 @@
 #include "UI/DialogueWidget.h"
 
 #include "DialogueSubsystem.h"
+#include "GSheetLocSystemLocalizedText.h"
 #include "YADSP.h"
 #include "Components/HorizontalBox.h"
-#include "Components/RichTextBlock.h"
-#include "Fonts/FontMeasure.h"
 #include "Framework/Application/SlateApplication.h"
 
 void UDialogueWidget::NativeConstruct()
@@ -36,7 +35,7 @@ void UDialogueWidget::NativeDestruct()
 	DialogueSubsystem->OnOptionSelected.RemoveDynamic(this, &UDialogueWidget::ClearDialogueOption);
 }
 
-void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FText& InSpeaker)
+void UDialogueWidget::UpdateDisplay_Implementation(const FGSheetLocSystemLocalizedText& TextRowHandle, const FGSheetLocSystemLocalizedText& SpeakersRowHandle)
 {
 	if (SpeakerTextBlock == nullptr || DialogueTextBlock == nullptr) {
 		UE_LOG(LogYADSP, Error, TEXT("UDialogueWidget::UpdateDisplay_Implementation -> %s%s"),
@@ -45,9 +44,9 @@ void UDialogueWidget::UpdateDisplay_Implementation(const FText& InText, const FT
 			);
 		return;
 	}
-	
-	SpeakerTextBlock->SetText(InSpeaker);
-	DialogueTextBlock->SetText(InText);
+
+	SpeakerTextBlock->SetLocalizedTexts(SpeakersRowHandle.TextsKeys, SpeakersRowHandle.LocSystemDataTable);
+	DialogueTextBlock->SetLocalizedText(TextRowHandle.TextKey, TextRowHandle.LocSystemDataTable);
 }
 
 void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBranchOptions)
@@ -75,9 +74,9 @@ void UDialogueWidget::OnBranchOptionsRequested(const TArray<FBranchOption>& InBr
 			continue;
 		}
 		
-		DialogueOption->SetDialogueOption(InBranchOptions[i].DialogueText, i);
+		DialogueOption->SetDialogueOption(InBranchOptions[i].DialogueRowHandle, i);
 		DialogueOption->bIsValid = InBranchOptions[i].bExpressionIsValid;
-		DialogueOption->OptionTooltip = InBranchOptions[i].Tooltip;
+		DialogueOption->OptionTooltip = InBranchOptions[i].TooltipRowHandle;
 	}
 }
 

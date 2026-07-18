@@ -5,6 +5,8 @@
 #include "BranchOption.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "DialogueSystem.h"
+#include "GSheetLocSystemLocalizedText.h"
+
 #include "DialogueSubsystem.generated.h"
 
 /**
@@ -19,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, UDialogueSystem
  * @param Text The dialogue line.
  * @param Speaker The name of the speaker.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueLineRequested, const FText&, Text, const FText&, Speaker);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueLineRequested, const FGSheetLocSystemLocalizedText&, TextRowHandle, const FGSheetLocSystemLocalizedText&, SpeakersRowHandles);
 
 /**
  * Delegate broadcast when branch options need to be displayed to the player.
@@ -75,5 +77,4 @@ public:
 	// Event fired to notify the dialogue player to continue the dialogue
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "YADSP")
 	FOnContinueDialogue OnContinueDialogue;
-	
 };

@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "DialogueSubsystem.h"
+#include "GSheetLocSystemRichTextBlock.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Components/RichTextBlock.h"
 #include "DialogueResponseWidget.generated.h"
 
 /**
@@ -22,11 +22,11 @@ protected:
 public:
 	/**
 	 * Configures the widget visuals and underlying data for a given branch option.
-	 * @param InText The label to display.
+	 * @param InTextRowHandle The label to display.
 	 * @param InIndex The zero-based choice index passed to the player upon selection.
 	 */
 	UFUNCTION()
-	void SetDialogueOption(const FText& InText, const int InIndex);
+	void SetDialogueOption(const FGSheetLocSystemLocalizedText& InTextRowHandle, const int InIndex);
 
 	/**
 	 * Handler executed when the widget's underlying button receives a click event.
@@ -40,7 +40,7 @@ public:
 
 	// Text block reflecting the option's text string.
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
-	TObjectPtr<URichTextBlock> ResponseButtonText = nullptr;
+	TObjectPtr<UGSheetLocSystemRichTextBlock> ResponseButtonText = nullptr;
 
 	// Determines whether this option is currently valid and selectable by the player.
 	UPROPERTY(BlueprintReadOnly, Category="YADSP")
@@ -48,7 +48,7 @@ public:
 	
 	// Hover tooltip content for this response option.
 	UPROPERTY(BlueprintReadOnly, Category="YADSP")
-	FText OptionTooltip;
+	FGSheetLocSystemLocalizedText OptionTooltip;
 	
 private:
 	int ButtonIndex;

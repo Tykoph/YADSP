@@ -1,6 +1,7 @@
 // Copyright Tom Duby. All Rights Reserved.
 
 #pragma once
+#include "GSheetLocSystemLocalizedText.h"
 
 #include "BranchOption.generated.h"
 
@@ -15,11 +16,11 @@ struct YADSP_API FBranchOption
 public:
 	// The text displayed for this dialogue option.
 	UPROPERTY(BlueprintReadOnly, Category="YADSP")
-	FText DialogueText;
+	FGSheetLocSystemLocalizedText DialogueRowHandle;
 	
 	// Optional tooltip text providing more context or condition requirements.
 	UPROPERTY(BlueprintReadOnly, Category="YADSP")
-	FText Tooltip;
+	FGSheetLocSystemLocalizedText TooltipRowHandle;
 	
 	// Indicates whether the associated condition expression evaluated successfully.
 	UPROPERTY(BlueprintReadOnly, Category="YADSP")

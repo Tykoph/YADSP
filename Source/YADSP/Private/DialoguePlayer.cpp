@@ -137,20 +137,18 @@ void UDialoguePlayer::ProcessTextNode()
 		UE_LOG(LogYADSP, Error, TEXT("UDialoguePlayer::ProcessTextNode -> TextNodeInfo is nullptr"));
 		return;
 	}
-		
-	// Set the speaker name
-	FString CombinedSpeakerNames;
+	
+	FGSheetLocSystemLocalizedText SpeakerArray;
+	SpeakerArray.LocSystemDataTable = Cast<UGSheetLocSystemDataTable>(DialogueSystem->SpeakerDataTable);
 	for (const FName& SpeakerKey : TextNodeInfo->SpeakerKeys) {
-		if (!CombinedSpeakerNames.IsEmpty()) {
-			CombinedSpeakerNames += TEXT(", ");
-		}
-		CombinedSpeakerNames += UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->SpeakerDataTable, SpeakerKey);
+		SpeakerArray.TextsKeys.Add(SpeakerKey);	
 	}
-
-	DialogueSubsystem->OnDialogueLineRequested.Broadcast(
-		FText::FromString(UDialogueSystemLibrary::GetTranslatedText(DialogueSystem, DialogueSystem->DialogueDataTable, TextNodeInfo->DialogueKey)),
-		FText::FromString(CombinedSpeakerNames)
-		);
+	
+	FGSheetLocSystemLocalizedText DialogueLineRowHandle;
+	DialogueLineRowHandle.LocSystemDataTable = Cast<UGSheetLocSystemDataTable>(DialogueSystem->DialogueDataTable);
+	DialogueLineRowHandle.TextKey = TextNodeInfo->DialogueKey;
+	
+	DialogueSubsystem->OnDialogueLineRequested.Broadcast(DialogueLineRowHandle, SpeakerArray);
 		
 	ProcessDialogueAutoProgress(TextNodeInfo);
 }
@@ -186,10 +184,12 @@ void UDialoguePlayer::ProcessBranchNode()
 		}
 				
 		FBranchOption CurrentBranch;
-		CurrentBranch.DialogueText = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
-				DialogueSystem, DialogueSystem->DialogueDataTable, BranchNodeInfo->BranchOptions[i].DialogueResponseKey));
-		CurrentBranch.Tooltip = FText::FromString(UDialogueSystemLibrary::GetTranslatedText(
-				DialogueSystem, DialogueSystem->DialogueDataTable, BranchNodeInfo->BranchOptions[i].ConditionTooltipKey));
+		CurrentBranch.DialogueRowHandle.LocSystemDataTable = Cast<UGSheetLocSystemDataTable>(DialogueSystem->DialogueDataTable);
+		CurrentBranch.DialogueRowHandle.TextKey = BranchNodeInfo->BranchOptions[i].DialogueResponseKey;
+		
+		CurrentBranch.TooltipRowHandle.LocSystemDataTable = Cast<UGSheetLocSystemDataTable>(DialogueSystem->DialogueDataTable);
+		CurrentBranch.TooltipRowHandle.TextKey = BranchNodeInfo->BranchOptions[i].ConditionTooltipKey;
+		
 		CurrentBranch.bExpressionIsValid = bIsValid;
 		BranchToDisplay.Add(CurrentBranch);
 	}

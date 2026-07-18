@@ -7,7 +7,7 @@
 #include "DialogueSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/HorizontalBox.h"
-#include "Components/RichTextBlock.h"
+#include "GSheetLocSystemRichTextBlock.h"
 #include "DialogueWidget.generated.h"
 
 /**
@@ -26,11 +26,11 @@ protected:
 public:	
 	/**
 	 * Updates the UI text elements with the latest conversation state.
-	 * @param InText The line currently spoken.
-	 * @param InSpeaker The localized name of the active speaker.
+	 * @param TextRowHandle The line currently spoken.
+	 * @param SpeakersRowHandle The names of the active speaker.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="YADSP")
-	void UpdateDisplay(const FText& InText, const FText& InSpeaker);
+	void UpdateDisplay(const FGSheetLocSystemLocalizedText& TextRowHandle, const FGSheetLocSystemLocalizedText& SpeakersRowHandle);
 	
 	/**
 	 * Configures and surfaces interactive widgets whenever a choice sequence arises.
@@ -54,11 +54,11 @@ public:
 	
 	// The text element reflecting the name of the active speaker(s).
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
-	TObjectPtr<URichTextBlock> SpeakerTextBlock = nullptr;
+	TObjectPtr<UGSheetLocSystemRichTextBlock> SpeakerTextBlock = nullptr;
 	
 	// The text element reflecting the current spoken line.
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")
-	TObjectPtr<URichTextBlock> DialogueTextBlock = nullptr;
+	TObjectPtr<UGSheetLocSystemRichTextBlock> DialogueTextBlock = nullptr;
 
 	// Container actively organizing selectable choice widgets.
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category="YADSP")

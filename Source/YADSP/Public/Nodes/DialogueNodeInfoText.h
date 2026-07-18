@@ -52,6 +52,6 @@ public:
 	UPROPERTY(EditAnywhere, Category="YADSP")
 	EDialogueProgression ProgressDialogue = EDialogueProgression::WaitForInput;
 	// Custom time in seconds to wait before auto-skipping.
-	UPROPERTY(EditAnywhere, meta=(EditCondition="ProgressDialogue == EDialogueProgression::AutoSkipAfterTime", ClampMin = 0), Category="YADSP")
+	UPROPERTY(EditAnywhere, meta=(EditCondition="ProgressDialogue == EDialogueProgression::AutoAfterTime", ClampMin = 0), Category="YADSP")
 	float ProgressAfterSeconds;
 };
