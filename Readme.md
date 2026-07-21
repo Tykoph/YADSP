@@ -8,7 +8,7 @@
 
 This is a plugin for Unreal Engine 5 that aims to be a modular dialogue system easy to use for game designers and programmers alike.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 
 ## Features
 
