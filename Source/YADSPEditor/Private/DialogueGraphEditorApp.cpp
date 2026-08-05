@@ -418,17 +418,18 @@ void FDialogueGraphEditorApp::OnPasteNodes() const
 	
     for (UEdGraphNode* GraphNode : PastedNodes) {
         if (UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(GraphNode)) {
-            if (DialogueNode->GetNodeInfo()) {
+        	DialogueNode->DialogueSystem = WorkingAsset;
+        	
+        	if (DialogueNode->GetNodeInfo()) {
                 UDialogueNodeInfoBase* NewInfo = DuplicateObject(DialogueNode->GetNodeInfo(), DialogueNode);
                 NewInfo->SetFlags(RF_Transactional);
                 DialogueNode->SetNodeInfo(NewInfo);
+                DialogueNode->GetNodeInfo()->DialogueSystem = WorkingAsset;
             }
 
             DialogueNode->CreateNewGuid();
-            
-            DialogueNode->DialogueSystem = WorkingAsset;
-            if (DialogueNode->GetNodeInfo()) {
-                DialogueNode->GetNodeInfo()->DialogueSystem = WorkingAsset;
+            for (UEdGraphPin* Pin : DialogueNode->Pins) {
+	            Pin->PinId = FGuid::NewGuid();
             }
         	
             DialogueNode->NodePosX += Offset.X;
