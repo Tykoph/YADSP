@@ -22,10 +22,10 @@
 void FYADSPEditorModule::StartupModule()
 {
 	IAssetTools& AssetTools = IAssetTools::Get();
-
+	
 	EAssetTypeCategories::Type AssetType = AssetTools.RegisterAdvancedAssetCategory(
-		FName(TEXT("DialogueGraph")),
-		LOCTEXT("DialogueGraphAssetCategory", "Dialogue Graph"));
+		FName(TEXT("YADSPEcosystem")),
+		LOCTEXT("YADSPAssetCategory", "YADSP Ecosystem"));
 	const TSharedPtr<FDialogueSystemAction> DialogueGraphAssetTypeAction = MakeShared<FDialogueSystemAction>(AssetType);
 	AssetTools.RegisterAssetTypeActions(DialogueGraphAssetTypeAction.ToSharedRef());
 
